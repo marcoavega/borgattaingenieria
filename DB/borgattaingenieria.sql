@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-11-2023 a las 06:10:23
+-- Tiempo de generación: 21-11-2023 a las 07:17:33
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.0.28
 
@@ -487,7 +487,8 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`usuario_id`, `usuario_usuario`, `usuario_clave`, `usuario_foto`, `usuario_creado`, `usuario_actualizado`) VALUES
-(1, 'Administrador', '$2y$10$uJv3jCCQKn20CMWiYjw6sOh81jCmUoEN8YJMLASs30kbTa6g6/Fuq', 'Administrador_95.jpg', '2023-11-06 21:45:33', '2023-11-10 22:33:51');
+(1, 'Administrador', '$2y$10$uJv3jCCQKn20CMWiYjw6sOh81jCmUoEN8YJMLASs30kbTa6g6/Fuq', 'Administrador_95.jpg', '2023-11-06 21:45:33', '2023-11-10 22:33:51'),
+(11, 'admin', '$2y$10$VvyL6hjqK8ivlDTKPr94HOHgV5Dzr0xfVCM8iRvaSrzUZedkveP3u', 'admin_71.jpg', '2023-11-21 05:48:31', '2023-11-21 05:48:31');
 
 --
 -- Índices para tablas volcadas
@@ -690,7 +691,7 @@ ALTER TABLE `unidades_medida`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `usuario_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `usuario_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Restricciones para tablas volcadas
