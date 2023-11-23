@@ -234,13 +234,13 @@
 
 			if(isset($busqueda) && $busqueda!=""){
 
-				$consulta_datos="SELECT * FROM usuario WHERE ((usuario_id!='".$_SESSION['id']."' AND usuario_id!='1') AND (usuario_nombre LIKE '%$busqueda%' OR usuario_apellido LIKE '%$busqueda%' OR usuario_email LIKE '%$busqueda%' OR usuario_usuario LIKE '%$busqueda%')) ORDER BY usuario_nombre ASC LIMIT $inicio,$registros";
+				$consulta_datos="SELECT * FROM usuario WHERE ( (usuario_usuario LIKE '%$busqueda%')) ORDER BY usuario_usuario ASC LIMIT $inicio,$registros";
 
-				$consulta_total="SELECT COUNT(usuario_id) FROM usuario WHERE ((usuario_id!='".$_SESSION['id']."' AND usuario_id!='1') AND (usuario_nombre LIKE '%$busqueda%' OR usuario_apellido LIKE '%$busqueda%' OR usuario_email LIKE '%$busqueda%' OR usuario_usuario LIKE '%$busqueda%'))";
+				$consulta_total="SELECT COUNT(usuario_id) FROM usuario WHERE ((usuario_id!='".$_SESSION['id']."' AND usuario_id!='1') AND (usuario_usuario LIKE '%$busqueda%'))";
 
 			}else{
 
-				$consulta_datos="SELECT * FROM usuario WHERE usuario_id!='".$_SESSION['id']."' AND usuario_id!='1' ORDER BY usuario_nombre ASC LIMIT $inicio,$registros";
+				$consulta_datos="SELECT * FROM usuario WHERE usuario_id!='".$_SESSION['id']."' AND usuario_id!='1' ORDER BY usuario_usuario ASC LIMIT $inicio,$registros";
 
 				$consulta_total="SELECT COUNT(usuario_id) FROM usuario WHERE usuario_id!='".$_SESSION['id']."' AND usuario_id!='1'";
 
@@ -260,9 +260,7 @@
 		            <thead>
 		                <tr>
 		                    <th class="has-text-centered">#</th>
-		                    <th class="has-text-centered">Nombre</th>
 		                    <th class="has-text-centered">Usuario</th>
-		                    <th class="has-text-centered">Email</th>
 		                    <th class="has-text-centered">Creado</th>
 		                    <th class="has-text-centered">Actualizado</th>
 		                    <th class="has-text-centered" colspan="3">Opciones</th>
@@ -278,9 +276,7 @@
 					$tabla.='
 						<tr class="has-text-centered" >
 							<td>'.$contador.'</td>
-							<td>'.$rows['usuario_nombre'].' '.$rows['usuario_apellido'].'</td>
 							<td>'.$rows['usuario_usuario'].'</td>
-							<td>'.$rows['usuario_email'].'</td>
 							<td>'.date("d-m-Y  h:i:s A",strtotime($rows['usuario_creado'])).'</td>
 							<td>'.date("d-m-Y  h:i:s A",strtotime($rows['usuario_actualizado'])).'</td>
 							<td>

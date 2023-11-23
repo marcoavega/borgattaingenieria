@@ -46,6 +46,7 @@
 
 					    # Verificando usuario #
 					    $check_usuario=$this->ejecutarConsulta("SELECT * FROM usuario WHERE usuario_usuario='$usuario'");
+						$check_product=$this->ejecutarConsulta("SELECT * FROM usuario WHERE usuario_usuario='$usuario'");
 
 					    if($check_usuario->rowCount()==1){
 

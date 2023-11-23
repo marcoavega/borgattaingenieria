@@ -44,6 +44,17 @@
                         <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userSearch/">Buscar</a></li>
                     </ul>
                 </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Productos
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productNew/">Nuevo</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productList/">Lista</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productSearch/">Buscar</a></li>
+                    </ul>
+                </li>
             </ul>
 
 
