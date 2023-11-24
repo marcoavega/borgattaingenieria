@@ -1,279 +1,273 @@
 <?php
 
-	namespace app\controllers;
-	use app\models\mainModel;
+namespace app\controllers;
 
-	class productController extends mainModel{
+use app\models\mainModel;
 
-		/*----------  Controlador registrar usuario  ----------*/
-		public function registrarProductoControlador(){
+class productController extends mainModel
+{
 
-			# Almacenando datos#
+	/*----------  Controlador registrar usuario  ----------*/
+	public function registrarProductoControlador()
+	{
 
-		    $usuario=$this->limpiarCadena($_POST['usuario_usuario']);
-		    $clave1=$this->limpiarCadena($_POST['usuario_clave_1']);
-		    $clave2=$this->limpiarCadena($_POST['usuario_clave_2']);
+		# Almacenando datos#
 
-
-		    # Verificando campos obligatorios #
-		    if($usuario=="" || $clave1=="" || $clave2==""){
-		    	$alerta=[
-					"tipo"=>"simple",
-					"titulo"=>"Ocurrió un error inesperado",
-					"texto"=>"No has llenado todos los campos que son obligatorios",
-					"icono"=>"error"
-				];
-				return json_encode($alerta);
-		        exit();
-		    }
-
-		    # Verificando integridad de los datos #
-		   
-
-		    if($this->verificarDatos("[a-zA-Z0-9]{4,20}",$usuario)){
-		    	$alerta=[
-					"tipo"=>"simple",
-					"titulo"=>"Ocurrió un error inesperado",
-					"texto"=>"El USUARIO no coincide con el formato solicitado",
-					"icono"=>"error"
-				];
-				return json_encode($alerta);
-		        exit();
-		    }
-
-		    if($this->verificarDatos("[a-zA-Z0-9$@.-]{7,100}",$clave1) || $this->verificarDatos("[a-zA-Z0-9$@.-]{7,100}",$clave2)){
-		    	$alerta=[
-					"tipo"=>"simple",
-					"titulo"=>"Ocurrió un error inesperado",
-					"texto"=>"Las CLAVES no coinciden con el formato solicitado",
-					"icono"=>"error"
-				];
-				return json_encode($alerta);
-		        exit();
-		    }
-
-		   
-
-            # Verificando claves #
-            if($clave1!=$clave2){
-				$alerta=[
-					"tipo"=>"simple",
-					"titulo"=>"Ocurrió un error inesperado",
-					"texto"=>"Las contraseñas que acaba de ingresar no coinciden, por favor verifique e intente nuevamente",
-					"icono"=>"error"
-				];
-				return json_encode($alerta);
-				exit();
-			}else{
-				$clave=password_hash($clave1,PASSWORD_BCRYPT,["cost"=>10]);
-            }
-
-            # Verificando usuario #
-		    $check_usuario=$this->ejecutarConsulta("SELECT usuario_usuario FROM usuario WHERE usuario_usuario='$usuario'");
-		    if($check_usuario->rowCount()>0){
-		    	$alerta=[
-					"tipo"=>"simple",
-					"titulo"=>"Ocurrió un error inesperado",
-					"texto"=>"El USUARIO ingresado ya se encuentra registrado, por favor elija otro",
-					"icono"=>"error"
-				];
-				return json_encode($alerta);
-		        exit();
-		    }
-
-		    # Directorio de imagenes #
-    		$img_dir="../views/fotos/";
-
-    		# Comprobar si se selecciono una imagen #
-    		if($_FILES['usuario_foto']['name']!="" && $_FILES['usuario_foto']['size']>0){
-
-    			# Creando directorio #
-		        if(!file_exists($img_dir)){
-		            if(!mkdir($img_dir,0777)){
-		            	$alerta=[
-							"tipo"=>"simple",
-							"titulo"=>"Ocurrió un error inesperado",
-							"texto"=>"Error al crear el directorio",
-							"icono"=>"error"
-						];
-						return json_encode($alerta);
-		                exit();
-		            } 
-		        }
-
-		        # Verificando formato de imagenes #
-		        if(mime_content_type($_FILES['usuario_foto']['tmp_name'])!="image/jpeg" && mime_content_type($_FILES['usuario_foto']['tmp_name'])!="image/png"){
-		        	$alerta=[
-						"tipo"=>"simple",
-						"titulo"=>"Ocurrió un error inesperado",
-						"texto"=>"La imagen que ha seleccionado es de un formato no permitido",
-						"icono"=>"error"
-					];
-					return json_encode($alerta);
-		            exit();
-		        }
-
-		        # Verificando peso de imagen #
-		        if(($_FILES['usuario_foto']['size']/1024)>5120){
-		        	$alerta=[
-						"tipo"=>"simple",
-						"titulo"=>"Ocurrió un error inesperado",
-						"texto"=>"La imagen que ha seleccionado supera el peso permitido",
-						"icono"=>"error"
-					];
-					return json_encode($alerta);
-		            exit();
-		        }
-
-		        # Nombre de la foto #
-		        $foto=str_ireplace(" ","_",$usuario);
-		        $foto=$foto."_".rand(0,100);
-
-		        # Extension de la imagen #
-		        switch(mime_content_type($_FILES['usuario_foto']['tmp_name'])){
-		            case 'image/jpeg':
-		                $foto=$foto.".jpg";
-		            break;
-		            case 'image/png':
-		                $foto=$foto.".png";
-		            break;
-		        }
-
-		        chmod($img_dir,0777);
-
-		        # Moviendo imagen al directorio #
-		        if(!move_uploaded_file($_FILES['usuario_foto']['tmp_name'],$img_dir.$foto)){
-		        	$alerta=[
-						"tipo"=>"simple",
-						"titulo"=>"Ocurrió un error inesperado",
-						"texto"=>"No podemos subir la imagen al sistema en este momento",
-						"icono"=>"error"
-					];
-					return json_encode($alerta);
-		            exit();
-		        }
-
-    		}else{
-    			$foto="";
-    		}
+		$usuario = $this->limpiarCadena($_POST['usuario_usuario']);
+		$clave1 = $this->limpiarCadena($_POST['usuario_clave_1']);
+		$clave2 = $this->limpiarCadena($_POST['usuario_clave_2']);
 
 
-		    $usuario_datos_reg=[
-				
-				[
-					"campo_nombre"=>"usuario_usuario",
-					"campo_marcador"=>":Usuario",
-					"campo_valor"=>$usuario
-				],
-				[
-					"campo_nombre"=>"usuario_clave",
-					"campo_marcador"=>":Clave",
-					"campo_valor"=>$clave
-				],
-				[
-					"campo_nombre"=>"usuario_foto",
-					"campo_marcador"=>":Foto",
-					"campo_valor"=>$foto
-				],
-				[
-					"campo_nombre"=>"usuario_creado",
-					"campo_marcador"=>":Creado",
-					"campo_valor"=>date("Y-m-d H:i:s")
-				],
-				[
-					"campo_nombre"=>"usuario_actualizado",
-					"campo_marcador"=>":Actualizado",
-					"campo_valor"=>date("Y-m-d H:i:s")
-				]
+		# Verificando campos obligatorios #
+		if ($usuario == "" || $clave1 == "" || $clave2 == "") {
+			$alerta = [
+				"tipo" => "simple",
+				"titulo" => "Ocurrió un error inesperado",
+				"texto" => "No has llenado todos los campos que son obligatorios",
+				"icono" => "error"
 			];
-
-			$registrar_usuario=$this->guardarDatos("usuario",$usuario_datos_reg);
-
-			if($registrar_usuario->rowCount()==1){
-				$alerta=[
-					"tipo"=>"limpiar",
-					"titulo"=>"Usuario registrado",
-					"texto"=>"El usuario ".$usuario." se registro con exito",
-					"icono"=>"success"
-				];
-			}else{
-				
-				if(is_file($img_dir.$foto)){
-		            chmod($img_dir.$foto,0777);
-		            unlink($img_dir.$foto);
-		        }
-
-				$alerta=[
-					"tipo"=>"simple",
-					"titulo"=>"Ocurrió un error inesperado",
-					"texto"=>"No se pudo registrar el usuario, por favor intente nuevamente",
-					"icono"=>"error"
-				];
-			}
-
 			return json_encode($alerta);
+			exit();
+		}
 
+		# Verificando integridad de los datos #
+
+
+		if ($this->verificarDatos("[a-zA-Z0-9]{4,20}", $usuario)) {
+			$alerta = [
+				"tipo" => "simple",
+				"titulo" => "Ocurrió un error inesperado",
+				"texto" => "El USUARIO no coincide con el formato solicitado",
+				"icono" => "error"
+			];
+			return json_encode($alerta);
+			exit();
+		}
+
+		if ($this->verificarDatos("[a-zA-Z0-9$@.-]{7,100}", $clave1) || $this->verificarDatos("[a-zA-Z0-9$@.-]{7,100}", $clave2)) {
+			$alerta = [
+				"tipo" => "simple",
+				"titulo" => "Ocurrió un error inesperado",
+				"texto" => "Las CLAVES no coinciden con el formato solicitado",
+				"icono" => "error"
+			];
+			return json_encode($alerta);
+			exit();
 		}
 
 
 
-		/*----------  Controlador listar usuario  ----------*/
-		public function listarProductControlador($pagina,$registros,$url,$busqueda){
+		# Verificando claves #
+		if ($clave1 != $clave2) {
+			$alerta = [
+				"tipo" => "simple",
+				"titulo" => "Ocurrió un error inesperado",
+				"texto" => "Las contraseñas que acaba de ingresar no coinciden, por favor verifique e intente nuevamente",
+				"icono" => "error"
+			];
+			return json_encode($alerta);
+			exit();
+		} else {
+			$clave = password_hash($clave1, PASSWORD_BCRYPT, ["cost" => 10]);
+		}
 
-			$pagina=$this->limpiarCadena($pagina);
-			$registros=$this->limpiarCadena($registros);
+		# Verificando usuario #
+		$check_usuario = $this->ejecutarConsulta("SELECT usuario_usuario FROM usuario WHERE usuario_usuario='$usuario'");
+		if ($check_usuario->rowCount() > 0) {
+			$alerta = [
+				"tipo" => "simple",
+				"titulo" => "Ocurrió un error inesperado",
+				"texto" => "El USUARIO ingresado ya se encuentra registrado, por favor elija otro",
+				"icono" => "error"
+			];
+			return json_encode($alerta);
+			exit();
+		}
 
-			$url=$this->limpiarCadena($url);
-			$url=APP_URL.$url."/";
+		# Directorio de imagenes #
+		$img_dir = "../views/fotos/";
 
-			$busqueda=$this->limpiarCadena($busqueda);
-			$tabla="";
+		# Comprobar si se selecciono una imagen #
+		if ($_FILES['usuario_foto']['name'] != "" && $_FILES['usuario_foto']['size'] > 0) {
 
-			$pagina = (isset($pagina) && $pagina>0) ? (int) $pagina : 1;
-			$inicio = ($pagina>0) ? (($pagina * $registros)-$registros) : 0;
-
-			if(isset($busqueda) && $busqueda!=""){
-
-				$consulta_datos="SELECT *
-                FROM productos
-                JOIN categorias ON productos.id_categoria = categorias.id_categoria
-                WHERE nombre_producto LIKE '%$busqueda%'
-                ORDER BY nombre_producto ASC
-                LIMIT $inicio, $registros;
-                ";
-
-				$consulta_total="SELECT COUNT(id_producto)
-                FROM productos
-                JOIN categorias ON productos.id_categoria = categorias.id_categoria
-                WHERE (id_producto != '".$_SESSION['id']."') AND (nombre_producto LIKE '%$busqueda%');
-                ";
-
-			}else{
-
-				$consulta_datos="SELECT *
-                FROM productos
-                JOIN categorias ON productos.id_categoria = categorias.id_categoria
-                WHERE nombre_producto LIKE '%$busqueda%'
-                ORDER BY nombre_producto ASC
-                LIMIT $inicio, $registros;
-                ";
-
-				$consulta_total="SELECT COUNT(id_producto)
-                FROM productos
-                JOIN categorias ON productos.id_categoria = categorias.id_categoria
-                WHERE (id_producto != '".$_SESSION['id']."') AND (nombre_producto LIKE '%$busqueda%');
-                ";
+			# Creando directorio #
+			if (!file_exists($img_dir)) {
+				if (!mkdir($img_dir, 0777)) {
+					$alerta = [
+						"tipo" => "simple",
+						"titulo" => "Ocurrió un error inesperado",
+						"texto" => "Error al crear el directorio",
+						"icono" => "error"
+					];
+					return json_encode($alerta);
+					exit();
+				}
 			}
 
-			$datos = $this->ejecutarConsulta($consulta_datos);
-			$datos = $datos->fetchAll();
+			# Verificando formato de imagenes #
+			if (mime_content_type($_FILES['usuario_foto']['tmp_name']) != "image/jpeg" && mime_content_type($_FILES['usuario_foto']['tmp_name']) != "image/png") {
+				$alerta = [
+					"tipo" => "simple",
+					"titulo" => "Ocurrió un error inesperado",
+					"texto" => "La imagen que ha seleccionado es de un formato no permitido",
+					"icono" => "error"
+				];
+				return json_encode($alerta);
+				exit();
+			}
 
-			$total = $this->ejecutarConsulta($consulta_total);
-			$total = (int) $total->fetchColumn();
+			# Verificando peso de imagen #
+			if (($_FILES['usuario_foto']['size'] / 1024) > 5120) {
+				$alerta = [
+					"tipo" => "simple",
+					"titulo" => "Ocurrió un error inesperado",
+					"texto" => "La imagen que ha seleccionado supera el peso permitido",
+					"icono" => "error"
+				];
+				return json_encode($alerta);
+				exit();
+			}
 
-			$numeroPaginas =ceil($total/$registros);
+			# Nombre de la foto #
+			$foto = str_ireplace(" ", "_", $usuario);
+			$foto = $foto . "_" . rand(0, 100);
 
-			$tabla.='
+			# Extension de la imagen #
+			switch (mime_content_type($_FILES['usuario_foto']['tmp_name'])) {
+				case 'image/jpeg':
+					$foto = $foto . ".jpg";
+					break;
+				case 'image/png':
+					$foto = $foto . ".png";
+					break;
+			}
+
+			chmod($img_dir, 0777);
+
+			# Moviendo imagen al directorio #
+			if (!move_uploaded_file($_FILES['usuario_foto']['tmp_name'], $img_dir . $foto)) {
+				$alerta = [
+					"tipo" => "simple",
+					"titulo" => "Ocurrió un error inesperado",
+					"texto" => "No podemos subir la imagen al sistema en este momento",
+					"icono" => "error"
+				];
+				return json_encode($alerta);
+				exit();
+			}
+
+		} else {
+			$foto = "";
+		}
+
+
+		$usuario_datos_reg = [
+
+			[
+				"campo_nombre" => "usuario_usuario",
+				"campo_marcador" => ":Usuario",
+				"campo_valor" => $usuario
+			],
+			[
+				"campo_nombre" => "usuario_clave",
+				"campo_marcador" => ":Clave",
+				"campo_valor" => $clave
+			],
+			[
+				"campo_nombre" => "usuario_foto",
+				"campo_marcador" => ":Foto",
+				"campo_valor" => $foto
+			],
+			[
+				"campo_nombre" => "usuario_creado",
+				"campo_marcador" => ":Creado",
+				"campo_valor" => date("Y-m-d H:i:s")
+			],
+			[
+				"campo_nombre" => "usuario_actualizado",
+				"campo_marcador" => ":Actualizado",
+				"campo_valor" => date("Y-m-d H:i:s")
+			]
+		];
+
+		$registrar_usuario = $this->guardarDatos("usuario", $usuario_datos_reg);
+
+		if ($registrar_usuario->rowCount() == 1) {
+			$alerta = [
+				"tipo" => "limpiar",
+				"titulo" => "Usuario registrado",
+				"texto" => "El usuario " . $usuario . " se registro con exito",
+				"icono" => "success"
+			];
+		} else {
+
+			if (is_file($img_dir . $foto)) {
+				chmod($img_dir . $foto, 0777);
+				unlink($img_dir . $foto);
+			}
+
+			$alerta = [
+				"tipo" => "simple",
+				"titulo" => "Ocurrió un error inesperado",
+				"texto" => "No se pudo registrar el usuario, por favor intente nuevamente",
+				"icono" => "error"
+			];
+		}
+
+		return json_encode($alerta);
+
+	}
+
+
+
+	/*----------  Controlador listar usuario  ----------*/
+	public function listarProductControlador($pagina, $registros, $url, $busqueda)
+	{
+
+		$pagina = $this->limpiarCadena($pagina);
+		$registros = $this->limpiarCadena($registros);
+
+		$url = $this->limpiarCadena($url);
+		$url = APP_URL . $url . "/";
+
+		$busqueda = $this->limpiarCadena($busqueda);
+		$tabla = "";
+
+		$pagina = (isset($pagina) && $pagina > 0) ? (int) $pagina : 1;
+		$inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
+
+
+		$consulta_datos = "SELECT *
+                FROM productos
+                JOIN categorias ON productos.id_categoria = categorias.id_categoria
+				JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
+				JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
+				JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
+                WHERE nombre_producto LIKE '%$busqueda%'
+                ORDER BY nombre_producto ASC
+                LIMIT $inicio, $registros;
+                ";
+
+		$consulta_total = "SELECT COUNT(id_producto)
+                FROM productos
+                JOIN categorias ON productos.id_categoria = categorias.id_categoria
+				JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
+				JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
+				JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
+                WHERE nombre_producto LIKE '%$busqueda%';
+                ";
+
+
+
+		$datos = $this->ejecutarConsulta($consulta_datos);
+		$datos = $datos->fetchAll();
+
+		$total = $this->ejecutarConsulta($consulta_total);
+		$total = (int) $total->fetchColumn();
+
+		$numeroPaginas = ceil($total / $registros);
+
+		$tabla .= '
 		        <div class="table-container">
 		        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
 		            <thead>
@@ -288,81 +282,84 @@
 		                    <th class="has-text-centered">Proveedor</th>
 		                    <th class="has-text-centered">Unidad de Medida</th>
 		                    <th class="has-text-centered">Moneda</th>
+							<th class="has-text-centered">Imagen</th>
                             <th class="has-text-centered" colspan="3">Opciones</th>
 		                </tr>
 		            </thead>
 		            <tbody>
 		    ';
 
-		    if($total>=1 && $pagina<=$numeroPaginas){
-				$contador=$inicio+1;
-				$pag_inicio=$inicio+1;
-				foreach($datos as $rows){
-					$tabla.='
+		if ($total >= 1 && $pagina <= $numeroPaginas) {
+			$contador = $inicio + 1;
+			$pag_inicio = $inicio + 1;
+			foreach ($datos as $rows) {
+				$tabla .= '
+
 						<tr class="has-text-centered" >
-							<td>'.$contador.'</td>
-							<td>'.$rows['codigo_producto'].'</td>
-							<td>'.$rows['nombre_producto'].'</td>
-							<td>'.$rows['descripcion'].'</td>
-                            <td>'.$rows['precio'].'</td>
-                            <td>'.$rows['stock'].'</td>
-                            <td>'.$rows['nombre_categoria'].'</td>
-                            <td>'.$rows['id_proveedor'].'</td>
-                            <td>'.$rows['id_unidad'].'</td>
-                            <td>'.$rows['id_moneda'].'</td>
+							<td>' . $contador . '</td>
+							<td>' . $rows['codigo_producto'] . '</td>
+							<td>' . $rows['nombre_producto'] . '</td>
+							<td>' . $rows['descripcion'] . '</td>
+                            <td>' . $rows['precio'] . '</td>
+                            <td>' . $rows['stock'] . '</td>
+                            <td>' . $rows['nombre_categoria'] . '</td>
+                            <td>' . $rows['nombre_proveedor'] . '</td>
+                            <td>' . $rows['nombre_unidad'] . '</td>
+                            <td>' . $rows['nombre_moneda'] . '</td>
+							<td> <img src="' . APP_URL . 'app/views/img/' . $rows['url_imagen'] . '" class="card-img-top " alt="..."></td>
 							<td>
-			                    <a href="'.APP_URL.'productPhoto/'.$rows['id_producto'].'/" class="button is-info is-rounded is-small">Foto</a>
+			                    <a href="' . APP_URL . 'productPhoto/' . $rows['id_producto'] . '/" class="button is-info is-rounded is-small">Foto</a>
 			                </td>
 			                <td>
-			                    <a href="'.APP_URL.'productUpdate/'.$rows['id_producto'].'/" class="button is-success is-rounded is-small">Actualizar</a>
+			                    <a href="' . APP_URL . 'productUpdate/' . $rows['id_producto'] . '/" class="button is-success is-rounded is-small">Actualizar</a>
 			                </td>
 			                <td>
-			                	<form class="FormularioAjax" action="'.APP_URL.'app/ajax/usuarioAjax.php" method="POST" autocomplete="off" >
+			                	<form class="FormularioAjax" action="' . APP_URL . 'app/ajax/usuarioAjax.php" method="POST" autocomplete="off" >
 
 			                		<input type="hidden" name="modulo_product" value="eliminar">
-			                		<input type="hidden" name="id_producto" value="'.$rows['id_producto'].'">
+			                		<input type="hidden" name="id_producto" value="' . $rows['id_producto'] . '">
 
 			                    	<button type="submit" class="button is-danger is-rounded is-small">Eliminar</button>
 			                    </form>
 			                </td>
 						</tr>
 					';
-					$contador++;
-				}
-				$pag_final=$contador-1;
-			}else{
-				if($total>=1){
-					$tabla.='
+				$contador++;
+			}
+			$pag_final = $contador - 1;
+		} else {
+			if ($total >= 1) {
+				$tabla .= '
 						<tr class="has-text-centered" >
 			                <td colspan="7">
-			                    <a href="'.$url.'1/" class="button is-link is-rounded is-small mt-4 mb-4">
+			                    <a href="' . $url . '1/" class="button is-link is-rounded is-small mt-4 mb-4">
 			                        Haga clic acá para recargar el listado
 			                    </a>
 			                </td>
 			            </tr>
 					';
-				}else{
-					$tabla.='
+			} else {
+				$tabla .= '
 						<tr class="has-text-centered" >
 			                <td colspan="7">
 			                    No hay registros en el sistema
 			                </td>
 			            </tr>
 					';
-				}
 			}
-
-			$tabla.='</tbody></table></div>';
-
-			### Paginacion ###
-			if($total>0 && $pagina<=$numeroPaginas){
-
-
-				$tabla.='<p class="pagination">Mostrando productos <strong> '. $pag_inicio .'</strong> al <strong>'.$pag_final.'</strong> de un <strong>total de '.$total.'</strong></p>';
-
-				$tabla.=$this->paginadorTablas($pagina,$numeroPaginas,$url,7);
-			}
-
-			return $tabla;
 		}
-    }
+
+		$tabla .= '</tbody></table></div>';
+
+		### Paginacion ###
+		if ($total > 0 && $pagina <= $numeroPaginas) {
+
+
+			$tabla .= '<p class="pagination">Mostrando productos <strong> ' . $pag_inicio . '</strong> al <strong>' . $pag_final . '</strong> de un <strong>total de ' . $total . '</strong></p>';
+
+			$tabla .= $this->paginadorTablas($pagina, $numeroPaginas, $url, 7);
+		}
+
+		return $tabla;
+	}
+}
