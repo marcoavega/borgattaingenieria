@@ -1,6 +1,6 @@
 <div class="container is-fluid mb-6">
-	<h1 class="title">Usuarios</h1>
-	<h2 class="subtitle">Lista de usuario</h2>
+	<h1 class="title">Productos</h1>
+	<h2 class="subtitle">Lista de productos</h2>
 </div>
 <div class="container pb-6 pt-6">
 
@@ -11,6 +11,6 @@
 
 		$insUsuario = new productController();
 
-		echo $insUsuario->listarProductControlador($url[1],15,$url[0],"");
+		echo $insUsuario->listarProductControlador($url[1],30,$url[0],"");
 	?>
 </div>

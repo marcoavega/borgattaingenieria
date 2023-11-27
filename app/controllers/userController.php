@@ -280,10 +280,10 @@
 							<td>'.date("d-m-Y  h:i:s A",strtotime($rows['usuario_creado'])).'</td>
 							<td>'.date("d-m-Y  h:i:s A",strtotime($rows['usuario_actualizado'])).'</td>
 							<td>
-			                    <a href="'.APP_URL.'userPhoto/'.$rows['usuario_id'].'/" class="button is-info is-rounded is-small">Foto</a>
+			                    <a href="'.APP_URL.'userPhoto/'.$rows['usuario_id'].'/" class="btn btn-primary">Foto</a>
 			                </td>
 			                <td>
-			                    <a href="'.APP_URL.'userUpdate/'.$rows['usuario_id'].'/" class="button is-success is-rounded is-small">Actualizar</a>
+			                    <a href="'.APP_URL.'userUpdate/'.$rows['usuario_id'].'/" class="btn btn-info">Actualizar</a>
 			                </td>
 			                <td>
 			                	<form class="FormularioAjax" action="'.APP_URL.'app/ajax/usuarioAjax.php" method="POST" autocomplete="off" >
@@ -291,7 +291,7 @@
 			                		<input type="hidden" name="modulo_usuario" value="eliminar">
 			                		<input type="hidden" name="usuario_id" value="'.$rows['usuario_id'].'">
 
-			                    	<button type="submit" class="button is-danger is-rounded is-small">Eliminar</button>
+			                    	<button type="submit" class="btn btn-danger">Eliminar</button>
 			                    </form>
 			                </td>
 						</tr>

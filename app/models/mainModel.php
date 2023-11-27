@@ -153,19 +153,19 @@
 
 		/*---------- Paginador de tablas ----------*/
 		protected function paginadorTablas($pagina,$numeroPaginas,$url,$botones){
-			$tabla='<nav class="pagination is-centered is-rounded" role="navigation" aria-label="pagination">';
+			$tabla='<nav aria-label="Page navigation example">';
 
 	        if($pagina<=1){
 	            $tabla.='
-	            <a class="pagination-previous is-disabled" disabled >Anterior</a>
-	            <ul class="pagination-list">
+				<ul class="pagination">
+				<li class="page-item"><a class="page-link" disabled >Anterior</a></li>
+	           
 	            ';
 	        }else{
 	            $tabla.='
-	            <a class="pagination-previous" href="'.$url.($pagina-1).'/">Anterior</a>
-	            <ul class="pagination-list">
-	                <li><a class="pagination-link" href="'.$url.'1/">1</a></li>
-	                <li><span class="pagination-ellipsis">&hellip;</span></li>
+				<ul class="pagination">
+				<li class="page-item"><a class="page-link" href="'.$url.($pagina-1).'/">Anterior</a></li>
+				<li class="page-item"><a class="page-link" href="'.$url.'1/">1</a></li>
 	            ';
 	        }
 
@@ -178,9 +178,9 @@
 	            }
 
 	            if($pagina==$i){
-	                $tabla.='<li><a class="pagination-link is-current" href="'.$url.$i.'/">'.$i.'</a></li>';
+	                $tabla.='<li class="page-item"><a class="page-link" href="'.$url.$i.'/">'.$i.'</a></li>';
 	            }else{
-	                $tabla.='<li><a class="pagination-link" href="'.$url.$i.'/">'.$i.'</a></li>';
+	                $tabla.='<li class="page-item"><a class="page-link" href="'.$url.$i.'/">'.$i.'</a></li>';
 	            }
 
 	            $ci++;
@@ -189,15 +189,15 @@
 
 	        if($pagina==$numeroPaginas){
 	            $tabla.='
+				<li class="page-item"><a class="page-link" disabled >Siguiente</a></li>
 	            </ul>
-	            <a class="pagination-next is-disabled" disabled >Siguiente</a>
-	            ';
+				';
+			
 	        }else{
 	            $tabla.='
-	                <li><span class="pagination-ellipsis">&hellip;</span></li>
-	                <li><a class="pagination-link" href="'.$url.$numeroPaginas.'/">'.$numeroPaginas.'</a></li>
-	            </ul>
-	            <a class="pagination-next" href="'.$url.($pagina+1).'/">Siguiente</a>
+				
+				<li class="page-item"><a class="page-link" href="'.$url.($pagina+1).'/" >Siguiente</a></li>
+				</ul>
 	            ';
 	        }
 
