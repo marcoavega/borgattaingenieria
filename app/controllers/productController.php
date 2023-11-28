@@ -315,6 +315,7 @@ public function obtenerOpcionesTiposMoneda()
                     <img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="card-img-top" alt="...">
                     <div class="card-body">
                         <h5 class="card-title">' . $rows['nombre_producto'] . '</h5>
+                        <p class="card-text">Código: ' . $rows['codigo_producto'] . '</p>
                         <p class="card-text">' . $rows['descripcion'] . '</p>
                         <p class="card-text">Precio: ' . $rows['precio'] . '</p>
                         <p class="card-text">Stock: ' . $rows['stock'] . '</p>
