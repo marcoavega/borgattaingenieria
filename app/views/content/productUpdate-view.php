@@ -124,7 +124,6 @@ $opcionesTiposMoneda = $insProduct->obtenerOpcionesTiposMoneda();
 
                         <div class="text-center mt-4" style="margin-bottom: 20px;">
                             <!-- Puedes ajustar el valor según tus necesidades -->
-                            <button type="reset" class="btn btn-secondary me-2">Limpiar</button>
                             <button type="submit" class="btn btn-primary">Actualizar</button>
                         </div>
 

@@ -1,43 +1,36 @@
 <div class="container is-fluid mb-6">
 	<?php 
-
 		$id=$insLogin->limpiarCadena($url[1]);
-
-		if($id==$_SESSION['id']){ 
 	?>
-	<h1 class="title">Mi foto de perfil</h1>
-	<h2 class="subtitle">Actualizar foto de perfil</h2>
-	<?php }else{ ?>
-	<h1 class="title">Usuarios</h1>
-	<h2 class="subtitle">Actualizar foto de perfil</h2>
-	<?php } ?>
+	<h1 class="title">Foto de producto</h1>
+	<h2 class="subtitle">Actualizar foto de producto</h2>
 </div>
+
+
 <div class="container pb-6 pt-6">
 	<?php
 	
 		include "./app/views/inc/btn_back.php";
 
-		$datos=$insLogin->seleccionarDatos("Unico","usuario","usuario_id",$id);
+        $datos = $insLogin->seleccionarDatos("Unico", "productos", "id_producto", $id);
 
 		if($datos->rowCount()==1){
 			$datos=$datos->fetch();
 	?>
 
-	<h2 class="title has-text-centered"><?php echo $datos['usuario_usuario']; ?></h2>
-
-	<p class="has-text-centered pb-6"><?php echo "<strong>Usuario creado:</strong> ".date("d-m-Y  h:i:s A",strtotime($datos['usuario_creado']))." &nbsp; <strong>Usuario actualizado:</strong> ".date("d-m-Y  h:i:s A",strtotime($datos['usuario_actualizado'])); ?></p>
+	<h2 class="title has-text-centered"><?php echo $datos['nombre_producto']; ?></h2>
 
 	<div class="columns">
 		<div class="column is-two-fifths">
-            <?php if(is_file("./app/views/fotos/".$datos['usuario_foto'])){ ?>
+            <?php if(is_file("./app/views/img/img/".$datos['url_imagen'])){ ?>
 			<figure class="image mb-6">
-                <img class="is-rounded" src="<?php echo APP_URL; ?>app/views/fotos/<?php echo $datos['usuario_foto']; ?>">
+                <img class="is-rounded" src="<?php echo APP_URL; ?>app/views/img/img/<?php echo $datos['url_imagen']; ?>">
 			</figure>
 			
-			<form class="FormularioAjax" action="<?php echo APP_URL; ?>app/ajax/usuarioAjax.php" method="POST" autocomplete="off" >
+			<form class="FormularioAjax" action="<?php echo APP_URL; ?>app/ajax/productAjax.php" method="POST" autocomplete="off" >
 
-				<input type="hidden" name="modulo_usuario" value="eliminarFoto">
-				<input type="hidden" name="usuario_id" value="<?php echo $datos['usuario_id']; ?>">
+				<input type="hidden" name="modulo_product" value="eliminarFoto">
+                <input type="hidden" name="id_producto" value="<?php echo $datos['id_producto']; ?>">
 
 				<p class="has-text-centered">
 					<button type="submit" class="button is-danger is-rounded">Eliminar foto</button>
@@ -52,16 +45,16 @@
 
 
 		<div class="column">
-			<form class="mb-6 has-text-centered FormularioAjax" action="<?php echo APP_URL; ?>app/ajax/usuarioAjax.php" method="POST" enctype="multipart/form-data" autocomplete="off" >
+			<form class="mb-6 has-text-centered FormularioAjax" action="<?php echo APP_URL; ?>app/ajax/productAjax.php" method="POST" enctype="multipart/form-data" autocomplete="off" >
 
-				<input type="hidden" name="modulo_usuario" value="actualizarFoto">
-				<input type="hidden" name="usuario_id" value="<?php echo $datos['usuario_id']; ?>">
+				<input type="hidden" name="modulo_product" value="actualizarFoto">
+				<input type="hidden" name="id_producto" value="<?php echo $datos['id_producto']; ?>">
 				
 				<label>Foto o imagen del usuario</label><br>
 
 				<div class="file has-name is-boxed is-justify-content-center mb-6">
 				  	<label class="file-label">
-						<input class="file-input" type="file" name="usuario_foto" accept=".jpg, .png, .jpeg" >
+						<input class="file-input" type="file" name="url_imagen" accept=".jpg, .png, .jpeg" >
 						<span class="file-cta">
 							<span class="file-label">
 								Seleccione una foto

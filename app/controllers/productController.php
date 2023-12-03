@@ -542,7 +542,248 @@ public function actualizarProductControlador(){
 
 
 
+/*----------  Controlador eliminar foto usuario  ----------*/
+public function eliminarFotoProductControlador(){
 
+    $id=$this->limpiarCadena($_POST['id_producto']);
+
+    # Verificando usuario #
+    $datos=$this->ejecutarConsulta("SELECT * FROM productos WHERE id_producto='$id'");
+    if($datos->rowCount()<=0){
+        $alerta=[
+            "tipo"=>"simple",
+            "titulo"=>"Ocurrió un error inesperado",
+            "texto"=>"No hemos encontrado el producto en el sistema",
+            "icono"=>"error"
+        ];
+        return json_encode($alerta);
+        exit();
+    }else{
+        $datos=$datos->fetch();
+    }
+
+    # Directorio de imagenes #
+    $img_dir="../views/img/img/";
+
+    chmod($img_dir,0777);
+
+    if(is_file($img_dir.$datos['url_imagen'])){
+
+        chmod($img_dir.$datos['url_imagen'],0777);
+
+        if(!unlink($img_dir.$datos['url_imagen'])){
+            $alerta=[
+                "tipo"=>"simple",
+                "titulo"=>"Ocurrió un error inesperado",
+                "texto"=>"Error al intentar eliminar la foto del producto, por favor intente nuevamente",
+                "icono"=>"error"
+            ];
+            return json_encode($alerta);
+            exit();
+        }
+    }else{
+        $alerta=[
+            "tipo"=>"simple",
+            "titulo"=>"Ocurrió un error inesperado",
+            "texto"=>"No hemos encontrado la foto del producto en el sistema",
+            "icono"=>"error"
+        ];
+        return json_encode($alerta);
+        exit();
+    }
+
+    $producto_datos_up=[
+        [
+            "campo_nombre"=>"url_imagen",
+            "campo_marcador"=>":Foto",
+            "campo_valor"=>""
+        ]
+    ];
+
+    $condicion=[
+        "condicion_campo"=>"id_producto",
+        "condicion_marcador"=>":ID",
+        "condicion_valor"=>$id
+    ];
+
+    if($this->actualizarDatos("productos",$producto_datos_up,$condicion)){
+
+        if($id==$_SESSION['id']){
+            $_SESSION['foto']="";
+        }
+
+        $alerta=[
+            "tipo"=>"recargar",
+            "titulo"=>"Foto eliminada",
+            "texto"=>"La foto del producto ".$datos['nombre_producto']." se elimino correctamente",
+            "icono"=>"success"
+        ];
+    }else{
+        $alerta=[
+            "tipo"=>"recargar",
+            "titulo"=>"Foto eliminada",
+            "texto"=>"No hemos podido actualizar algunos datos del producto ".$datos['nombre_producto'].", sin embargo la foto ha sido eliminada correctamente",
+            "icono"=>"warning"
+        ];
+    }
+
+    return json_encode($alerta);
+}
+
+
+
+
+/*----------  Controlador actualizar foto usuario  ----------*/
+public function actualizarFotoProductControlador(){
+
+    $id=$this->limpiarCadena($_POST['id_producto']);
+
+    # Verificando usuario #
+    $datos=$this->ejecutarConsulta("SELECT * FROM productos WHERE id_producto='$id'");
+    if($datos->rowCount()<=0){
+        $alerta=[
+            "tipo"=>"simple",
+            "titulo"=>"Ocurrió un error inesperado",
+            "texto"=>"No hemos encontrado el producto en el sistema",
+            "icono"=>"error"
+        ];
+        return json_encode($alerta);
+        exit();
+    }else{
+        $datos=$datos->fetch();
+    }
+
+    # Directorio de imagenes #
+    $img_dir="../views/img/img/";
+
+    # Comprobar si se selecciono una imagen #
+    if($_FILES['url_imagen']['name']=="" && $_FILES['url_imagen']['size']<=0){
+        $alerta=[
+            "tipo"=>"simple",
+            "titulo"=>"Ocurrió un error inesperado",
+            "texto"=>"No ha seleccionado una foto para el producto",
+            "icono"=>"error"
+        ];
+        return json_encode($alerta);
+        exit();
+    }
+
+    # Creando directorio #
+    if(!file_exists($img_dir)){
+        if(!mkdir($img_dir,0777)){
+            $alerta=[
+                "tipo"=>"simple",
+                "titulo"=>"Ocurrió un error inesperado",
+                "texto"=>"Error al crear el directorio",
+                "icono"=>"error"
+            ];
+            return json_encode($alerta);
+            exit();
+        } 
+    }
+
+    # Verificando formato de imagenes #
+    if(mime_content_type($_FILES['url_imagen']['tmp_name'])!="image/jpeg" && mime_content_type($_FILES['url_imagen']['tmp_name'])!="image/png"){
+        $alerta=[
+            "tipo"=>"simple",
+            "titulo"=>"Ocurrió un error inesperado",
+            "texto"=>"La imagen que ha seleccionado es de un formato no permitido",
+            "icono"=>"error"
+        ];
+        return json_encode($alerta);
+        exit();
+    }
+
+    # Verificando peso de imagen #
+    if(($_FILES['url_imagen']['size']/1024)>5120){
+        $alerta=[
+            "tipo"=>"simple",
+            "titulo"=>"Ocurrió un error inesperado",
+            "texto"=>"La imagen que ha seleccionado supera el peso permitido",
+            "icono"=>"error"
+        ];
+        return json_encode($alerta);
+        exit();
+    }
+
+    # Nombre de la foto #
+    if($datos['url_imagen']!=""){
+        $foto=explode(".", $datos['url_imagen']);
+        $foto=$foto[0];
+    }else{
+        $foto=str_ireplace(" ","_",$datos['nombre_producto']);
+        $foto=$foto."_".rand(0,100);
+    }
+    
+
+    # Extension de la imagen #
+    switch(mime_content_type($_FILES['url_imagen']['tmp_name'])){
+        case 'image/jpeg':
+            $foto=$foto.".jpg";
+        break;
+        case 'image/png':
+            $foto=$foto.".png";
+        break;
+    }
+
+    chmod($img_dir,0777);
+
+    # Moviendo imagen al directorio #
+    if(!move_uploaded_file($_FILES['url_imagen']['tmp_name'],$img_dir.$foto)){
+        $alerta=[
+            "tipo"=>"simple",
+            "titulo"=>"Ocurrió un error inesperado",
+            "texto"=>"No podemos subir la imagen al sistema en este momento",
+            "icono"=>"error"
+        ];
+        return json_encode($alerta);
+        exit();
+    }
+
+    # Eliminando imagen anterior #
+    if(is_file($img_dir.$datos['url_imagen']) && $datos['url_imagen']!=$foto){
+        chmod($img_dir.$datos['url_imagen'], 0777);
+        unlink($img_dir.$datos['url_imagen']);
+    }
+
+    $productos_datos_up=[
+        [
+            "campo_nombre"=>"url_imagen",
+            "campo_marcador"=>":Foto",
+            "campo_valor"=>$foto
+        ]
+    ];
+
+    $condicion=[
+        "condicion_campo"=>"id_producto",
+        "condicion_marcador"=>":ID",
+        "condicion_valor"=>$id
+    ];
+
+    if($this->actualizarDatos("productos",$productos_datos_up,$condicion)){
+
+        if($id==$_SESSION['id']){
+            $_SESSION['foto']=$foto;
+        }
+
+        $alerta=[
+            "tipo"=>"recargar",
+            "titulo"=>"Foto actualizada",
+            "texto"=>"La foto del producto ".$datos['nombre_producto']." se actualizo correctamente",
+            "icono"=>"success"
+        ];
+    }else{
+
+        $alerta=[
+            "tipo"=>"recargar",
+            "titulo"=>"Foto actualizada",
+            "texto"=>"No hemos podido actualizar algunos datos del producto ".$datos['nombre_producto'].", sin embargo la foto ha sido actualizada",
+            "icono"=>"warning"
+        ];
+    }
+
+    return json_encode($alerta);
+}
 
 
 
