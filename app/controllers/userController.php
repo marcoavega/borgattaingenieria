@@ -377,7 +377,7 @@
 		        $alerta=[
 					"tipo"=>"recargar",
 					"titulo"=>"Usuario eliminado",
-					"texto"=>"El usuario ".$datos['usuario_nombre']." ".$datos['usuario_apellido']." ha sido eliminado del sistema correctamente",
+					"texto"=>"El usuario ".$datos['usuario_usuario']." ha sido eliminado del sistema correctamente",
 					"icono"=>"success"
 				];
 
@@ -386,7 +386,7 @@
 		    	$alerta=[
 					"tipo"=>"simple",
 					"titulo"=>"Ocurrió un error inesperado",
-					"texto"=>"No hemos podido eliminar el usuario ".$datos['usuario_nombre']." ".$datos['usuario_apellido']." del sistema, por favor intente nuevamente",
+					"texto"=>"No hemos podido eliminar el usuario ".$datos['usuario_usuario']." del sistema, por favor intente nuevamente",
 					"icono"=>"error"
 				];
 		    }
@@ -482,16 +482,12 @@
 
 
 			# Almacenando datos#
-		    $nombre=$this->limpiarCadena($_POST['usuario_nombre']);
-		    $apellido=$this->limpiarCadena($_POST['usuario_apellido']);
-
 		    $usuario=$this->limpiarCadena($_POST['usuario_usuario']);
-		    $email=$this->limpiarCadena($_POST['usuario_email']);
 		    $clave1=$this->limpiarCadena($_POST['usuario_clave_1']);
 		    $clave2=$this->limpiarCadena($_POST['usuario_clave_2']);
 
 		    # Verificando campos obligatorios #
-		    if($nombre=="" || $apellido=="" || $usuario==""){
+		    if($usuario==""){
 		        $alerta=[
 					"tipo"=>"simple",
 					"titulo"=>"Ocurrió un error inesperado",
@@ -503,27 +499,6 @@
 		    }
 
 		    # Verificando integridad de los datos #
-		    if($this->verificarDatos("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{3,40}",$nombre)){
-		        $alerta=[
-					"tipo"=>"simple",
-					"titulo"=>"Ocurrió un error inesperado",
-					"texto"=>"El NOMBRE no coincide con el formato solicitado",
-					"icono"=>"error"
-				];
-				return json_encode($alerta);
-		        exit();
-		    }
-
-		    if($this->verificarDatos("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{3,40}",$apellido)){
-		        $alerta=[
-					"tipo"=>"simple",
-					"titulo"=>"Ocurrió un error inesperado",
-					"texto"=>"El APELLIDO no coincide con el formato solicitado",
-					"icono"=>"error"
-				];
-				return json_encode($alerta);
-		        exit();
-		    }
 
 		    if($this->verificarDatos("[a-zA-Z0-9]{4,20}",$usuario)){
 		    	$alerta=[
@@ -537,30 +512,6 @@
 		    }
 
 		    # Verificando email #
-		    if($email!="" && $datos['usuario_email']!=$email){
-				if(filter_var($email, FILTER_VALIDATE_EMAIL)){
-					$check_email=$this->ejecutarConsulta("SELECT usuario_email FROM usuario WHERE usuario_email='$email'");
-					if($check_email->rowCount()>0){
-						$alerta=[
-							"tipo"=>"simple",
-							"titulo"=>"Ocurrió un error inesperado",
-							"texto"=>"El EMAIL que acaba de ingresar ya se encuentra registrado en el sistema, por favor verifique e intente nuevamente",
-							"icono"=>"error"
-						];
-						return json_encode($alerta);
-						exit();
-					}
-				}else{
-					$alerta=[
-						"tipo"=>"simple",
-						"titulo"=>"Ocurrió un error inesperado",
-						"texto"=>"Ha ingresado un correo electrónico no valido",
-						"icono"=>"error"
-					];
-					return json_encode($alerta);
-					exit();
-				}
-            }
 
             # Verificando claves #
             if($clave1!="" || $clave2!=""){
@@ -610,24 +561,9 @@
 
             $usuario_datos_up=[
 				[
-					"campo_nombre"=>"usuario_nombre",
-					"campo_marcador"=>":Nombre",
-					"campo_valor"=>$nombre
-				],
-				[
-					"campo_nombre"=>"usuario_apellido",
-					"campo_marcador"=>":Apellido",
-					"campo_valor"=>$apellido
-				],
-				[
 					"campo_nombre"=>"usuario_usuario",
 					"campo_marcador"=>":Usuario",
 					"campo_valor"=>$usuario
-				],
-				[
-					"campo_nombre"=>"usuario_email",
-					"campo_marcador"=>":Email",
-					"campo_valor"=>$email
 				],
 				[
 					"campo_nombre"=>"usuario_clave",
@@ -650,22 +586,20 @@
 			if($this->actualizarDatos("usuario",$usuario_datos_up,$condicion)){
 
 				if($id==$_SESSION['id']){
-					$_SESSION['nombre']=$nombre;
-					$_SESSION['apellido']=$apellido;
 					$_SESSION['usuario']=$usuario;
 				}
 
 				$alerta=[
 					"tipo"=>"recargar",
 					"titulo"=>"Usuario actualizado",
-					"texto"=>"Los datos del usuario ".$datos['usuario_nombre']." ".$datos['usuario_apellido']." se actualizaron correctamente",
+					"texto"=>"Los datos del usuario ".$datos['usuario_usuario']." se actualizaron correctamente",
 					"icono"=>"success"
 				];
 			}else{
 				$alerta=[
 					"tipo"=>"simple",
 					"titulo"=>"Ocurrió un error inesperado",
-					"texto"=>"No hemos podido actualizar los datos del usuario ".$datos['usuario_nombre']." ".$datos['usuario_apellido'].", por favor intente nuevamente",
+					"texto"=>"No hemos podido actualizar los datos del usuario ".$datos['usuario_usuario'].", por favor intente nuevamente",
 					"icono"=>"error"
 				];
 			}
@@ -752,14 +686,14 @@
 				$alerta=[
 					"tipo"=>"recargar",
 					"titulo"=>"Foto eliminada",
-					"texto"=>"La foto del usuario ".$datos['usuario_nombre']." ".$datos['usuario_apellido']." se elimino correctamente",
+					"texto"=>"La foto del usuario ".$datos['usuario_usuario']." se elimino correctamente",
 					"icono"=>"success"
 				];
 			}else{
 				$alerta=[
 					"tipo"=>"recargar",
 					"titulo"=>"Foto eliminada",
-					"texto"=>"No hemos podido actualizar algunos datos del usuario ".$datos['usuario_nombre']." ".$datos['usuario_apellido'].", sin embargo la foto ha sido eliminada correctamente",
+					"texto"=>"No hemos podido actualizar algunos datos del usuario ".$datos['usuario_usuario'].", sin embargo la foto ha sido eliminada correctamente",
 					"icono"=>"warning"
 				];
 			}
@@ -846,7 +780,7 @@
 		        $foto=explode(".", $datos['usuario_foto']);
 		        $foto=$foto[0];
 	        }else{
-	        	$foto=str_ireplace(" ","_",$datos['usuario_nombre']);
+	        	$foto=str_ireplace(" ","_",$datos['usuario_usuario']);
 	        	$foto=$foto."_".rand(0,100);
 	        }
 	        
@@ -909,7 +843,7 @@
 				$alerta=[
 					"tipo"=>"recargar",
 					"titulo"=>"Foto actualizada",
-					"texto"=>"La foto del usuario ".$datos['usuario_nombre']." ".$datos['usuario_apellido']." se actualizo correctamente",
+					"texto"=>"La foto del usuario ".$datos['usuario_usuario']." se actualizo correctamente",
 					"icono"=>"success"
 				];
 			}else{
@@ -917,7 +851,7 @@
 				$alerta=[
 					"tipo"=>"recargar",
 					"titulo"=>"Foto actualizada",
-					"texto"=>"No hemos podido actualizar algunos datos del usuario ".$datos['usuario_nombre']." ".$datos['usuario_apellido']." , sin embargo la foto ha sido actualizada",
+					"texto"=>"No hemos podido actualizar algunos datos del usuario ".$datos['usuario_usuario'].", sin embargo la foto ha sido actualizada",
 					"icono"=>"warning"
 				];
 			}

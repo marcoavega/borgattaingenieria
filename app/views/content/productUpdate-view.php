@@ -1,8 +1,9 @@
-<div id="login" class="container">
-	<div class="login well well-small center">
-		<h1 class="title">Productos</h1>
-		<h2 class="subtitle">Nuevo Producto</h2>
-	</div>
+<div class="container is-fluid mb-6">
+    <?php
+    $id = $insLogin->limpiarCadena($url[1]);
+        ?>
+        <h1 class="title">Productos</h1>
+        <h2 class="subtitle">Editar Producto</h2>
 </div>
 
 <?php
@@ -23,41 +24,59 @@ $opcionesTiposMoneda = $insProduct->obtenerOpcionesTiposMoneda();
 
 ?>
 
-<div id="login" class="container">
 
-    <div class="row-fluid">
+<div class="container pb-6 pt-6">
+    <?php
 
-        <div class="span12">
+    include "./app/views/inc/btn_back.php";
 
-            <div class="login well well-small">
+    $datos = $insLogin->seleccionarDatos("Unico", "productos", "id_producto", $id);
 
-                <main class="form-signin w-100 m-auto">
+    if ($datos->rowCount() == 1) {
+        $datos = $datos->fetch();
+        ?>
 
-                    <form class="FormularioAjax" action="<?php echo APP_URL; ?>app/ajax/productAjax.php" method="POST"
-                        autocomplete="off" enctype="multipart/form-data">
+        <div id="login" class="container">
 
-                        <input type="hidden" name="modulo_product" value="registrar">
+            <div class="row-fluid">
 
-                        <div class="mb-3">
+                <div class="span12">
+
+                    <div class="login well well-small">
+
+                        <main class="form-signin w-100 m-auto">
+
+                            <h2 class="title has-text-centered">
+                                <?php echo $datos['nombre_producto']; ?>
+                            </h2>
+
+                            <form class="FormularioAjax" action="<?php echo APP_URL; ?>app/ajax/productAjax.php"
+                                method="POST" autocomplete="off">
+
+                                <input type="hidden" name="modulo_product" value="actualizar">
+                                <input type="hidden" name="id_producto" value="<?php echo $datos['id_producto']; ?>">
+
+
+                                <div class="mb-3">
                             <label for="" class="form-label">Código Producto:</label>
                             <input type="text" class="form-control" name="codigo_producto"
-                                pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" required>
+                                pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" value="<?php echo $datos['codigo_producto']; ?>" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="exampleInputPassword1" class="form-label">Nombre Producto:</label>
                             <input type="text" class="form-control" name="nombre_producto"
-                                pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="1000" required>
+                                pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="1000" value="<?php echo $datos['nombre_producto']; ?>" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="exampleInputPassword1" class="form-label">Precio en Pesos $:</label>
-                            <input type="text" class="form-control" name="precio" required>
+                            <input type="text" class="form-control" name="precio" value="<?php echo $datos['precio']; ?>" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="exampleInputPassword1" class="form-label">Cantidad a Ingresar:</label>
-                            <input type="number" class="form-control" name="stock" required>
+                            <input type="number" class="form-control" name="stock" value="<?php echo $datos['stock']; ?>" required>
                         </div>
 
 
@@ -103,28 +122,28 @@ $opcionesTiposMoneda = $insProduct->obtenerOpcionesTiposMoneda();
                         </div>
 
 
-                        <div class="form-group">
-                            <label class="col-sm-12 control-label" for="inputGroupFile01">Subir Foto</label>
-                            <div class="col-sm-12">
-                                <input type="file" class="form-control" id="inputGroupFile01" name="url_imagen"
-                                    accept=".jpg, .png, .jpeg">
-                            </div>
-                        </div>
-
                         <div class="text-center mt-4" style="margin-bottom: 20px;">
                             <!-- Puedes ajustar el valor según tus necesidades -->
                             <button type="reset" class="btn btn-secondary me-2">Limpiar</button>
-                            <button type="submit" class="btn btn-primary">Guardar</button>
+                            <button type="submit" class="btn btn-primary">Actualizar</button>
                         </div>
 
-                    </form>
 
-                </main>
+                            </form>
+
+                        </main>
+
+                    </div>
+
+                </div>
 
             </div>
 
         </div>
 
-    </div>
 
-</div>
+        <?php
+    } else {
+        include "./app/views/inc/error_alert.php";
+    }
+    ?>

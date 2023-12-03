@@ -10,7 +10,8 @@
 		use app\controllers\productController;
 
 		$insUsuario = new productController();
-
+		
 		echo $insUsuario->listarProductControlador($url[1],30,$url[0],"");
 	?>
+
 </div>
