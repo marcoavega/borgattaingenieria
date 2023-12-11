@@ -1,32 +1,28 @@
-<div id="login" class="container">
-	<div class="row-fluid">
-		<div class="span12">
-			<div class="login well well-small">
-
-				<main class="form-signin w-100 m-auto">
-					<form class="" action="" method="POST" autocomplete="off">
-
-						<div class="center">
-							<img class="mb-12 rounded" <?php echo 'src="' . APP_URL . 'app/views/img/logo.png"' ?> alt=""
-								width="72" height="57">
-							<h1 class="h3 mb-3 fw-normal">Borgatta Ingeniería</h1>
-						</div>
-						<div class="form-floating">
-							<input type="text" class="form-control" id="floatingInput" placeholder="Usuario"
-								name="login_usuario" pattern="[a-zA-Z0-9]{4,30}" maxlength="30" required>
-							<label for="floatingInput">Usuario</label>
-						</div>
-						<div class="form-floating">
-							<input type="password" class="form-control" id="floatingPassword" placeholder="Password"
-								name="login_clave" pattern="[a-zA-Z0-9$@.-]{5,100}" maxlength="100" required>
-							<label for="floatingPassword">Clave</label>
-						</div>
-
-						<button class="btn btn-primary w-100 py-2" type="submit">Ingresar</button>
-
-					</form>
-				</main>
-			</div>
+<div class="container-fluid min-vh-100 d-flex justify-content-center align-items-center">
+    <!-- Formulario de inicio de sesión -->
+    <div class="card shadow-lg">
+        <div class="card-body p-5">
+		<form class="" action="" method="POST" autocomplete="off">
+                <!-- Logo de la empresa -->
+                <div class="text-center mb-4">
+                    <img class="mb-3 rounded-circle" <?php echo 'src="' . APP_URL . 'app/views/img/logo.png"' ?> alt="" width="72" height="72">
+                    <h1 class="h3 mb-3 fw-normal">Borgatta Ingeniería</h1>
+                </div>
+                <!-- Campo de entrada para el nombre de usuario -->
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="floatingInput" placeholder="Usuario" name="login_usuario" pattern="[a-zA-Z0-9]{4,30}" maxlength="30" required>
+                    <label for="floatingInput">Usuario</label>
+                </div>
+                <!-- Campo de entrada para la contraseña -->
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="login_clave" pattern="[a-zA-Z0-9$@.-]{5,100}" maxlength="100" required>
+                    <label for="floatingPassword">Clave</label>
+                </div>
+                <!-- Botón para enviar el formulario -->
+                <button class="btn btn-primary w-100" type="submit">Ingresar</button>
+            </form>
+				
+		
 		</div>
 	</div>
 </div>

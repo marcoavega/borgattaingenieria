@@ -1,130 +1,107 @@
-<div id="login" class="container">
-	<div class="login well well-small center">
-		<h1 class="title">Productos</h1>
-		<h2 class="subtitle">Nuevo Producto</h2>
-	</div>
-</div>
+<!-- Contenedor principal -->
+<div class="container-fluid py-4">
+    <?php
+    // Obtiene el ID del producto a editar
+    $id = $insLogin->limpiarCadena($url[1]);
+    ?>
+    <!-- Título de la página -->
+    <h1 class="display-4 text-center">Productos</h1>
+    <!-- Subtítulo de la página -->
+    <h2 class="lead text-center">Nuevo Producto</h2>
 
-<?php
-// Incluye el controlador necesario
-use app\controllers\productController;
+    <!-- Contenedor para el formulario de creación de producto -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <?php
+            // Importa el controlador de productos
+            use app\controllers\productController;
 
-// Crea una instancia del controlador
-$insProduct = new productController();
+            // Crea una instancia del controlador
+            $insProduct = new productController();
 
-// Obtén las opciones de categorías
-$opcionesCategorias = $insProduct->obtenerOpcionesCategorias();
-// Obtener opciones de proveedores
-$opcionesProveedores = $insProduct->obtenerOpcionesProveedores();
-// Obtener opciones de unidades medida
-$opcionesUnidadesMedida = $insProduct->obtenerOpcionesUnidadesMedida();
-// Obtener opciones de unidades monedas
-$opcionesTiposMoneda = $insProduct->obtenerOpcionesTiposMoneda();
+            // Obtiene las opciones de categorías, proveedores, unidades de medida y tipos de moneda
+            $opcionesCategorias = $insProduct->obtenerOpcionesCategorias();
+            $opcionesProveedores = $insProduct->obtenerOpcionesProveedores();
+            $opcionesUnidadesMedida = $insProduct->obtenerOpcionesUnidadesMedida();
+            $opcionesTiposMoneda = $insProduct->obtenerOpcionesTiposMoneda();
+            ?>
 
-?>
+            <!-- Formulario de creación de producto -->
+            <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/productAjax.php" method="POST" autocomplete="off" enctype="multipart/form-data">
+                <!-- Campo oculto para el módulo de producto -->
+                <input type="hidden" name="modulo_product" value="registrar">
 
-<div id="login" class="container">
+                <!-- Campo para el código del producto -->
+                <div class="mb-3">
+                    <label for="codigo_producto" class="form-label">Código Producto:</label>
+                    <input type="text" class="form-control" id="codigo_producto" name="codigo_producto" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" required>
+                </div>
 
-    <div class="row-fluid">
+                <!-- Campo para el nombre del producto -->
+                <div class="mb-3">
+                    <label for="nombre_producto" class="form-label">Nombre Producto:</label>
+                    <input type="text" class="form-control" id="nombre_producto" name="nombre_producto" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="1000" required>
+                </div>
 
-        <div class="span12">
+                <!-- Campo para el precio del producto -->
+                <div class="mb-3">
+                    <label for="precio" class="form-label">Precio en Pesos $:</label>
+                    <input type="text" class="form-control" id="precio" name="precio" required>
+                </div>
 
-            <div class="login well well-small">
+                <!-- Campo para la cantidad de producto -->
+                <div class="mb-3">
+                    <label for="stock" class="form-label">Cantidad a Ingresar:</label>
+                    <input type="number" class="form-control" id="stock" name="stock" required>
+                </div>
 
-                <main class="form-signin w-100 m-auto">
+                <!-- Campo de selección para la categoría del producto -->
+                <div class="mb-3">
+                    <label for="categoria" class="form-label">Categoría</label>
+                    <select class='form-control' name='categoria' id='categoria' required>
+                        <option value="">Selecciona una categoría</option>
+                        <?php echo $opcionesCategorias; ?>
+                    </select>
+                </div>
 
-                    <form class="FormularioAjax" action="<?php echo APP_URL; ?>app/ajax/productAjax.php" method="POST"
-                        autocomplete="off" enctype="multipart/form-data">
+                <!-- Campo de selección para el proveedor del producto -->
+                <div class="mb-3">
+                    <label for="proveedor" class="form-label">Proveedor</label>
+                    <select class='form-control' name='proveedor' id='proveedor' required>
+                        <option value="">Selecciona un proveedor</option>
+                        <?php echo $opcionesProveedores; ?>
+                    </select>
+                </div>
 
-                        <input type="hidden" name="modulo_product" value="registrar">
+                <!-- Campo de selección para la unidad de medida del producto -->
+                <div class="mb-3">
+                    <label for="unidad_medida" class="form-label">Unidad de Medida</label>
+                    <select class="form-control" name="unidad_medida" id="unidad_medida" required>
+                        <option value="">Selecciona una unidad de medida</option>
+                        <?php echo $opcionesUnidadesMedida; ?>
+                    </select>
+                </div>
 
-                        <div class="mb-3">
-                            <label for="" class="form-label">Código Producto:</label>
-                            <input type="text" class="form-control" name="codigo_producto"
-                                pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" required>
-                        </div>
+                <!-- Campo de selección para el tipo de moneda del producto -->
+                <div class="mb-3">
+                    <label for="tipo_moneda" class="form-label">Tipo de Moneda</label>
+                    <select class="form-control" name="tipo_moneda" id="tipo_moneda" required>
+                        <option value="">Selecciona un tipo de moneda</option>
+                        <?php echo $opcionesTiposMoneda; ?>
+                    </select>
+                </div>
 
-                        <div class="mb-3">
-                            <label for="exampleInputPassword1" class="form-label">Nombre Producto:</label>
-                            <input type="text" class="form-control" name="nombre_producto"
-                                pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="1000" required>
-                        </div>
+                <!-- Campo para subir la foto del producto -->
+                <div class="mb-3">
+                    <label for="url_imagen" class="form-label">Subir Foto</label>
+                    <input class="form-control" type="file" id="url_imagen" name="url_imagen" accept=".jpg, .png, .jpeg">
+                </div>
 
-                        <div class="mb-3">
-                            <label for="exampleInputPassword1" class="form-label">Precio en Pesos $:</label>
-                            <input type="text" class="form-control" name="precio" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="exampleInputPassword1" class="form-label">Cantidad a Ingresar:</label>
-                            <input type="number" class="form-control" name="stock" required>
-                        </div>
-
-
-                        <div class="form-group">
-                            <label for="categoria" class="col-sm-3 control-label">Categoría</label>
-                            <div class="col-sm-12">
-                                <select class='form-control' name='categoria' id='categoria' required>
-                                    <option value="">Selecciona una categoría</option>
-                                    <?php echo $opcionesCategorias; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="proveedor" class="col-sm-12 control-label">Proveedor</label>
-                            <div class="col-sm-12">
-                                <select class='form-control' name='proveedor' id='proveedor' required>
-                                    <option value="">Selecciona un proveedor</option>
-                                    <?php echo $opcionesProveedores; ?>
-                                </select>
-                            </div>
-                        </div>
-
-
-                        <div class="form-group">
-                            <label for="unidad_medida" class="col-sm-12 control-label">Unidad de Medida</label>
-                            <div class="col-sm-12">
-                                <select class="form-control" name="unidad_medida" id="unidad_medida" required>
-                                    <option value="">Selecciona una unidad de medida</option>
-                                    <?php echo $opcionesUnidadesMedida; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="tipo_moneda" class="col-sm-12 control-label">Tipo de Moneda</label>
-                            <div class="col-sm-12">
-                                <select class="form-control" name="tipo_moneda" id="tipo_moneda" required>
-                                    <option value="">Selecciona un tipo de moneda</option>
-                                    <?php echo $opcionesTiposMoneda; ?>
-                                </select>
-                            </div>
-                        </div>
-
-
-                        <div class="form-group">
-                            <label class="col-sm-12 control-label" for="inputGroupFile01">Subir Foto</label>
-                            <div class="col-sm-12">
-                                <input type="file" class="form-control" id="inputGroupFile01" name="url_imagen"
-                                    accept=".jpg, .png, .jpeg">
-                            </div>
-                        </div>
-
-                        <div class="text-center mt-4" style="margin-bottom: 20px;">
-                            <!-- Puedes ajustar el valor según tus necesidades -->
-                            <button type="reset" class="btn btn-secondary me-2">Limpiar</button>
-                            <button type="submit" class="btn btn-primary">Guardar</button>
-                        </div>
-
-                    </form>
-
-                </main>
-
-            </div>
-
+                <!-- Botón para enviar el formulario -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
         </div>
-
     </div>
-
 </div>

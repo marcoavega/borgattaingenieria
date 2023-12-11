@@ -1,148 +1,114 @@
-<div class="container is-fluid mb-6">
+<!-- Contenedor principal -->
+<div class="container-fluid mb-4">
     <?php
+    // Obtiene el ID del producto a editar
     $id = $insLogin->limpiarCadena($url[1]);
-        ?>
-        <h1 class="title">Productos</h1>
-        <h2 class="subtitle">Editar Producto</h2>
+    ?>
+    <!-- Título de la página -->
+    <h1 class="display-4 text-center">Productos</h1>
+    <!-- Subtítulo de la página -->
+    <h2 class="lead text-center">Editar Producto</h2>
 </div>
 
-<?php
-// Incluye el controlador necesario
-use app\controllers\productController;
-
-// Crea una instancia del controlador
-$insProduct = new productController();
-
-// Obtén las opciones de categorías
-$opcionesCategorias = $insProduct->obtenerOpcionesCategorias();
-// Obtener opciones de proveedores
-$opcionesProveedores = $insProduct->obtenerOpcionesProveedores();
-// Obtener opciones de unidades medida
-$opcionesUnidadesMedida = $insProduct->obtenerOpcionesUnidadesMedida();
-// Obtener opciones de unidades monedas
-$opcionesTiposMoneda = $insProduct->obtenerOpcionesTiposMoneda();
-
-?>
-
-
-<div class="container pb-6 pt-6">
+<!-- Contenedor para el formulario de edición de producto -->
+<div class="container py-4">
     <?php
+    // Importa el controlador de productos
+    use app\controllers\productController;
 
-    include "./app/views/inc/btn_back.php";
+    // Crea una instancia del controlador
+    $insProduct = new productController();
 
+    // Obtiene las opciones de categorías, proveedores, unidades de medida y tipos de moneda
+    $opcionesCategorias = $insProduct->obtenerOpcionesCategorias();
+    $opcionesProveedores = $insProduct->obtenerOpcionesProveedores();
+    $opcionesUnidadesMedida = $insProduct->obtenerOpcionesUnidadesMedida();
+    $opcionesTiposMoneda = $insProduct->obtenerOpcionesTiposMoneda();
+
+    // Obtiene los datos del producto a editar
     $datos = $insLogin->seleccionarDatos("Unico", "productos", "id_producto", $id);
 
+    // Comprueba si se obtuvieron los datos del producto
     if ($datos->rowCount() == 1) {
         $datos = $datos->fetch();
         ?>
 
-        <div id="login" class="container">
+        <!-- Formulario de edición de producto -->
+        <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/productAjax.php" method="POST" autocomplete="off">
+            <!-- Campo oculto para el módulo de producto y el ID del producto -->
+            <input type="hidden" name="modulo_product" value="actualizar">
+            <input type="hidden" name="id_producto" value="<?php echo $datos['id_producto']; ?>">
 
-            <div class="row-fluid">
-
-                <div class="span12">
-
-                    <div class="login well well-small">
-
-                        <main class="form-signin w-100 m-auto">
-
-                            <h2 class="title has-text-centered">
-                                <?php echo $datos['nombre_producto']; ?>
-                            </h2>
-
-                            <form class="FormularioAjax" action="<?php echo APP_URL; ?>app/ajax/productAjax.php"
-                                method="POST" autocomplete="off">
-
-                                <input type="hidden" name="modulo_product" value="actualizar">
-                                <input type="hidden" name="id_producto" value="<?php echo $datos['id_producto']; ?>">
-
-
-                                <div class="mb-3">
-                            <label for="" class="form-label">Código Producto:</label>
-                            <input type="text" class="form-control" name="codigo_producto"
-                                pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" value="<?php echo $datos['codigo_producto']; ?>" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="exampleInputPassword1" class="form-label">Nombre Producto:</label>
-                            <input type="text" class="form-control" name="nombre_producto"
-                                pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="1000" value="<?php echo $datos['nombre_producto']; ?>" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="exampleInputPassword1" class="form-label">Precio en Pesos $:</label>
-                            <input type="text" class="form-control" name="precio" value="<?php echo $datos['precio']; ?>" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="exampleInputPassword1" class="form-label">Cantidad a Ingresar:</label>
-                            <input type="number" class="form-control" name="stock" value="<?php echo $datos['stock']; ?>" required>
-                        </div>
-
-
-                        <div class="form-group">
-                            <label for="categoria" class="col-sm-3 control-label">Categoría</label>
-                            <div class="col-sm-12">
-                                <select class='form-control' name='categoria' id='categoria' required>
-                                    <option value="">Selecciona una categoría</option>
-                                    <?php echo $opcionesCategorias; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="proveedor" class="col-sm-12 control-label">Proveedor</label>
-                            <div class="col-sm-12">
-                                <select class='form-control' name='proveedor' id='proveedor' required>
-                                    <option value="">Selecciona un proveedor</option>
-                                    <?php echo $opcionesProveedores; ?>
-                                </select>
-                            </div>
-                        </div>
-
-
-                        <div class="form-group">
-                            <label for="unidad_medida" class="col-sm-12 control-label">Unidad de Medida</label>
-                            <div class="col-sm-12">
-                                <select class="form-control" name="unidad_medida" id="unidad_medida" required>
-                                    <option value="">Selecciona una unidad de medida</option>
-                                    <?php echo $opcionesUnidadesMedida; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="tipo_moneda" class="col-sm-12 control-label">Tipo de Moneda</label>
-                            <div class="col-sm-12">
-                                <select class="form-control" name="tipo_moneda" id="tipo_moneda" required>
-                                    <option value="">Selecciona un tipo de moneda</option>
-                                    <?php echo $opcionesTiposMoneda; ?>
-                                </select>
-                            </div>
-                        </div>
-
-
-                        <div class="text-center mt-4" style="margin-bottom: 20px;">
-                            <!-- Puedes ajustar el valor según tus necesidades -->
-                            <button type="submit" class="btn btn-primary">Actualizar</button>
-                        </div>
-
-
-                            </form>
-
-                        </main>
-
-                    </div>
-
-                </div>
-
+            <!-- Campo para el código del producto -->
+            <div class="mb-3">
+                <label for="codigo_producto" class="form-label">Código Producto:</label>
+                <input type="text" class="form-control" id="codigo_producto" name="codigo_producto" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" value="<?php echo $datos['codigo_producto']; ?>" required>
             </div>
 
-        </div>
+            <!-- Campo para el nombre del producto -->
+            <div class="mb-3">
+                <label for="nombre_producto" class="form-label">Nombre Producto:</label>
+                <input type="text" class="form-control" id="nombre_producto" name="nombre_producto" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="1000" value="<?php echo $datos['nombre_producto']; ?>" required>
+            </div>
 
+            <!-- Campo para el precio del producto -->
+            <div class="mb-3">
+                <label for="precio" class="form-label">Precio en Pesos $:</label>
+                <input type="text" class="form-control" id="precio" name="precio" value="<?php echo $datos['precio']; ?>" required>
+            </div>
+
+            <!-- Campo para la cantidad de producto -->
+            <div class="mb-3">
+                <label for="stock" class="form-label">Cantidad a Ingresar:</label>
+                <input type="number" class="form-control" id="stock" name="stock" value="<?php echo $datos['stock']; ?>" required>
+            </div>
+
+            <!-- Campo de selección para la categoría del producto -->
+            <div class="form-group">
+                <label for="categoria" class="form-label">Categoría</label>
+                <select class='form-control' name='categoria' id='categoria' required>
+                    <option value="">Selecciona una categoría</option>
+                    <?php echo $opcionesCategorias; ?>
+                </select>
+            </div>
+
+            <!-- Campo de selección para el proveedor del producto -->
+            <div class="form-group mt-3">
+                <label for="proveedor" class="form-label">Proveedor</label>
+                <select class='form-control' name='proveedor' id='proveedor' required>
+                    <option value="">Selecciona un proveedor</option>
+                    <?php echo $opcionesProveedores; ?>
+                </select>
+            </div>
+
+            <!-- Campo de selección para la unidad de medida del producto -->
+            <div class="form-group mt-3">
+                <label for="unidad_medida" class="form-label">Unidad de Medida</label>
+                <select class="form-control" name="unidad_medida" id="unidad_medida" required>
+                    <option value="">Selecciona una unidad de medida</option>
+                    <?php echo $opcionesUnidadesMedida; ?>
+                </select>
+            </div>
+
+            <!-- Campo de selección para el tipo de moneda del producto -->
+            <div class="form-group mt-3">
+                <label for="tipo_moneda" class="form-label">Tipo de Moneda</label>
+                <select class="form-control" name="tipo_moneda" id="tipo_moneda" required>
+                    <option value="">Selecciona un tipo de moneda</option>
+                    <?php echo $opcionesTiposMoneda; ?>
+                </select>
+            </div>
+
+            <!-- Botón para enviar el formulario -->
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+            </div>
+        </form>
 
         <?php
     } else {
+        // Si no se obtuvieron los datos del producto, muestra un mensaje de error
         include "./app/views/inc/error_alert.php";
     }
     ?>
+</div>

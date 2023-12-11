@@ -1,26 +1,41 @@
 <?php
-	
-	namespace app\models;
+    // Define el espacio de nombres de la clase
+    namespace app\models;
 
-	class viewsModel{
+    // Define la clase viewsModel
+    class viewsModel {
 
-		/*---------- Modelo obtener vista ----------*/
-		protected function obtenerVistasModelo($vista){
+        /*---------- Modelo obtener vista ----------*/
+        // Función para obtener una vista
+        protected function obtenerVistasModelo($vista) {
 
-			$listaBlanca=["dashboard","userNew","userList","userUpdate","userSearch","userPhoto","logOut","404","productList","productNew","productSearch","productPhoto","productUpdate"];
+            // Lista de vistas permitidas
+            $listaBlanca = ["dashboard", "userNew", "userList", "userUpdate", "userSearch", "userPhoto", "logOut", "404", "productList", "productNew", "productSearch", "productPhoto", "productUpdate"];
 
-			if(in_array($vista, $listaBlanca)){
-				if(is_file("./app/views/content/".$vista."-view.php")){
-					$contenido="./app/views/content/".$vista."-view.php";
-				}else{
-					$contenido="404";
-				}
-			}elseif($vista=="login" || $vista=="index"){
-				$contenido="login";
-			}else{
-				$contenido="404";
-			}
-			return $contenido;
-		}
+            // Comprueba si la vista solicitada está en la lista blanca
+            if (in_array($vista, $listaBlanca)) {
 
-	}
+                // Comprueba si el archivo de la vista existe
+                if (is_file("./app/views/content/".$vista."-view.php")) {
+                    // Si existe, establece el contenido a la vista solicitada
+                    $contenido = "./app/views/content/".$vista."-view.php";
+                } else {
+                    // Si no existe, establece el contenido a la vista 404
+                    $contenido = "404";
+                }
+
+            // Comprueba si la vista solicitada es la vista de inicio de sesión o la vista de índice
+            } elseif ($vista == "login" || $vista == "index") {
+                // Si es así, establece el contenido a la vista de inicio de sesión
+                $contenido = "login";
+
+            } else {
+                // Si la vista solicitada no está en la lista blanca y no es la vista de inicio de sesión ni la vista de índice, establece el contenido a la vista 404
+                $contenido = "404";
+            }
+
+            // Devuelve el contenido
+            return $contenido;
+        }
+
+    }

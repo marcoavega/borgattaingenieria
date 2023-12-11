@@ -1,15 +1,21 @@
 <?php
 
-	const APP_URL="http://localhost/borgattaingenieria/";
-	const APP_NAME="BORGATTA INGENIERIA";
-	const APP_SESSION_NAME="BORGATTA_INGENIERIA";
+// URL base de la aplicación
+const APP_URL = "http://localhost/borgattaingenieria/";
+//const APP_URL = "http://borgattaingenieria.atwebpages.com/";
 
 
-	/*----------  Zona horaria  ----------*/
-	date_default_timezone_set("America/mexico_city");
+// Nombre de la aplicación
+const APP_NAME = "BORGATTA INGENIERIA";
 
-	/*
-		Configuración de zona horaria de tu país, para más información visita
-		http://php.net/manual/es/function.date-default-timezone-set.php
-		http://php.net/manual/es/timezones.php
-	*/
+// Nombre de la sesión
+const APP_SESSION_NAME = "BORGATTA_INGENIERIA";
+
+// Zona horaria
+date_default_timezone_set("America/Mexico_City");
+
+/*
+    Configuración de la zona horaria de tu país. Para más información, visita:
+    http://php.net/manual/es/function.date-default-timezone-set.php
+    http://php.net/manual/es/timezones.php
+*/

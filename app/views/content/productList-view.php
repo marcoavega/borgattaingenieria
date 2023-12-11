@@ -1,17 +1,23 @@
-<div class="container is-fluid mb-6">
-	<h1 class="title">Productos</h1>
-	<h2 class="subtitle">Lista de productos</h2>
+<!-- Contenedor principal -->
+<div class="container-fluid mb-4">
+    <!-- Título de la página -->
+    <h1 class="display-4 text-center">Productos</h1>
+    <!-- Subtítulo de la página -->
+    <h2 class="lead text-center">Lista de productos</h2>
 </div>
-<div class="container pb-6 pt-6">
 
-	<div class="form-rest mb-6 mt-6"></div>
+<!-- Contenedor para la lista de productos -->
+<div class="container py-4">
+    <div class="mb-4"></div>
 
-	<?php
-		use app\controllers\productController;
+    <?php
+        // Importa el controlador de productos
+        use app\controllers\productController;
 
-		$insUsuario = new productController();
-		
-		echo $insUsuario->listarProductControlador($url[1],30,$url[0],"");
-	?>
+        // Crea una instancia del controlador
+        $insProduct = new productController();
 
+        // Muestra la lista de productos
+        echo $insProduct->listarProductControlador($url[1],30,$url[0],"");
+    ?>
 </div>

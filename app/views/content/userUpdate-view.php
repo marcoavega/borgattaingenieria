@@ -1,90 +1,99 @@
-<div class="container is-fluid mb-6">
-	<?php 
+<!-- Contenedor principal -->
+<div class="container-fluid mb-4">
+    <?php 
+        // Obtiene el ID del usuario a actualizar
+        $id=$insLogin->limpiarCadena($url[1]);
 
-		$id=$insLogin->limpiarCadena($url[1]);
-
-		if($id==$_SESSION['id']){ 
-	?>
-	<h1 class="title">Mi cuenta</h1>
-	<h2 class="subtitle">Actualizar cuenta</h2>
-	<?php }else{ ?>
-	<h1 class="title">Usuarios</h1>
-	<h2 class="subtitle">Actualizar usuario</h2>
-	<?php } ?>
+        // Comprueba si el ID del usuario a actualizar es el mismo que el ID del usuario logueado
+        if($id==$_SESSION['id']){ 
+    ?>
+    <!-- Si el usuario está actualizando su propia cuenta, muestra estos títulos -->
+    <h1 class="display-4">Mi cuenta</h1>
+    <h2 class="lead">Actualizar cuenta</h2>
+    <?php }else{ ?>
+    <!-- Si el usuario está actualizando la cuenta de otro usuario, muestra estos títulos -->
+    <h1 class="display-4">Usuarios</h1>
+    <h2 class="lead">Actualizar usuario</h2>
+    <?php } ?>
 </div>
-<div class="container pb-6 pt-6">
-	<?php
-	
-		include "./app/views/inc/btn_back.php";
 
-		$datos=$insLogin->seleccionarDatos("Unico","usuario","usuario_id",$id);
+<!-- Contenedor para el formulario de actualización -->
+<div class="container py-4">
+    <?php
+        // Incluye el botón de regreso
+        include "./app/views/inc/btn_back.php";
 
-		if($datos->rowCount()==1){
-			$datos=$datos->fetch();
-	?>
+        // Obtiene los datos del usuario a actualizar
+        $datos=$insLogin->seleccionarDatos("Unico","usuario","usuario_id",$id);
 
-	<h2 class="title has-text-centered"><?php echo $datos['usuario_usuario']; ?></h2>
+        // Comprueba si se obtuvieron los datos del usuario
+        if($datos->rowCount()==1){
+            $datos=$datos->fetch();
+    ?>
 
-	<p class="has-text-centered pb-6"><?php echo "<strong>Usuario creado:</strong> ".date("d-m-Y  h:i:s A",strtotime($datos['usuario_creado']))." &nbsp; <strong>Usuario actualizado:</strong> ".date("d-m-Y  h:i:s A",strtotime($datos['usuario_actualizado'])); ?></p>
+    <!-- Muestra el nombre de usuario -->
+    <h2 class="h3 text-center mb-4"><?php echo $datos['usuario_usuario']; ?></h2>
 
-	<form class="FormularioAjax" action="<?php echo APP_URL; ?>app/ajax/usuarioAjax.php" method="POST" autocomplete="off" >
+    <!-- Muestra las fechas de creación y actualización del usuario -->
+    <p class="text-center pb-4"><?php echo "<strong>Usuario creado:</strong> ".date("d-m-Y  h:i:s A",strtotime($datos['usuario_creado']))." &nbsp; <strong>Usuario actualizado:</strong> ".date("d-m-Y  h:i:s A",strtotime($datos['usuario_actualizado'])); ?></p>
 
-		<input type="hidden" name="modulo_usuario" value="actualizar">
-		<input type="hidden" name="usuario_id" value="<?php echo $datos['usuario_id']; ?>">
+    <!-- Formulario para actualizar los datos del usuario -->
+    <form class="FormularioAjax" action="<?php echo APP_URL; ?>app/ajax/usuarioAjax.php" method="POST" autocomplete="off" >
+        <!-- Campo oculto para el módulo de usuario -->
+        <input type="hidden" name="modulo_usuario" value="actualizar">
+        <!-- Campo oculto para el ID del usuario -->
+        <input type="hidden" name="usuario_id" value="<?php echo $datos['usuario_id']; ?>">
 
-		
-		<div class="columns">
-		  	<div class="column">
-		    	<div class="control">
-					<label>Usuario</label>
-				  	<input class="input" type="text" name="usuario_usuario" pattern="[a-zA-Z0-9]{4,20}" maxlength="20" value="<?php echo $datos['usuario_usuario']; ?>" required >
-				</div>
-		  	</div>
-		</div>
-		<br><br>
-		<p class="has-text-centered">
-			SI desea actualizar la clave de este usuario por favor llene los 2 campos. Si NO desea actualizar la clave deje los campos vacíos.
-		</p>
-		<br>
-		<div class="columns">
-		  	<div class="column">
-		    	<div class="control">
-					<label>Nueva clave</label>
-				  	<input class="input" type="password" name="usuario_clave_1" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" >
-				</div>
-		  	</div>
-		  	<div class="column">
-		    	<div class="control">
-					<label>Repetir nueva clave</label>
-				  	<input class="input" type="password" name="usuario_clave_2" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" >
-				</div>
-		  	</div>
-		</div>
-		<br><br><br>
-		<p class="has-text-centered">
-			Para poder actualizar los datos de este usuario por favor ingrese su USUARIO y CLAVE con la que ha iniciado sesión
-		</p>
-		<div class="columns">
-		  	<div class="column">
-		    	<div class="control">
-					<label>Usuario</label>
-				  	<input class="input" type="text" name="administrador_usuario" pattern="[a-zA-Z0-9]{4,20}" maxlength="20" required >
-				</div>
-		  	</div>
-		  	<div class="column">
-		    	<div class="control">
-					<label>Clave</label>
-				  	<input class="input" type="password" name="administrador_clave" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" required >
-				</div>
-		  	</div>
-		</div>
-		<p class="has-text-centered">
-			<button type="submit" class="button is-success is-rounded">Actualizar</button>
-		</p>
-	</form>
-	<?php
-		}else{
-			include "./app/views/inc/error_alert.php";
-		}
-	?>
+        <!-- Campo para el nombre de usuario -->
+        <div class="mb-3">
+            <label for="usuario_usuario" class="form-label">Usuario</label>
+            <input type="text" class="form-control" id="usuario_usuario" name="usuario_usuario" pattern="[a-zA-Z0-9]{4,20}" maxlength="20" value="<?php echo $datos['usuario_usuario']; ?>" required>
+        </div>
+
+        <!-- Mensaje sobre la actualización de la clave -->
+        <p class="text-center">
+            SI desea actualizar la clave de este usuario por favor llene los 2 campos. Si NO desea actualizar la clave deje los campos vacíos.
+        </p>
+
+        <!-- Campos para la nueva clave -->
+        <div class="row g-3">
+            <div class="col">
+                <label for="usuario_clave_1" class="form-label">Nueva clave</label>
+                <input type="password" class="form-control" id="usuario_clave_1" name="usuario_clave_1" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100">
+            </div>
+            <div class="col">
+                <label for="usuario_clave_2" class="form-label">Repetir nueva clave</label>
+                <input type="password" class="form-control" id="usuario_clave_2" name="usuario_clave_2" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100">
+            </div>
+        </div>
+
+        <!-- Mensaje sobre la necesidad de ingresar el usuario y la clave del administrador -->
+        <p class="text-center mt-4">
+            Para poder actualizar los datos de este usuario por favor ingrese su USUARIO y CLAVE con la que ha iniciado sesión
+        </p>
+
+        <!-- Campos para el usuario y la clave del administrador -->
+        <div class="row g-3">
+            <div class="col">
+                <label for="administrador_usuario" class="form-label">Usuario</label>
+                <input type="text" class="form-control" id="administrador_usuario" name="administrador_usuario" pattern="[a-zA-Z0-9]{4,20}" maxlength="20" required>
+            </div>
+            <div class="col">
+                <label for="administrador_clave" class="form-label">Clave</label>
+                <input type="password" class="form-control" id="administrador_clave" name="administrador_clave" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" required>
+            </div>
+        </div>
+
+        <!-- Botón para enviar el formulario -->
+        <div class="d-grid gap-2 mt-4">
+            <button type="submit" class="btn btn-success">Actualizar</button>
+        </div>
+    </form>
+
+    <?php
+        }else{
+            // Si no se obtuvieron los datos del usuario, muestra un mensaje de error
+            include "./app/views/inc/error_alert.php";
+        }
+    ?>
 </div>

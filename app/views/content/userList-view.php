@@ -1,16 +1,21 @@
-<div class="container is-fluid mb-6">
-	<h1 class="title">Usuarios</h1>
-	<h2 class="subtitle">Lista de usuario</h2>
+<!-- Contenedor principal -->
+<div class="container-fluid mb-4">
+    <!-- Título de la página -->
+    <h1 class="display-4 text-center">Usuarios</h1>
+    <!-- Subtítulo de la página -->
+    <h2 class="lead text-center">Lista de usuarios</h2>
 </div>
-<div class="container pb-6 pt-6">
 
-	<div class="form-rest mb-6 mt-6"></div>
+<!-- Contenedor para la lista de usuarios -->
+<div class="container py-4">
+    <div class="mb-4"></div>
 
-	<?php
-		use app\controllers\userController;
+    <?php
+        // Importa el controlador de usuarios
+        use app\controllers\userController;
+        $insUsuario = new userController();
 
-		$insUsuario = new userController();
-
-		echo $insUsuario->listarUsuarioControlador($url[1],15,$url[0],"");
-	?>
+        // Muestra la lista de usuarios
+        echo $insUsuario->listarUsuarioControlador($url[1],15,$url[0],"");
+    ?>
 </div>
