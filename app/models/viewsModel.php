@@ -10,7 +10,7 @@
         protected function obtenerVistasModelo($vista) {
 
             // Lista de vistas permitidas
-            $listaBlanca = ["dashboard", "userNew", "userList", "userUpdate", "userSearch", "userPhoto", "logOut", "404", "productList", "productNew", "productSearch", "productPhoto", "productUpdate"];
+            $listaBlanca = ["dashboard", "userNew", "userList", "userUpdate", "userSearch", "userPhoto", "logOut", "404", "productList", "productNew", "productSearch", "productPhoto", "productUpdate", "almacenGeneralList"];
 
             // Comprueba si la vista solicitada está en la lista blanca
             if (in_array($vista, $listaBlanca)) {

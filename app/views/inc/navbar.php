@@ -54,6 +54,18 @@
                         <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productSearch/">Buscar</a></li>
                     </ul>
                 </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Almacen General
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>almacenGeneraNew/">Nuevo</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>almacenGeneralList/">Lista</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>almacenGeneraSearch/">Buscar</a></li>
+                    </ul>
+                </li>
+
             </ul>
 
             <!-- Botón para cambiar el tema (light, dark, auto) -->
