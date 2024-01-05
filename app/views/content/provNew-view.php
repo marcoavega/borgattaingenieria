@@ -17,7 +17,7 @@
 
                 <!-- Campo para el nombre de usuario -->
                 <div class="mb-3">
-                    <label for="nombre_proveedor" class="form-label">Proveedor</label>
+                    <label for="nombre_proveedor" class="form-label">Nombre Proveedor</label>
                     <input type="text" class="form-control" id="nombre_proveedor" name="nombre_proveedor"
                         pattern="[a-zA-Z0-9$@.-]{3,100}" maxlength="100" required>
                 </div>

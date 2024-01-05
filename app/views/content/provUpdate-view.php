@@ -18,7 +18,9 @@
 
     // Crea una instancia del controlador
     $insProduct = new provController();
-
+    
+    // Obtiene los datos de proveedores.
+    $opcionesProveedores = $insProduct->obtenerOpcionesProveedores();
    
     // Obtiene los datos del producto a editar
     $datos = $insLogin->seleccionarDatos("Unico", "proveedores", "id_proveedor", $id);
@@ -34,11 +36,29 @@
             <input type="hidden" name="modulo_proveedor" value="actualizar">
             <input type="hidden" name="id_proveedor" value="<?php echo $datos['id_proveedor']; ?>">
 
-            <!-- Campo para el nombre del producto -->
-            <div class="mb-3">
-                <label for="nombre_proveedor" class="form-label">Nombre Proveedor:</label>
-                <input type="text" class="form-control" id="nombre_proveedor" name="nombre_proveedor" pattern="[a-zA-Z0-9$@.-]{3,100}" maxlength="1000" value="<?php echo $datos['nombre_proveedor']; ?>" required>
-            </div>
+           <!-- Campo para el nombre de usuario -->
+           <div class="mb-3">
+                    <label for="nombre_proveedor" class="form-label">Nombre Proveedor</label>
+                    <input type="text" class="form-control" id="nombre_proveedor" name="nombre_proveedor"
+                        pattern="[a-zA-Z0-9$@.-]{3,100}" maxlength="100" value="<?php echo $datos['nombre_proveedor']; ?>" required>
+                </div>
+                <!-- Campo para el email -->
+                <div class="mb-3">
+                    <label for="email_proveedor" class="form-label">Correo electronico</label>
+                    <input type="mail" class="form-control" id="email_proveedor" name="email_proveedor" maxlength="100"
+                    value="<?php echo $datos['email_proveedor']; ?>" required>
+                </div>
+                <!-- Campo para el nombre de usuario -->
+                <div class="mb-3">
+                    <label for="telefono_proveedor" class="form-label">Teléfono</label>
+                    <input type="text" class="form-control" id="telefono_proveedor" name="telefono_proveedor"
+                        maxlength="20" value="<?php echo $datos['telefono_proveedor']; ?>" required>
+                </div>
+                <!-- Campo para el nombre de usuario -->
+                <div class="mb-3">
+                    <label for="direccion_proveedor" class="form-label">Dirección</label>
+                    <textarea class="form-control" id="direccion_proveedor" name="direccion_proveedor" rows="3" maxlength="500" value="<?php echo $datos['nombre_proveedor']; ?>" required><?php echo $datos['direccion_proveedor']; ?></textarea>
+                </div>
 
             <!-- Botón para enviar el formulario -->
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-12-2023 a las 04:10:26
+-- Tiempo de generación: 05-01-2024 a las 04:34:23
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.0.28
 
@@ -247,7 +247,7 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (86, 'H-0034', 'Inserto NT3RK / KC5025 / 1795787', 1.00, 10, 1, 2, 1, 1, '652481dc39e07_IMG_20231009_161307_339.jpg'),
 (87, 'H-0035', 'Inserto NG2031RK / KC5025', 1.00, 5, 1, 2, 1, 1, '6524831fba5b4_IMG_20231009_164537_426.jpg'),
 (88, 'H-0036', 'Inserto CNMG090308MP / CNMG322MP / KC5010', 1.00, 5, 1, 2, 1, 1, '6524835def208_IMG_20231009_161822_013.jpg'),
-(89, 'H-0037', 'Inserto A4G0205M02U02GMN / KC5025', 1.00, 10, 1, 2, 1, 1, '652483a716952_IMG_20231009_161742_020.jpg'),
+(89, 'H-0037', 'Inserto A4G0205M02U02GMN / KC5025', 500.00, 10, 1, 2, 1, 1, '652483a716952_IMG_20231009_161742_020.jpg'),
 (91, 'H-0038', 'Inserto NT3R / KC5010', 1.00, 4, 1, 2, 1, 1, '652484445d5e1_IMG_20231009_165123_369.jpg'),
 (92, 'H-0039', 'Broca para metal 10.00 MM', 1.00, 7, 1, 2, 1, 1, '6525779ebfad1_IMG_20231010_100001_599.jpg'),
 (93, 'H-0040', 'Broca para metal 17/64\"', 1.00, 2, 1, 2, 1, 1, '6525785db67f9_IMG_20231010_100116_298.jpg'),
@@ -466,7 +466,80 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (330, 'I-0049', 'Segueta Bimetálica de 24DPP, 12\" de largo Segueta Bimetálica de 24DPP, 12\" de largo', 20.25, 6, 2, 4, 1, 1, 'IMG20231123143322.jpg'),
 (331, 'H-0156', 'Llave combinada de 1/2\" X 170mm. de largo Llave combinada de 1/2\" X 170mm. de largo', 25.00, 1, 1, 4, 1, 1, 'IMG20231123143227.jpg'),
 (332, 'H-0157', 'Llave combinada 9/16\" X 180mm de largo Llave combinada 9/16\" X 180mm de largo', 30.17, 1, 1, 4, 1, 1, 'IMG20231123143215.jpg'),
-(337, 'aaaaaa1', 'aaaaaa1', 2.00, 2, 10, 3, 5, 1, 'aaaaaa1_32.jpg');
+(338, 'H-0159', 'Broca de cobalto C/ Alcrona 1/8\" X 70mm Corte 13mm largo total DORMER', 756.00, 2, 1, 2, 1, 1, 'IMG20231206152658.jpg'),
+(339, 'H-0160', 'Broca HSS Alfabética Letra \"B\" CLEVELAND', 65.25, 4, 1, 2, 1, 1, 'IMG20231206152430.jpg'),
+(340, 'I-0050', 'Nivel de gota para arco facial', 3.00, 92, 2, 4, 1, 1, 'IMG20231206161640.jpg'),
+(341, 'H-0161', 'Inserto de carburo A4R125I03P00GMN KCU10 KENNAMETAL', 546.00, 10, 1, 2, 1, 1, 'IMG20240102133744.jpg'),
+(342, 'H-0162', 'PortaHerramientas Derecho A4SMR1616K0314 KENNAMETAL', 3208.75, 1, 1, 2, 1, 1, 'IMG20240102133754.jpg'),
+(343, 'H-0163', 'Broca HSS Alfabetica Letra \"D\" Clev', 65.25, 5, 1, 2, 1, 1, 'IMG20240102134457.jpg'),
+(344, 'H-0164', 'BROCA HSS NUMERICA \"#30\" CLEV', 43.50, 5, 1, 2, 1, 1, 'IMG20240102133730.jpg'),
+(345, 'H-0165', 'Broca HSS Alfabetica Letra \"N\" CLEV', 85.55, 5, 1, 2, 1, 1, 'IMG20240102134427.jpg'),
+(346, 'H-0166', 'Broca HSS Numerica \"#15\" CLEV', 50.75, 5, 1, 2, 1, 1, 'IMG20240102133812.jpg'),
+(347, 'H-0167', 'RIMA HSS 3/16\"', 913.50, 1, 1, 2, 1, 1, 'IMG20240102134304.jpg');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `productos_almacen_ensamble`
+--
+
+CREATE TABLE `productos_almacen_ensamble` (
+  `id_producto` int(11) NOT NULL,
+  `codigo_producto` varchar(50) NOT NULL,
+  `nombre_producto` varchar(255) NOT NULL,
+  `precio` decimal(10,2) NOT NULL,
+  `stock` int(11) NOT NULL,
+  `id_categoria` int(11) NOT NULL,
+  `id_proveedor` int(11) NOT NULL,
+  `id_unidad` int(11) NOT NULL,
+  `id_moneda` int(11) NOT NULL,
+  `url_imagen` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `productos_almacen_general`
+--
+
+CREATE TABLE `productos_almacen_general` (
+  `id_producto` int(11) NOT NULL,
+  `codigo_producto` varchar(50) NOT NULL,
+  `nombre_producto` varchar(255) NOT NULL,
+  `precio` decimal(10,2) NOT NULL,
+  `stock` int(11) NOT NULL,
+  `id_categoria` int(11) NOT NULL,
+  `id_proveedor` int(11) NOT NULL,
+  `id_unidad` int(11) NOT NULL,
+  `id_moneda` int(11) NOT NULL,
+  `url_imagen` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `productos_almacen_general`
+--
+
+INSERT INTO `productos_almacen_general` (`id_producto`, `codigo_producto`, `nombre_producto`, `precio`, `stock`, `id_categoria`, `id_proveedor`, `id_unidad`, `id_moneda`, `url_imagen`) VALUES
+(1, 'H-0001', 'Avellanador 1/4\"', 400.00, 1, 1, 2, 1, 1, 'avellanador1_4.jpg');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `productos_almacen_maquinados`
+--
+
+CREATE TABLE `productos_almacen_maquinados` (
+  `id_producto` int(11) NOT NULL,
+  `codigo_producto` varchar(50) NOT NULL,
+  `nombre_producto` varchar(255) NOT NULL,
+  `precio` decimal(10,2) NOT NULL,
+  `stock` int(11) NOT NULL,
+  `id_categoria` int(11) NOT NULL,
+  `id_proveedor` int(11) NOT NULL,
+  `id_unidad` int(11) NOT NULL,
+  `id_moneda` int(11) NOT NULL,
+  `url_imagen` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -476,18 +549,24 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 
 CREATE TABLE `proveedores` (
   `id_proveedor` int(11) NOT NULL,
-  `nombre_proveedor` varchar(100) NOT NULL
+  `nombre_proveedor` varchar(100) NOT NULL,
+  `email_proveedor` varchar(255) DEFAULT NULL,
+  `telefono_proveedor` varchar(20) DEFAULT NULL,
+  `direccion_proveedor` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `proveedores`
 --
 
-INSERT INTO `proveedores` (`id_proveedor`, `nombre_proveedor`) VALUES
-(1, 'MAPI'),
-(2, 'HIGHER-TOOLS'),
-(3, 'MAQUINADOS'),
-(4, 'COMPRAS FUERA.');
+INSERT INTO `proveedores` (`id_proveedor`, `nombre_proveedor`, `email_proveedor`, `telefono_proveedor`, `direccion_proveedor`) VALUES
+(1, 'MAPI', NULL, NULL, NULL),
+(2, 'HIGHER-TOOLS', NULL, NULL, NULL),
+(3, 'MAQUINADOS', NULL, NULL, NULL),
+(4, 'COMPRAS EXTERNAS', NULL, NULL, NULL),
+(5, 'TONY PAPELERIA', NULL, NULL, NULL),
+(6, 'nuevo', NULL, NULL, NULL),
+(7, 'nuevozzz1', 'nuevo@nuevo.com', '5566666666', 'CALLE NUEVA KDIUOF8878');
 
 -- --------------------------------------------------------
 
@@ -642,10 +721,41 @@ ALTER TABLE `productos`
   ADD KEY `id_moneda` (`id_moneda`);
 
 --
+-- Indices de la tabla `productos_almacen_ensamble`
+--
+ALTER TABLE `productos_almacen_ensamble`
+  ADD PRIMARY KEY (`id_producto`),
+  ADD KEY `id_categoria` (`id_categoria`),
+  ADD KEY `id_proveedor` (`id_proveedor`),
+  ADD KEY `id_unidad` (`id_unidad`),
+  ADD KEY `id_moneda` (`id_moneda`);
+
+--
+-- Indices de la tabla `productos_almacen_general`
+--
+ALTER TABLE `productos_almacen_general`
+  ADD PRIMARY KEY (`id_producto`),
+  ADD KEY `id_categoria` (`id_categoria`),
+  ADD KEY `id_proveedor` (`id_proveedor`),
+  ADD KEY `id_unidad` (`id_unidad`),
+  ADD KEY `id_moneda` (`id_moneda`);
+
+--
+-- Indices de la tabla `productos_almacen_maquinados`
+--
+ALTER TABLE `productos_almacen_maquinados`
+  ADD PRIMARY KEY (`id_producto`),
+  ADD KEY `id_categoria` (`id_categoria`),
+  ADD KEY `id_proveedor` (`id_proveedor`),
+  ADD KEY `id_unidad` (`id_unidad`),
+  ADD KEY `id_moneda` (`id_moneda`);
+
+--
 -- Indices de la tabla `proveedores`
 --
 ALTER TABLE `proveedores`
-  ADD PRIMARY KEY (`id_proveedor`);
+  ADD PRIMARY KEY (`id_proveedor`),
+  ADD UNIQUE KEY `email_proveedor` (`email_proveedor`);
 
 --
 -- Indices de la tabla `tipos_moneda`
@@ -733,13 +843,13 @@ ALTER TABLE `permisos`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=338;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=348;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedores`
 --
 ALTER TABLE `proveedores`
-  MODIFY `id_proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `tipos_moneda`
@@ -812,6 +922,33 @@ ALTER TABLE `productos`
   ADD CONSTRAINT `productos_ibfk_2` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedores` (`id_proveedor`),
   ADD CONSTRAINT `productos_ibfk_3` FOREIGN KEY (`id_unidad`) REFERENCES `unidades_medida` (`id_unidad`),
   ADD CONSTRAINT `productos_ibfk_4` FOREIGN KEY (`id_moneda`) REFERENCES `tipos_moneda` (`id_moneda`);
+
+--
+-- Filtros para la tabla `productos_almacen_ensamble`
+--
+ALTER TABLE `productos_almacen_ensamble`
+  ADD CONSTRAINT `productos_almacen_ensamble_ibfk_1` FOREIGN KEY (`id_categoria`) REFERENCES `categorias` (`id_categoria`),
+  ADD CONSTRAINT `productos_almacen_ensamble_ibfk_2` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedores` (`id_proveedor`),
+  ADD CONSTRAINT `productos_almacen_ensamble_ibfk_3` FOREIGN KEY (`id_unidad`) REFERENCES `unidades_medida` (`id_unidad`),
+  ADD CONSTRAINT `productos_almacen_ensamble_ibfk_4` FOREIGN KEY (`id_moneda`) REFERENCES `tipos_moneda` (`id_moneda`);
+
+--
+-- Filtros para la tabla `productos_almacen_general`
+--
+ALTER TABLE `productos_almacen_general`
+  ADD CONSTRAINT `productos_almacen_general_ibfk_1` FOREIGN KEY (`id_categoria`) REFERENCES `categorias` (`id_categoria`),
+  ADD CONSTRAINT `productos_almacen_general_ibfk_2` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedores` (`id_proveedor`),
+  ADD CONSTRAINT `productos_almacen_general_ibfk_3` FOREIGN KEY (`id_unidad`) REFERENCES `unidades_medida` (`id_unidad`),
+  ADD CONSTRAINT `productos_almacen_general_ibfk_4` FOREIGN KEY (`id_moneda`) REFERENCES `tipos_moneda` (`id_moneda`);
+
+--
+-- Filtros para la tabla `productos_almacen_maquinados`
+--
+ALTER TABLE `productos_almacen_maquinados`
+  ADD CONSTRAINT `productos_almacen_maquinados_ibfk_1` FOREIGN KEY (`id_categoria`) REFERENCES `categorias` (`id_categoria`),
+  ADD CONSTRAINT `productos_almacen_maquinados_ibfk_2` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedores` (`id_proveedor`),
+  ADD CONSTRAINT `productos_almacen_maquinados_ibfk_3` FOREIGN KEY (`id_unidad`) REFERENCES `unidades_medida` (`id_unidad`),
+  ADD CONSTRAINT `productos_almacen_maquinados_ibfk_4` FOREIGN KEY (`id_moneda`) REFERENCES `tipos_moneda` (`id_moneda`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

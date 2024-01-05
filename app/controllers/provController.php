@@ -7,6 +7,22 @@ use app\models\mainModel;
 class provController extends mainModel
 {
 
+    public function obtenerOpcionesProveedores()
+    {
+        $consulta_proveedores = "SELECT * FROM proveedores ORDER BY nombre_proveedor";
+        $datos_proveedores = $this->ejecutarConsulta($consulta_proveedores);
+        $opciones_proveedores = "";
+
+        while ($proveedor = $datos_proveedores->fetch()) {
+            $opciones_proveedores =  $proveedor['nombre_proveedor'];
+            $opciones_proveedores =  $proveedor['email_proveedor'];
+            $opciones_proveedores =  $proveedor['telefono_proveedor'];
+            $opciones_proveedores =  $proveedor['direccion_proveedor'];
+        }
+
+        return $opciones_proveedores;
+    }
+
     /*----------  Controlador registrar usuario  ----------*/
     public function registrarProveedorControlador()
     {
@@ -106,7 +122,7 @@ class provController extends mainModel
                 "campo_nombre" => "direccion_proveedor",
                 "campo_marcador" => ":Direccion",
                 "campo_valor" => $direccion
-            ],
+            ]
            
         ];
 
@@ -258,40 +274,18 @@ class provController extends mainModel
             $datos = $datos->fetch();
         }
 
-        $nombre_proveedor = $this->limpiarCadena($_POST['nombre_proveedor']);
-
-        # Verificando campos obligatorios admin #
-        if ($nombre_proveedor == "") {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No ha llenado el nombre de proveedor",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
-
-        if ($this->verificarDatos("[a-zA-Z0-9 ]{3,100}", $nombre_proveedor)) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "Su Proveedor no coincide con el formato solicitado",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
-
-        # Almacenando datos#
         $proveedor = $this->limpiarCadena($_POST['nombre_proveedor']);
+        $email = $this->limpiarCadena($_POST['email_proveedor']);
+        $telefono = $this->limpiarCadena($_POST['telefono_proveedor']);
+        $direccion = $this->limpiarCadena($_POST['direccion_proveedor']);
+        
 
-        # Verificando campos obligatorios #
-        if ($proveedor == "") {
+        # Verificando campos obligatorios  #
+        if ($proveedor == "" || $email == "" || $telefono == "" || $direccion == "") {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No has llenado todos los campos que son obligatorios",
+                "texto" => "No ha llenado algun dato",
                 "icono" => "error"
             ];
             return json_encode($alerta);
@@ -299,19 +293,49 @@ class provController extends mainModel
         }
 
         # Verificando integridad de los datos #
-
         if ($this->verificarDatos("[a-zA-Z0-9 ]{3,100}", $proveedor)) {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
-                "texto" => "El Proveedor no coincide con el formato solicitado",
+                "texto" => "El nombre de proveedor no coincide con el formato solicitado",
+                "icono" => "error"
+            ];
+            return json_encode($alerta);
+            exit();
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "El email de proveedor no coincide con el formato solicitado",
+                "icono" => "error"
+            ];
+            return json_encode($alerta);
+            exit();
+        }
+        if ($this->verificarDatos("[a-zA-Z0-9 ]{8,20}", $telefono)) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "El teléfono de proveedor no coincide con el formato solicitado",
+                "icono" => "error"
+            ];
+            return json_encode($alerta);
+            exit();
+        }
+        if ($this->verificarDatos("[a-zA-Z0-9 @]{3,500}", $direccion)) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "La dirección del proveedor no coincide con el formato solicitado",
                 "icono" => "error"
             ];
             return json_encode($alerta);
             exit();
         }
 
-        # Verificando usuario #
+       
+        # Verificando proveedor #
         if ($datos['nombre_proveedor'] != $proveedor) {
             $check_usuario = $this->ejecutarConsulta("SELECT nombre_proveedor FROM proveedores WHERE nombre_proveedor='$proveedor'");
             if ($check_usuario->rowCount() > 0) {
@@ -326,11 +350,27 @@ class provController extends mainModel
             }
         }
 
+
         $proveedor_datos_up = [
             [
                 "campo_nombre" => "nombre_proveedor",
                 "campo_marcador" => ":Proveedor",
                 "campo_valor" => $proveedor
+            ],
+            [
+                "campo_nombre" => "email_proveedor",
+                "campo_marcador" => ":Email",
+                "campo_valor" => $email
+            ],
+            [
+                "campo_nombre" => "telefono_proveedor",
+                "campo_marcador" => ":Telefono",
+                "campo_valor" => $telefono
+            ],
+            [
+                "campo_nombre" => "direccion_proveedor",
+                "campo_marcador" => ":Direccion",
+                "campo_valor" => $direccion
             ]
         ];
 
