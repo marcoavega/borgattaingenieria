@@ -57,9 +57,14 @@
                 <!-- Campo para el nombre de usuario -->
                 <div class="mb-3">
                     <label for="direccion_proveedor" class="form-label">Dirección</label>
-                    <textarea class="form-control" id="direccion_proveedor" name="direccion_proveedor" rows="3" maxlength="500" value="<?php echo $datos['nombre_proveedor']; ?>" required><?php echo $datos['direccion_proveedor']; ?></textarea>
+                    <textarea class="form-control" id="direccion_proveedor" name="direccion_proveedor" rows="3" maxlength="500"  required><?php echo $datos['direccion_proveedor']; ?></textarea>
                 </div>
-
+                <!-- Campo para el contacto -->
+                <div class="mb-3">
+                    <label for="contacto_proveedor" class="form-label">Nombre de contacto Proveedor</label>
+                    <input type="text" class="form-control" id="contacto_proveedor" name="contacto_proveedor"
+                         maxlength="100" value="<?php echo $datos['contacto_proveedor']; ?>" required>
+                </div>
             <!-- Botón para enviar el formulario -->
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
                 <button type="submit" class="btn btn-primary">Actualizar</button>

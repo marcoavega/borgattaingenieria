@@ -18,6 +18,8 @@ class provController extends mainModel
             $opciones_proveedores =  $proveedor['email_proveedor'];
             $opciones_proveedores =  $proveedor['telefono_proveedor'];
             $opciones_proveedores =  $proveedor['direccion_proveedor'];
+            $opciones_proveedores =  $proveedor['contacto_proveedor'];
+
         }
 
         return $opciones_proveedores;
@@ -33,9 +35,10 @@ class provController extends mainModel
         $email = $this->limpiarCadena($_POST['email_proveedor']);
         $telefono = $this->limpiarCadena($_POST['telefono_proveedor']);
         $direccion = $this->limpiarCadena($_POST['direccion_proveedor']);
+        $contacto = $this->limpiarCadena($_POST['contacto_proveedor']);
 
         # Verificando campos obligatorios #
-        if ($proveedor == "" || $telefono == "" || $email == "" || $direccion =="") {
+        if ($proveedor == "" || $telefono == "" || $email == "" || $direccion == "" || $contacto == "") {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
@@ -67,7 +70,7 @@ class provController extends mainModel
             return json_encode($alerta);
             exit();
         }
-        if ($this->verificarDatos("[a-zA-Z0-9 ]{8,20}", $telefono)) {
+        if ($this->verificarDatos("[0-9]{6,20}", $telefono)) {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
@@ -77,11 +80,21 @@ class provController extends mainModel
             return json_encode($alerta);
             exit();
         }
-        if ($this->verificarDatos("[a-zA-Z0-9 @]{3,500}", $direccion)) {
+        if ($this->verificarDatos("[a-zA-Z0-9 ]{3,500}", $direccion)) {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
                 "texto" => "La dirección del proveedor no coincide con el formato solicitado",
+                "icono" => "error"
+            ];
+            return json_encode($alerta);
+            exit();
+        }
+        if ($this->verificarDatos("[a-zA-Z0-9 ]{3,500}", $contacto)) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "El contacto del proveedor no coincide con el formato solicitado",
                 "icono" => "error"
             ];
             return json_encode($alerta);
@@ -122,6 +135,11 @@ class provController extends mainModel
                 "campo_nombre" => "direccion_proveedor",
                 "campo_marcador" => ":Direccion",
                 "campo_valor" => $direccion
+            ],
+            [
+                "campo_nombre" => "contacto_proveedor",
+                "campo_marcador" => ":Contacto",
+                "campo_valor" => $contacto
             ]
            
         ];
@@ -278,10 +296,10 @@ class provController extends mainModel
         $email = $this->limpiarCadena($_POST['email_proveedor']);
         $telefono = $this->limpiarCadena($_POST['telefono_proveedor']);
         $direccion = $this->limpiarCadena($_POST['direccion_proveedor']);
-        
+        $contacto = $this->limpiarCadena($_POST['contacto_proveedor']);
 
         # Verificando campos obligatorios  #
-        if ($proveedor == "" || $email == "" || $telefono == "" || $direccion == "") {
+        if ($proveedor == "" || $email == "" || $telefono == "" || $direccion == "" || $contacto == "") {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
@@ -333,6 +351,16 @@ class provController extends mainModel
             return json_encode($alerta);
             exit();
         }
+        if ($this->verificarDatos("[a-zA-Z0-9 ]{3,500}", $contacto)) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "El contacto del proveedor no coincide con el formato solicitado",
+                "icono" => "error"
+            ];
+            return json_encode($alerta);
+            exit();
+        }
 
        
         # Verificando proveedor #
@@ -371,6 +399,11 @@ class provController extends mainModel
                 "campo_nombre" => "direccion_proveedor",
                 "campo_marcador" => ":Direccion",
                 "campo_valor" => $direccion
+            ],
+            [
+                "campo_nombre" => "contacto_proveedor",
+                "campo_marcador" => ":Contacto",
+                "campo_valor" => $contacto
             ]
         ];
 

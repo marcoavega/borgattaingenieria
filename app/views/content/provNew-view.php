@@ -27,18 +27,24 @@
                     <input type="mail" class="form-control" id="email_proveedor" name="email_proveedor" maxlength="100"
                         required>
                 </div>
-                <!-- Campo para el nombre de usuario -->
+                <!-- Campo para el telefono -->
                 <div class="mb-3">
                     <label for="telefono_proveedor" class="form-label">Teléfono</label>
                     <input type="text" class="form-control" id="telefono_proveedor" name="telefono_proveedor"
                         maxlength="20" required>
                 </div>
-                <!-- Campo para el nombre de usuario -->
+                <!-- Campo para la direccion-->
                 <div class="mb-3">
                     <label for="direccion_proveedor" class="form-label">Dirección</label>
-                    <textarea class="form-control" id="direccion_proveedor" name="direccion_proveedor" rows="3" maxlength="500"></textarea>
+                    <textarea class="form-control" id="direccion_proveedor" name="direccion_proveedor" rows="3"
+                        maxlength="500"></textarea>
                 </div>
-
+                <!-- Campo para el contacto -->
+                <div class="mb-3">
+                    <label for="contacto_proveedor" class="form-label">Nombre de contacto Proveedor</label>
+                    <input type="text" class="form-control" id="contacto_proveedor" name="contacto_proveedor"
+                         maxlength="100" required>
+                </div>
                 <!-- Botones para limpiar el formulario y enviar el formulario -->
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                     <button type="reset" class="btn btn-secondary">Limpiar</button>
