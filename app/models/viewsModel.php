@@ -15,7 +15,8 @@
                             "logOut", "404", 
                             "productList", "productNew", "productSearch", "productPhoto", "productUpdate", 
                             "almacenGeneralList", 
-                            "provNew", "provList", "provUpdate", "provSearch"];
+                            "provNew", "provList", "provUpdate", "provSearch",
+                            "movUpdate"];
 
             // Comprueba si la vista solicitada está en la lista blanca
             if (in_array($vista, $listaBlanca)) {

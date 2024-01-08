@@ -17,7 +17,7 @@
     session_regenerate_id(true);
 
     // Comprueba si se ha establecido la variable de sesión LAST_ACTIVITY
-    if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)) {
+    if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 3600)) {
         // Si ha pasado más de 30 minutos desde la última actividad del usuario, destruye la sesión
         session_unset();     // Libera todas las variables de sesión
         session_destroy();   // Destruye toda la información registrada de la sesión
