@@ -500,7 +500,7 @@
 
 		    # Verificando integridad de los datos #
 
-		    if($this->verificarDatos("[a-zA-Z0-9]{4,20}",$usuario)){
+		    if($this->verificarDatos("[a-zA-Z0-9 -]{4,20}",$usuario)){
 		    	$alerta=[
 					"tipo"=>"simple",
 					"titulo"=>"Ocurrió un error inesperado",

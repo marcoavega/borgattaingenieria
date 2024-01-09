@@ -78,6 +78,7 @@ class productController extends mainModel
         $proveedor = $this->limpiarCadena($_POST['proveedor']);
         $unidad_medida = $this->limpiarCadena($_POST['unidad_medida']);
         $tipo_moneda = $this->limpiarCadena($_POST['tipo_moneda']);
+  
 
         # Verificando campos obligatorios #
         if (
@@ -217,8 +218,10 @@ class productController extends mainModel
                 "campo_valor" => $foto
             ],
         ];
+        
 
         $registrar_producto = $this->guardarDatos("productos", $producto_datos_reg);
+       
 
         if ($registrar_producto->rowCount() == 1) {
             $alerta = [
@@ -271,7 +274,7 @@ class productController extends mainModel
 				JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
 				JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
                 WHERE nombre_producto LIKE '%$busqueda%'
-                ORDER BY nombre_producto ASC
+                ORDER BY id_producto DESC
                 LIMIT $inicio, $registros;
                 ";
 

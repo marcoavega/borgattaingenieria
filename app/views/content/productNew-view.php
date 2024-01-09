@@ -34,13 +34,13 @@
                 <!-- Campo para el código del producto -->
                 <div class="mb-3">
                     <label for="codigo_producto" class="form-label">Código Producto:</label>
-                    <input type="text" class="form-control" id="codigo_producto" name="codigo_producto" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" required>
+                    <input type="text" class="form-control" id="codigo_producto" name="codigo_producto" maxlength="100" required>
                 </div>
 
                 <!-- Campo para el nombre del producto -->
                 <div class="mb-3">
                     <label for="nombre_producto" class="form-label">Nombre Producto:</label>
-                    <input type="text" class="form-control" id="nombre_producto" name="nombre_producto" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="1000" required>
+                    <input type="text" class="form-control" id="nombre_producto" name="nombre_producto" required>
                 </div>
 
                 <!-- Campo para el precio del producto -->
