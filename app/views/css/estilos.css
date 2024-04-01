@@ -1,0 +1,81 @@
+/* Estilos generales */
+/* Establece la altura y el ancho del cuerpo y del html al 100% */
+body,html{
+  height: 100%;
+  width: 100%;
+}
+
+/* Establece el contenedor principal para que ocupe todo el espacio disponible y centra su contenido tanto vertical como horizontalmente */
+.main-container{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Establece la altura a 'auto' y el ancho a '100%' para las clases 'login' y 'hero-body' que son hijos directos de '.main-container'. También establece un ancho máximo y mínimo. */
+.main-container > .login,
+.main-container > .hero-body{
+  height: auto;
+  width: 100%;
+  max-width: 400px;
+  min-width: 300px;
+}
+
+/* Estilos específicos para la página de login */
+
+/* Establece el tamaño de fuente para la clase '.bd-placeholder-img' y deshabilita la selección de texto */
+.bd-placeholder-img {
+  font-size: 1.125rem;
+  text-anchor: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+/* Aumenta el tamaño de fuente para la clase '.bd-placeholder-img-lg' en pantallas más grandes */
+@media (min-width: 768px) {
+  .bd-placeholder-img-lg {
+    font-size: 3.5rem;
+  }
+}
+
+/* Define el estilo para un divisor de ejemplo */
+.b-example-divider {
+  width: 100%;
+  height: 3rem;
+  background-color: rgba(0, 0, 0, .1);
+  border: solid rgba(0, 0, 0, .15);
+  border-width: 1px 0;
+  box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+}
+
+/* ... */
+/* Los estilos restantes definen el aspecto de varios elementos, como botones, iconos, barras de desplazamiento y más. */
+
+/* Estilos específicos para la página de login */
+/* Agrega un margen alrededor de las imágenes dentro del elemento con id 'login' */
+#login img{
+  margin: 10px 0;
+}
+
+/* Centra el texto dentro de los elementos con la clase 'center' dentro del elemento con id 'login' */
+#login .center {
+  text-align: center;
+}
+
+/* Establece un ancho máximo y agrega un margen alrededor del elemento con la clase 'login' dentro del elemento con id 'login' */
+#login .login {
+  max-width: 300px;
+  margin: 35px auto;
+}
+
+/* Agrega relleno a los lados del formulario de login */
+#login .login-form{
+  padding:0px 25px;
+}
+
+.text-right {
+  text-align: right;
+}

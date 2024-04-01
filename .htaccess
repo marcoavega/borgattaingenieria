@@ -1,0 +1,10 @@
+# Activa el motor de reescritura de Apache
+RewriteEngine On
+
+# Configuración de las opciones. 
+# En este caso, se deshabilita la visualización de listas de directorios.
+Options All -Indexes
+
+# Regla de reescritura: Captura una URL que contiene caracteres alfanuméricos, barras inclinadas 
+# y los caracteres especiales 'ñ' y 'Ñ'. La URL capturada se pasa como un parámetro 'views' a 'index.php'.
+RewriteRule ^([a-zA-Z0-9/ñÑ-]+)$ index.php?views=$1

@@ -1,0 +1,364 @@
+<?php
+
+namespace app\controllers;
+
+use app\models\mainModel;
+
+class movController extends mainModel
+{
+
+    public function obtenerOpcionesProductos()
+    {
+        $consulta_productos = "SELECT * FROM productos ORDER BY id_producto";
+        $datos_productos = $this->ejecutarConsulta($consulta_productos);
+        $opciones_productos = "";
+
+        while ($productos = $datos_productos->fetch()) {
+            $opciones_productos .= '<option value="' . $productos['id_producto'] . '">'
+                . $productos['codigo_producto'] . " " . $productos['nombre_producto'] . '</option>';
+        }
+
+        return $opciones_productos;
+    }
+    public function obtenerOpcionesAlmacenes()
+    {
+        $consulta_almacenes = "SELECT * FROM almacenes ORDER BY nombre_almacen";
+        $datos_almacenes = $this->ejecutarConsulta($consulta_almacenes);
+        $opciones_almacenes = "";
+
+        while ($almacenes = $datos_almacenes->fetch()) {
+            $opciones_almacenes .= '<option value="' . $almacenes['id_almacen'] . '">'
+                . $almacenes['nombre_almacen'] . '</option>';
+        }
+
+        return $opciones_almacenes;
+    }
+     public function obtenerEmpleados()
+    {
+        $consulta_empleados = "SELECT * FROM empleados ORDER BY nombre_empleado";
+        $datos_empleados = $this->ejecutarConsulta($consulta_empleados);
+        $opciones_empleados = "";
+
+        while ($empleados = $datos_empleados->fetch()) {
+            $opciones_empleados .= '<option value="' . $empleados['id_empleado'] . '">'
+                . $empleados['nombre_empleado'] . '</option>';
+        }
+
+        return $opciones_empleados;
+    }
+
+
+    /*----------  Controlador registrar proveedor  ----------*/
+    public function registrarMovimientoControlador()
+    {
+
+        # Almacenando datos#
+
+        $id_producto = $this->limpiarCadena($_POST['id_producto']);
+        $id_almacen_origen = $this->limpiarCadena($_POST['id_almacen_origen']);
+        $id_almacen_destino = $this->limpiarCadena($_POST['id_almacen_destino']);
+        $cantidad = $this->limpiarCadena($_POST['cantidad']);
+        $id_empleado = $this->limpiarCadena($_POST['id_empleado']);
+        $nota = $this->limpiarCadena($_POST['nota']);
+
+
+        // Validar que los campos no estén vacíos
+        if (empty($id_producto) || empty($id_almacen_origen) || empty($id_almacen_destino) || empty($cantidad) || empty($nota) || empty($id_empleado)) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "No has llenado todos los campos que son obligatorios" ,
+                "icono" => "error"
+            ];
+
+            return json_encode($alerta);
+        }
+
+
+        $movimiento_datos_reg = [
+
+            [
+                "campo_nombre" => "id_producto",
+                "campo_marcador" => ":Producto",
+                "campo_valor" => $id_producto
+            ],
+            [
+                "campo_nombre" => "id_almacen_origen ",
+                "campo_marcador" => ":Origen",
+                "campo_valor" => $id_almacen_origen
+            ],
+            [
+                "campo_nombre" => "id_almacen_destino",
+                "campo_marcador" => ":Destino",
+                "campo_valor" => $id_almacen_destino
+            ],
+            [
+                "campo_nombre" => "cantidad",
+                "campo_marcador" => ":Cantidad",
+                "campo_valor" => $cantidad
+            ],
+            [
+                "campo_nombre" => "id_empleado",
+                "campo_marcador" => ":Empleado",
+                "campo_valor" => $id_empleado
+            ],
+            [
+                "campo_nombre" => "nota_movimiento",
+                "campo_marcador" => ":Nota",
+                "campo_valor" => $nota
+            ]
+
+        ];
+
+
+
+        $registrar_movimiento = $this->guardarDatos("movimientos", $movimiento_datos_reg);
+
+        if ($registrar_movimiento->rowCount() == 1) {
+            $alerta = [
+                "tipo" => "limpiar",
+                "titulo" => "Movimiento registrado",
+                "texto" => "El movimiento se registro con exito",
+                "icono" => "success"
+            ];
+        } else {
+
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "No se pudo registrar el movimiento, por favor intente nuevamente",
+                "icono" => "error"
+            ];
+        }
+
+
+
+        # Verificando usuario #
+        $check_inventario = $this->ejecutarConsulta("SELECT * FROM stock_almacen");
+        if ($check_inventario->rowCount() <= 0) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "No hay registros favor de contactar con el administrador",
+                "icono" => "error"
+            ];
+            return json_encode($alerta);
+            exit();
+        }
+        //Restar stock del almacén de origen
+        $restarStockOrigen = "UPDATE stock_almacen SET stock = stock - $cantidad WHERE id_producto = $id_producto AND id_almacen = $id_almacen_origen";
+
+
+        $resultadoRestar = $this->ejecutarConsulta($restarStockOrigen);
+        if ($resultadoRestar->rowCount() == 1) {
+            $alerta = [
+                "tipo" => "limpiar",
+                "titulo" => "Movimiento registrado",
+                "texto" => "El movimiento de salida se registro con exito",
+                "icono" => "success"
+            ];
+        } else {
+
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "No se pudo registrar el movimiento de salida, por favor intente nuevamente",
+                "icono" => "error"
+            ];
+        }
+        //Sumar stock al almacén de destino
+        $sumarStockDestino = "UPDATE stock_almacen SET stock = stock + $cantidad WHERE id_producto = $id_producto AND id_almacen = $id_almacen_destino";
+
+        $resultadoSumar = $this->ejecutarConsulta($sumarStockDestino);
+        if ($resultadoSumar->rowCount() == 1) {
+            $alerta = [
+                "tipo" => "limpiar",
+                "titulo" => "Movimiento registrado",
+                "texto" => "El movimiento de entrada se registro con exito",
+                "icono" => "success"
+            ];
+        } else {
+
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "No se pudo registrar el movimiento de entrada, por favor intente nuevamente",
+                "icono" => "error"
+            ];
+        }
+
+
+        return json_encode($alerta);
+
+    }
+
+
+
+ /*----------  Controlador listar productos  ----------*/
+ public function listarMovControlador($pagina, $registros, $url, $busqueda)
+ {
+ 
+     $pagina = $this->limpiarCadena($pagina);
+     $registros = $this->limpiarCadena($registros);
+ 
+     $url = $this->limpiarCadena($url);
+     $url = APP_URL . $url . "/";
+ 
+     $busqueda = $this->limpiarCadena($busqueda);
+     $tabla = "";
+ 
+     $pagina = (isset($pagina) && $pagina > 0) ? (int) $pagina : 1;
+     $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
+ 
+     $consulta_datos = "SELECT
+     movimientos.id_movimiento,
+     productos.nombre_producto,
+     origen.nombre_almacen AS nombre_almacen_origen,
+     destino.nombre_almacen AS nombre_almacen_destino,
+     empleados.nombre_empleado,
+     movimientos.cantidad,
+     movimientos.nota_movimiento,
+     movimientos.fecha_movimiento
+ FROM
+     movimientos
+ JOIN
+     productos ON movimientos.id_producto = productos.id_producto
+ JOIN
+     almacenes AS origen ON movimientos.id_almacen_origen = origen.id_almacen
+ JOIN
+     almacenes AS destino ON movimientos.id_almacen_destino = destino.id_almacen
+ JOIN
+     empleados ON movimientos.id_empleado = empleados.id_empleado
+ WHERE
+ empleados.id_empleado LIKE '%$busqueda%'
+ GROUP BY
+     movimientos.id_movimiento
+ ORDER BY
+     movimientos.id_movimiento DESC
+ LIMIT
+     $inicio, $registros;
+ 
+ 
+ 
+     ";
+ 
+ $consulta_total = "SELECT COUNT(DISTINCT movimientos.id_movimiento)
+ FROM movimientos
+ JOIN productos ON movimientos.id_producto = productos.id_producto
+ JOIN almacenes AS origen ON movimientos.id_almacen_origen = origen.id_almacen
+ JOIN almacenes AS destino ON movimientos.id_almacen_destino = destino.id_almacen
+ JOIN empleados ON movimientos.id_empleado = empleados.id_empleado
+ WHERE empleados.id_empleado LIKE '%$busqueda%';        
+ ";
+ 
+ 
+ $datos = $this->ejecutarConsulta($consulta_datos);
+ $datos = $datos->fetchAll();
+ 
+ $total = $this->ejecutarConsulta($consulta_total);
+ $total = (int) $total->fetchColumn();
+ 
+ $numeroPaginas = ceil($total / $registros);
+ 
+ $tabla .= '
+ <button class="btn btn-primary" onclick="imprimirArea(\'areaImprimir\')">Imprimir</button>
+ <div id="areaImprimir">
+ <div class="row row-cols-1 row-cols-md-3 g-4 p-5">';
+ 
+ if ($total >= 1 && $pagina <= $numeroPaginas) {
+     $contador = $inicio + 1;
+     $pag_inicio = $inicio + 1;
+ 
+     $tabla .= '
+<div class="table-responsive w-100">
+    <table class="table w-100">
+        <thead>
+            <tr>
+                <th>Artículo</th>
+                <th>Almacén origen</th>
+                <th>Almacén destino</th>
+                <th>Cantidad</th>
+                <th>Nombre Empleado</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>';
+
+foreach ($datos as $rows) {
+    $tabla .= '
+        <tr>
+            <td>' . $rows['nombre_producto'] . '</td>
+            <td>' . $rows['nombre_almacen_origen'] . '</td>
+            <td>' . $rows['nombre_almacen_destino'] . '</td>
+            <td>' . $rows['cantidad'] . '</td>
+            <td>' . $rows['nombre_empleado'] . '</td>
+            <td>' . $rows['fecha_movimiento'] . '</td>
+        </tr>';
+    $contador++;
+}
+
+$tabla .= '
+    </tbody>
+</table>
+</div>
+</div>
+
+<script>
+function imprimirArea(id) {
+   var contenido = document.getElementById(id).innerHTML;
+   var ventanaImpresion = window.open("", "_blank");
+   ventanaImpresion.document.write("<html><head><title>Imprimir</title>");
+   
+   // Aquí puedes agregar tus estilos CSS
+   ventanaImpresion.document.write("<style>");
+   ventanaImpresion.document.write("body,td { font-family: Arial, sans-serif; line-height: 2; text-align: center; }"); // Centramos el texto
+   ventanaImpresion.document.write("table { border-collapse: collapse; border: 1px solid black; border-radius: 10px; overflow: hidden; }"); // Agregamos bordes y esquinas redondeadas
+   ventanaImpresion.document.write("td, th { border: 1px solid black; }"); // Agregamos bordes a las celdas
+   ventanaImpresion.document.write("</style>");
+   
+   ventanaImpresion.document.write("</head><body>");
+   ventanaImpresion.document.write(contenido);
+   ventanaImpresion.document.write("</body></html>");
+   ventanaImpresion.document.close();
+   ventanaImpresion.print();
+}
+</script>';
+
+ 
+     $pag_final = $contador - 1;
+ } else {
+     if ($total >= 1) {
+         $tabla .= '
+             <div class="col">
+                 <a href="' . $url . '1/" class="button is-link is-rounded is-small mt-4 mb-4">
+                     Haga clic acá para recargar el listado
+                 </a>
+             </div>
+         ';
+     } else {
+         $tabla .= '
+             <div class="col">
+                 No hay registros en el sistema
+             </div>
+         ';
+     }
+ }
+ 
+ $tabla .= '</div>';
+ 
+ 
+   ### Paginacion ###
+ if ($total > 0 && $pagina <= $numeroPaginas) {
+     $tabla .= "<p class=\"pagination\">Mostrando productos <strong>  " . $pag_inicio . "   </strong> al <strong>  " . $pag_final . "   </strong> de un total de <strong>  " . $total . "   </strong></p>";
+     $tabla .= $this->paginadorTablas($pagina, $numeroPaginas, $url, $pagina);
+ }
+ 
+     
+     
+     return $tabla;
+ }
+
+
+
+
+}
