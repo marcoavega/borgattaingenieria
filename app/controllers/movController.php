@@ -52,6 +52,24 @@ class movController extends mainModel
     public function registrarMovimientoControlador()
     {
 
+        $id = $this->limpiarCadena($_POST['id_producto']);
+
+        # Verificando usuario #
+        $datos = $this->ejecutarConsulta("SELECT * FROM productos WHERE id_producto='$id'");
+        if ($datos->rowCount() <= 0) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "No hemos encontrado el productos en el sistema",
+                "icono" => "error"
+            ];
+            return json_encode($alerta);
+            exit();
+        } else {
+            $datos = $datos->fetch();
+        }
+
+
         # Almacenando datos#
 
         $id_producto = $this->limpiarCadena($_POST['id_producto']);

@@ -4,7 +4,7 @@
 </svg>
 
 <!-- Inicio de la barra de navegación -->
-<nav class="navbar navbar-expand-lg py-3 border border" data-bs-theme="">
+<nav class="navbar navbar-expand-lg py-3 border" data-bs-theme="">
     <div class="container-fluid">
 
         <!-- Enlace de la navbar a la página de inicio del panel de control 
@@ -21,9 +21,8 @@
 
         <!-- Contenedor para los elementos de la navbar que se colapsarán en dispositivos móviles -->
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
-            <!-- Enlaces de la navbar -->
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
                 <!-- Enlace a la página de inicio -->
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="<?php echo APP_URL; ?>dashboard/">BORGATTA INGENIERÍA</a>
@@ -36,23 +35,12 @@
                             Usuarios
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userNew/">Nuevo</a></li>
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userList/">Lista</a></li>
+                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userNew/">Crear Nuevo usuario</a></li>
+                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userList/">Lista de Usuarios</a></li>
                         </ul>
                     </li>
                 <?php } ?>
 
-                <!-- Menú desplegable para las acciones relacionadas con los productos -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Consultar
-                    </a>
-                    <ul class="dropdown-menu">
-                    <?php if ($_SESSION['permiso'] == 1) { ?>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productConsult/">Consultar artículos prueba</a></li>
-                        <?php } ?>
-                        <li><a class="dropdown-item" href="http://localhost/borgattaingenieria/busqueda.php">Consultar artículos</a></li>
-                    </ul>
 
                     <!-- Menú desplegable para las acciones relacionadas con los productos -->
                 <li class="nav-item dropdown">
@@ -61,24 +49,14 @@
                     </a>
                     <ul class="dropdown-menu">
                         <?php if ($_SESSION['permiso'] == 1) { ?>
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productNew/">Nuevo</a></li>
+                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productNew/">Alta de Artículos Nuevos</a></li>
                         <?php } ?>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productList/">Lista</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productSearch/">Buscar</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productList/">Lista de Artículos</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productSearch/">Buscar Artículos</a></li>
+                        <li><a class="dropdown-item" href="http://localhost/borgattaingenieria/busqueda.php">Busqueda Rapída</a></li>
                     </ul>
                 </li>
 
-                <?php if ($_SESSION['permiso'] == 1) { ?>
-                    <!-- Menú desplegable para las acciones relacionadas con los productos -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Stock de almacenes
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>stockAlmNew/">Nuevo Registro</a></li>
-                        </ul>
-                    </li>
-                <?php } ?>
 
                 <!-- Menú desplegable para las acciones relacionadas con los movimientos -->
                 <li class="nav-item dropdown">
@@ -87,7 +65,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <?php if ($_SESSION['permiso'] == 1) { ?>
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movUpdate/">Nuevo</a></li>
+                           
                         <?php } ?>
                         <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movList/">Consultar Todos</a></li>
                         <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movSearch/">Buscar por nombre</a></li>
@@ -127,7 +105,7 @@
             </ul>
 
             <!-- Botón para cambiar el tema (light, dark, auto) -->
-            <ul class="navbar-nav mb-2 mb-lg-0">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item dropdown w-25" data-bs-theme="auto">
                     <button class="btn btn-link nav-link py-1 px-0 px-lg-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static">
                         <svg class="bi my-1 theme-icon-active" width="16" height="16" fill="currentColor">

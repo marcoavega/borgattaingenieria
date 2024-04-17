@@ -25,27 +25,36 @@
     $opcionesEmpleados = $insProduct->obtenerEmpleados();
 
     // Comprueba si se obtuvieron los datos del producto
-
-    ?>
+    // Obtiene los datos del producto a editar
+    $datos = $insLogin->seleccionarDatos("Unico", "productos", "id_producto", $id);
+    if ($datos->rowCount() == 1) {
+        $datos = $datos->fetch();
+        ?>
     <?php
     // Incluye el botón de regreso
     include "./app/views/inc/btn_back.php";
     ?>
     <!-- Formulario de edición de producto -->
-    <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/movimientoAjax.php" method="POST" autocomplete="off">
+    <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/movimientoAjax.php"
+        method="POST" autocomplete="off">
 
         <!-- Campo oculto para el módulo de producto y el ID del producto -->
         <input type="hidden" name="modulo_movimiento" value="registrar">
         <input type="hidden" name="id_producto" value="<?php echo $datos['id_producto']; ?>">
 
-        <!-- Campo de selección para la categoría del producto -->
-        <div class="form-group">
-            <label for="id_producto" class="form-label">Producto</label>
-            <select class='form-control' name='id_producto' id='id_producto' required>
-                <option value="">Selecciona un producto</option>
-                <?php echo $opcionesProductos; ?>
-            </select>
+        <!-- Campo para el código del producto -->
+        <div class="mb-3">
+            <label for="id_producto" class="form-label">Id Producto</label>
+            <input type="text" class="form-control" id="id_producto" name="id_producto" maxlength="100"
+                value="<?php echo $datos['id_producto']; ?>" required readonly>
         </div>
+
+        <!-- Campo para mostrar el nombre del producto -->
+<div class="mb-3">
+    <label for="nombre_producto" class="form-label">Nombre del Producto</label>
+    <input type="text" class="form-control" id="nombre_producto" value="<?php echo htmlspecialchars($datos['nombre_producto']); ?>" readonly>
+</div>
+       
         <!-- Campo de selección para el almacen del producto -->
         <div class="form-group mt-3">
             <label for="id_almacen_origen" class="form-label">Almacen de origen</label>
@@ -67,7 +76,7 @@
             <label for="cantidad" class="form-label">Cantidad a mover:</label>
             <input type="number" class="form-control" id="cantidad" name="cantidad" required>
         </div>
-<!-- Campo de selección para el nombre de empleado -->
+        <!-- Campo de selección para el nombre de empleado -->
         <div class="form-group mt-3">
             <label for="id_almacen_origen" class="form-label">Nombre de empleado que solicita:</label>
             <select class='form-control' name='id_empleado' id='id_empleado' required>
@@ -88,6 +97,9 @@
     </form>
 
     <?php
-
+    } else {
+        // Si no se obtuvieron los datos del producto, muestra un mensaje de error
+        include "./app/views/inc/error_alert.php";
+    }
     ?>
 </div>

@@ -38,13 +38,13 @@
                 <!-- Campo para el código del producto -->
                 <div class="mb-3">
                     <label for="codigo_producto" class="form-label">Código Producto:</label>
-                    <input type="text" class="form-control" id="codigo_producto" name="codigo_producto" maxlength="100" required>
+                    <input type="text" class="form-control" id="codigo_producto" name="codigo_producto" maxlength="30" required>
                 </div>
 
                 <!-- Campo para el nombre del producto -->
                 <div class="mb-3">
                     <label for="nombre_producto" class="form-label">Nombre Producto:</label>
-                    <textarea class="form-control" id="nombre_producto" name="nombre_producto" required></textarea>
+                    <textarea class="form-control" id="nombre_producto" name="nombre_producto" maxlength="180" required></textarea>
                 </div>
 
 

@@ -29,6 +29,10 @@
 		if($_POST['modulo_product']=="actualizarFoto"){
 			echo $insProduct->actualizarFotoProductControlador();
 		}
+
+		if($_POST['modulo_product']=="actualizarStock"){
+			echo $insProduct->agregarCantidadProductControlador();
+		}
 		
 	}else{
 		session_destroy();

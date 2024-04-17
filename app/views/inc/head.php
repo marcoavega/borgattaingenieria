@@ -27,3 +27,8 @@
 
 <script src="<?php echo APP_URL; ?>app/views/js/jquery-3.1.1.min.js" ></script>
 
+<link rel="icon" href="<?php echo APP_URL; ?>app/views/img/logo.ico" type="image/x-icon">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bakbak+One&family=Lilita+One&family=Orbitron:wght@400..900&family=Russo+One&display=swap" rel="stylesheet">

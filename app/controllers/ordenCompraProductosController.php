@@ -36,19 +36,7 @@ class ordenCompraProductosController extends mainModel
         return $opciones_ordenes;
     }
 
-public function obtenerOpcionesMonedas()
-    {
-        $consulta_tipos_moneda = "SELECT * FROM tipos_moneda ORDER BY id_moneda";
-        $datos_moneda = $this->ejecutarConsulta($consulta_tipos_moneda);
-        $opciones_monedas = "";
 
-        while ($moneda = $datos_moneda->fetch()) {
-            $opciones_monedas .= '<option value="' . $moneda['id_moneda'] . '">'
-                . $moneda['nombre_moneda'] . '</option>';
-        }
-
-        return $opciones_monedas;
-    }
 
 public function obtenerOpcionesNombreProductos()
     {
@@ -103,7 +91,6 @@ public function obtenerOpcionesUnidadesMedida()
 # Almacenando datos#
 
 $id_orden_compra = $_POST['id_orden_compra'];
-$id_moneda = $_POST['id_moneda'];
 $numero_partida = $_POST['numero_partida'];
 $nombre_producto = $_POST['nombre_producto'];
 $cantidad = $_POST['cantidad'];
@@ -114,7 +101,7 @@ $total = $_POST['total'];
 
 
 # Verificando campos obligatorios #
-if ($id_orden_compra == "" || $id_moneda == "" || $numero_partida == "" || $nombre_producto == "" || $cantidad == "" || $precio_sin_IVA == "" || $total == "" || $unidad_medida == "" ) {
+if ($id_orden_compra == "" || $numero_partida == "" || $nombre_producto == "" || $cantidad == "" || $precio_sin_IVA == "" || $total == "" || $unidad_medida == "" ) {
     $alerta = [
         "tipo" => "simple",
         "titulo" => "Ocurrió un error inesperado",
@@ -134,11 +121,6 @@ $detalle_datos_reg = [
         "campo_nombre" => "id_orden_compra",
         "campo_marcador" => ":OrdenCompra",
         "campo_valor" => $id_orden_compra
-    ],
-    [
-        "campo_nombre" => "id_moneda",
-        "campo_marcador" => ":IdMoneda",
-        "campo_valor" => $id_moneda
     ],
     [
         "campo_nombre" => "numero_partida",

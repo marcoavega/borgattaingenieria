@@ -64,40 +64,76 @@
             }
 		}
 
+/*----------  Funcion para ejecutar una consulta INSERT preparada  ----------*/
+protected function guardarDatos($tabla,$datos){
 
-		/*----------  Funcion para ejecutar una consulta INSERT preparada  ----------*/
-		protected function guardarDatos($tabla,$datos){
+	$query="INSERT INTO $tabla (";
 
-			$query="INSERT INTO $tabla (";
+	$C=0;
+	foreach ($datos as $clave){
+		if($C>=1){ $query.=","; }
+		$query.=$clave["campo_nombre"];
+		$C++;
+	}
+	
+	$query.=") VALUES(";
 
-			$C=0;
-			foreach ($datos as $clave){
-				if($C>=1){ $query.=","; }
-				$query.=$clave["campo_nombre"];
-				$C++;
+	$C=0;
+	foreach ($datos as $clave){
+		if($C>=1){ $query.=","; }
+		$query.=$clave["campo_marcador"];
+		$C++;
+	}
+
+	$query.=")";
+	$sql=$this->conectar()->prepare($query);
+
+	foreach ($datos as $clave){
+		$sql->bindParam($clave["campo_marcador"],$clave["campo_valor"]);
+	}
+
+	$sql->execute();
+
+	return $sql;
+}
+
+
+		protected function guardarDatos2($tabla, $datos) {
+			$conexion = $this->conectar();
+			$conexion->beginTransaction(); // Inicia la transacción
+		
+			try {
+				$query = "INSERT INTO $tabla (";
+				$query .= implode(", ", array_column($datos, "campo_nombre"));
+				$query .= ") VALUES (";
+				$query .= implode(", ", array_column($datos, "campo_marcador"));
+				$query .= ")";
+		
+				$sql = $conexion->prepare($query);
+		
+				foreach ($datos as $clave) {
+					$sql->bindParam($clave["campo_marcador"], $clave["campo_valor"]);
+				}
+		
+				$sql->execute();
+				$lastInsertId = $conexion->lastInsertId();
+				$conexion->commit(); // Confirma la transacción
+		
+				return ['success' => true, 'lastInsertId' => $lastInsertId];
+			} catch (\PDOException $e) {
+				$conexion->rollBack(); // Revierte la transacción
+				// Manejar el error de SQL de manera adecuada
+				
+				die("Error de SQL al guardar datos: " . $e->getMessage());
 			}
-			
-			$query.=") VALUES(";
-
-			$C=0;
-			foreach ($datos as $clave){
-				if($C>=1){ $query.=","; }
-				$query.=$clave["campo_marcador"];
-				$C++;
-			}
-
-			$query.=")";
-			$sql=$this->conectar()->prepare($query);
-
-			foreach ($datos as $clave){
-				$sql->bindParam($clave["campo_marcador"],$clave["campo_valor"]);
-			}
-
-			$sql->execute();
-
-			return $sql;
 		}
+		
+		
 
+		public function ultimoIdInsertado() {
+			$conexion = $this->conectar();
+			return $conexion->lastInsertId();
+		}
 
 		/*---------- Funcion seleccionar datos ----------*/
         public function seleccionarDatos($tipo,$tabla,$campo,$id){
@@ -187,6 +223,10 @@
 			$tabla .= '</ul></nav>';
 			return $tabla;
 		}
+
+
+		
+		
 
 	    
 	}

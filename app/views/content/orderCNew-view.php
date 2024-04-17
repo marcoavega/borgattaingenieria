@@ -15,9 +15,11 @@
 
             // Crea una instancia del controlador
             $insProduct = new ordenCompraController();
+            $insMoneda = new ordenCompraController();
 
             // Obtiene las opciones de proveedores.
             $opcionesProveedores = $insProduct->obtenerOpcionesProveedores();
+            $opcionesTiposMoneda = $insMoneda->obtenerOpcionesMonedas();
             ?>
             <?php
             // Incluye el botón de regreso
@@ -46,6 +48,15 @@
                         </select>
                     </div>
                 </div><!-- termina row -->
+
+                 <!-- Campo de selección -->
+        <div class="mb-3">
+            <label for="id_moneda" class="form-label">Tipos de moneda</label>
+            <select class='form-control' name='id_moneda' id='id_moneda' required>
+                <option value="">Selecciona un tipo de moneda</option>
+                <?php echo $opcionesTiposMoneda; ?>
+            </select>
+        </div>
 
                 <!-- Botón para enviar el formulario -->
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">

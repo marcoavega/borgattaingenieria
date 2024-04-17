@@ -51,6 +51,20 @@ class ordenCompraController extends mainModel
         return $opciones_ordenes;
     }
 
+    public function obtenerOpcionesMonedas()
+    {
+        $consulta_tipos_moneda = "SELECT * FROM tipos_moneda ORDER BY id_moneda";
+        $datos_moneda = $this->ejecutarConsulta($consulta_tipos_moneda);
+        $opciones_monedas = "";
+
+        while ($moneda = $datos_moneda->fetch()) {
+            $opciones_monedas .= '<option value="' . $moneda['id_moneda'] . '">'
+                . $moneda['nombre_moneda'] . '</option>';
+        }
+
+        return $opciones_monedas;
+    }
+
     /*----------  Controlador registrar usuario  ----------*/
     public function registrarOrdenCompraControlador()
     {
@@ -65,6 +79,7 @@ class ordenCompraController extends mainModel
 
         # Almacenando datos
         $id_proveedor = $_POST['id_proveedor'];
+        $id_moneda = $_POST['id_moneda'];
 
         # Verificando campos obligatorios
         if ($id_proveedor == "") {
@@ -87,6 +102,11 @@ class ordenCompraController extends mainModel
                 "campo_nombre" => "id_proveedor",
                 "campo_marcador" => ":IdProveedor",
                 "campo_valor" => $id_proveedor
+            ],
+            [
+                "campo_nombre" => "id_moneda",
+                "campo_marcador" => ":IdMoneda",
+                "campo_valor" => $id_moneda
             ]
         ];
 
@@ -169,7 +189,7 @@ class ordenCompraController extends mainModel
     LEFT JOIN ordenes_compra ON detalle_orden_compra.id_orden_compra = ordenes_compra.id_orden_compra
     LEFT JOIN proveedores ON ordenes_compra.id_proveedor = proveedores.id_proveedor
     LEFT JOIN unidades_medida ON detalle_orden_compra.id_unidad = unidades_medida.id_unidad
-    LEFT JOIN tipos_moneda ON detalle_orden_compra.id_moneda = tipos_moneda.id_moneda
+    LEFT JOIN tipos_moneda ON ordenes_compra.id_moneda = tipos_moneda.id_moneda
     WHERE
         detalle_orden_compra.nombre_producto LIKE '%$busqueda%'
         OR ordenes_compra.numero_orden LIKE '%$busqueda%'

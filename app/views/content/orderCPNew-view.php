@@ -15,7 +15,6 @@
 
             // Crea una instancia del controlador
             $insOrdencompra = new ordenCompraProductosController();
-            $insMoneda = new ordenCompraProductosController();
             $insNombreProducto = new ordenCompraProductosController();
             $insCodigoProducto = new ordenCompraProductosController();
             $insUnidadesMedida = new ordenCompraProductosController();
@@ -23,7 +22,6 @@
 
             // Obtiene las opciones de proveedores.
             $opcionesOrdenes = $insOrdencompra->obtenerOpcionesOrdenCompra();
-            $opcionesTiposMoneda = $insMoneda->obtenerOpcionesMonedas();
             $opcionesNombreProductos = $insNombreProducto->obtenerOpcionesNombreProductos();
             $opcionesCodigoProductos = $insCodigoProducto->obtenerOpcionesCodigoProductos();
             $opcionesUnidadesMedida = $insUnidadesMedida->obtenerOpcionesUnidadesMedida();
@@ -46,15 +44,6 @@
             <select class='form-control' name='id_orden_compra' id='id_orden_compra' required>
                 <option value="">Selecciona una orden</option>
                 <?php echo $opcionesOrdenes; ?>
-            </select>
-        </div>
-
-        <!-- Campo de selección -->
-        <div class="mb-3">
-            <label for="id_moneda" class="form-label">Tipos de moneda</label>
-            <select class='form-control' name='id_moneda' id='id_moneda' required>
-                <option value="">Selecciona un tipo de moneda</option>
-                <?php echo $opcionesTiposMoneda; ?>
             </select>
         </div>
 
@@ -89,7 +78,7 @@
             <label for="precio_sin_IVA" class="form-label">Precio sin IVA:</label>
             <div class="input-group">
                 <span class="input-group-text">$</span>
-                <input type="number" class="form-control" id="precio_sin_IVA" name="precio_sin_IVA" required>
+                <input type="text" class="form-control" id="precio_sin_IVA" name="precio_sin_IVA" required>
             </div>
         </div>
 
@@ -98,7 +87,7 @@
             <label for="total" class="form-label">Precio total:</label>
             <div class="input-group">
                 <span class="input-group-text">$</span>
-                <input type="number" class="form-control" id="total" name="total" required readonly>
+                <input type="text" class="form-control" id="total" name="total" required readonly>
             </div>
         </div>
 

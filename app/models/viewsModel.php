@@ -19,9 +19,10 @@
                             "movUpdate",
                             "orderCNew","orderCPNew","orderSearch",
                             "movList","movSearch",
-                            "stockAlmNew",
                             "productConsult",
-                            "busqueda"];
+                            "busqueda",
+                            "kitArticulador",
+                            "productEntrance"];
 
             // Comprueba si la vista solicitada está en la lista blanca
             if (in_array($vista, $listaBlanca)) {

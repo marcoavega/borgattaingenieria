@@ -35,7 +35,7 @@
             ?>
         <!-- Formulario de edición de producto -->
         <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/proveedorAjax.php" method="POST" autocomplete="off">
-            <!-- Campo oculto para el módulo de producto y el ID del producto -->
+            <!-- Campo oculto para el módulo de provedor y el ID del provedor -->
             <input type="hidden" name="modulo_proveedor" value="actualizar">
             <input type="hidden" name="id_proveedor" value="<?php echo $datos['id_proveedor']; ?>">
 

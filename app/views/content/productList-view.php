@@ -1,3 +1,4 @@
+<?php //require_once "./app/views/inc/navbar.php"; ?>
 <!-- Contenedor principal -->
 <div class="container-fluid mb-4">
     <!-- Título de la página -->
@@ -12,7 +13,7 @@
     <?php
         // Importa el controlador de productos
         use app\controllers\productController;
-    
+        
         // Incluye el botón de regreso
         include "./app/views/inc/btn_back.php";
         
@@ -20,6 +21,6 @@
         $insProduct = new productController();
 
         // Muestra la lista de productos
-        echo $insProduct->listarProductControlador($url[1],30,$url[0],"");
+        echo $insProduct->listarProductControlador($url[1],50,$url[0],"");
     ?>
 </div>

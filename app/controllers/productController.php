@@ -246,41 +246,76 @@ class productController extends mainModel
         ];
         
 
-        $registrar_producto = $this->guardarDatos("productos", $producto_datos_reg);
-       
+     // Registrar el producto
+$productoResult = $this->guardarDatos2("productos", $producto_datos_reg);
 
-        if ($registrar_producto->rowCount() == 1) {
-            $alerta = [
-                "tipo" => "limpiar",
-                "titulo" => "Producto registrado",
-                "texto" => "El producto " . $nombre_producto . " se registró con éxito",
-                "icono" => "success"
-            ];
+if ($productoResult['success']) {
+    // Obtén el ID del producto recién insertado
+    $id_producto_recien_insertado = $productoResult['lastInsertId'];
 
+    // Datos para el primer almacén
+    $datos_stock_almacen = [
+        ["campo_nombre" => "id_producto", "campo_marcador" => ":IdProducto", "campo_valor" => $id_producto_recien_insertado],
+        ["campo_nombre" => "id_almacen", "campo_marcador" => ":IdAlmacen", "campo_valor" => 1], // Asumiendo que el id_almacen es 1 para este ejemplo
+        ["campo_nombre" => "stock", "campo_marcador" => ":Stock", "campo_valor" => $stock]
+    ];
 
-            
-        } else {
-        // Manejar el caso en que no se pudo registrar el producto
-        if (is_file($img_dir . $foto)) {
-            chmod($img_dir . $foto, 0777);
-            unlink($img_dir . $foto);
-        }
+    // Inserta los datos en la tabla stock_almacen para el primer almacén
+    $resultado_stock_almacen = $this->guardarDatos2("stock_almacen", $datos_stock_almacen);
 
+    if (!$resultado_stock_almacen['success']) {
+        // Si falla, manejar el error y terminar
         $alerta = [
             "tipo" => "simple",
-            "titulo" => "Ocurrió un error inesperado",
-            "texto" => "No se pudo registrar el producto, por favor inténtelo nuevamente",
+            "titulo" => "Error al registrar stock",
+            "texto" => "No se pudo registrar el stock en el almacén 1: " . $resultado_stock_almacen['error'],
             "icono" => "error"
         ];
-
+        return json_encode($alerta);
     }
 
+    // Inserción de stock de 0 para los almacenes 2 y 3
+    $almacenesAdicionales = [2, 3];
+    foreach ($almacenesAdicionales as $id_almacen) {
+        $datos_stock_almacen_adicional = [
+            ["campo_nombre" => "id_producto", "campo_marcador" => ":IdProducto", "campo_valor" => $id_producto_recien_insertado],
+            ["campo_nombre" => "id_almacen", "campo_marcador" => ":IdAlmacen", "campo_valor" => $id_almacen],
+            ["campo_nombre" => "stock", "campo_marcador" => ":Stock", "campo_valor" => 0] // Stock inicial será 0
+        ];
 
+        $resultado_stock_almacen_adicional = $this->guardarDatos2("stock_almacen", $datos_stock_almacen_adicional);
 
+        if (!$resultado_stock_almacen_adicional['success']) {
+            // Si falla, manejar el error y terminar
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Error al registrar stock",
+                "texto" => "No se pudo registrar el stock en el almacén " . $id_almacen . ": " . $resultado_stock_almacen_adicional['error'],
+                "icono" => "error"
+            ];
+            return json_encode($alerta);
+        }
+    }
 
-    return json_encode($alerta);
+    // Si todos los registros fueron exitosos
+    $alerta = [
+        "tipo" => "limpiar",
+        "titulo" => "Producto registrado",
+        "texto" => "El producto y el stock se han registrado correctamente en todos los almacenes",
+        "icono" => "success"
+    ];
+} else {
+    // Si falla el registro del producto, manejar el error
+    $alerta = [
+        "tipo" => "simple",
+        "titulo" => "Error al registrar producto",
+        "texto" => "No se pudo registrar el producto: " . $productoResult['error'],
+        "icono" => "error"
+    ];
 }
 
+return json_encode($alerta);
+    }
 
     
    /*----------  Controlador listar productos  ----------*/
@@ -348,35 +383,46 @@ WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%';
         $pag_inicio = $inicio + 1;
         foreach ($datos as $rows) {
             
-            $tabla .= '
-            <div class="col">
-                <div class="card h-100">
-                    <img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h5 class="card-title">' . $rows['nombre_producto'] . '</h5>
-                        <p class="card-text">Id: ' . $rows['id_producto'] . '</p>
-                        <p class="card-text">Código: ' . $rows['codigo_producto'] . '</p>
-                        <p class="card-text">Precio: ' . $rows['precio'] . '</p>
-                        <p class="card-text">Stock Almacén General: ' . $rows['stock_general'] . '
-                            <br> Almacén Maquinados: ' . $rows['stock_maquinados'] . '
-                            <br> Almacén Ensamble: ' . $rows['stock_ensamble'] . '</p>
-                        <p class="card-text">Categoría: ' . $rows['nombre_categoria'] . '</p>
-                        <p class="card-text">Proveedor: ' . $rows['nombre_proveedor'] . '</p>
-                        <p class="card-text">Unidad de Medida: ' . $rows['nombre_unidad'] . '</p>
-                        <p class="card-text">Moneda: ' . $rows['nombre_moneda'] . '</p>
-                    </div>'
-                    . ($_SESSION['permiso'] == 1 ? 
-                    '<div class="card-footer text-center">
-                        <a href="' . APP_URL . 'productPhoto/' . $rows['id_producto'] . '/" class="btn btn-primary me-2">Foto</a>
-                        <a href="' . APP_URL . 'productUpdate/' . $rows['id_producto'] . '/" class="btn btn-info me-2">Actualizar</a>
-                        <form class="FormularioAjax d-inline-block" action="' . APP_URL . 'app/ajax/productAjax.php" method="POST" autocomplete="off">
-                            <input type="hidden" name="modulo_product" value="eliminar">
-                            <input type="hidden" name="id_producto" value="' . $rows['id_producto'] . '">
-                            <button type="submit" class="btn btn-danger">Eliminar</button>
-                        </form>
-                    </div>' : '') . 
-            '</div>
-        </div>';
+           // Concatenación de la cadena que contiene el HTML
+           $tabla .= '
+<div class="col-md-6 col-lg-4"> <!-- Clases de Bootstrap para controlar el ancho de la columna en diferentes tamaños de pantalla -->
+    <div class="card h-100"> <!-- Tarjeta de Bootstrap con altura completa -->
+
+        <div class="card-img-top-container"> <!-- Contenedor personalizado para la imagen -->
+            <img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="card-img-top" alt="..."> <!-- Imagen del producto -->
+        </div>
+
+        <div class="card-body"> <!-- Cuerpo de la tarjeta donde se muestra la información del producto -->
+            <h5 class="card-title">' . $rows['nombre_producto'] . '</h5> <!-- Nombre del producto -->
+            <p class="card-text">Id: ' . $rows['id_producto'] . '</p> <!-- ID del producto -->
+            <p class="card-text">Código: ' . $rows['codigo_producto'] . '</p> <!-- Código del producto -->
+            <p class="card-text">Precio: ' . $rows['precio'] . '</p> <!-- Precio del producto -->
+            <p class="card-text">Stock Almacén General: ' . $rows['stock_general'] . ' <!-- Stock en almacén general -->
+                <br> Almacén Maquinados: ' . $rows['stock_maquinados'] . ' <!-- Stock en almacén de maquinados -->
+                <br> Almacén Ensamble: ' . $rows['stock_ensamble'] . '</p> <!-- Stock en almacén de ensamble -->
+            <p class="card-text">Categoría: ' . $rows['nombre_categoria'] . '</p> <!-- Categoría del producto -->
+            <p class="card-text">Proveedor: ' . $rows['nombre_proveedor'] . '</p> <!-- Proveedor del producto -->
+            <p class="card-text">Unidad de Medida: ' . $rows['nombre_unidad'] . '</p> <!-- Unidad de medida del producto -->
+            <p class="card-text">Moneda: ' . $rows['nombre_moneda'] . '</p> <!-- Moneda en la que se valora el producto -->
+        </div>
+
+        ' . ($_SESSION['permiso'] == 1 ? ' <!-- Condición para mostrar los botones solo si el usuario tiene permiso -->
+        <div class="card-footer d-flex flex-column align-items-center"> <!-- Pie de tarjeta con botones centrados y en columna -->
+            <div class="btn-group w-100" role="group" style="gap: 10px;"> <!-- Grupo de botones con un espacio entre ellos y ancho completo -->
+                <a href="' . APP_URL . 'productPhoto/' . $rows['id_producto'] . '/" class="btn btn-warning rounded">Foto</a>
+                <a href="' . APP_URL . 'productUpdate/' . $rows['id_producto'] . '/" class="btn btn-info rounded">Actualizar</a>
+                <a href="' . APP_URL . 'productEntrance/' . $rows['id_producto'] . '/" class="btn btn-light rounded">Entrada</a>
+            </div>
+            <div class="btn-group w-100" role="group" style="gap: 10px; margin-top: 10px;"> <!-- Segundo grupo de botones con margen superior para nueva fila -->
+                <a href="' . APP_URL . 'movUpdate/' . $rows['id_producto'] . '/" class="btn btn-success rounded">Movimientos</a>
+            </div>
+        </div>' : '') . ' <!-- Fin de la condicional de permisos -->
+    </div>
+</div>';
+
+           
+
+        
         
 
 
@@ -503,13 +549,14 @@ if ($total > 0 && $pagina <= $numeroPaginas) {
         # Almacenando datos#
         $codigo_producto = $this->limpiarCadena($_POST['codigo_producto']);
         $nombre_producto = $this->limpiarCadena($_POST['nombre_producto']);
+        $id_categoria = $this->limpiarCadena($_POST['id_categoria']);
         $precio = $this->limpiarCadena($_POST['precio']);
         $stock = $this->limpiarCadena($_POST['stock']);
        
 
         # Verificando campos obligatorios #
         if (
-            $codigo_producto == "" || $nombre_producto == "" || $precio == "" || $stock == "" 
+            $codigo_producto == "" || $nombre_producto == "" || $precio == "" || $stock == "" || $id_categoria == ""
         ) {
             $alerta = [
                 "tipo" => "simple",
@@ -532,6 +579,11 @@ if ($total > 0 && $pagina <= $numeroPaginas) {
                 "campo_nombre" => "nombre_producto",
                 "campo_marcador" => ":NombreProducto",
                 "campo_valor" => $nombre_producto
+            ],
+            [
+                "campo_nombre" => "id_categoria",
+                "campo_marcador" => ":IdCategoria",
+                "campo_valor" => $id_categoria
             ],
             [
                 "campo_nombre" => "precio",
@@ -572,6 +624,59 @@ if ($total > 0 && $pagina <= $numeroPaginas) {
 
         return json_encode($alerta);
     }
+
+
+
+    public function agregarCantidadProductControlador()
+    {
+        $id = $this->limpiarCadena($_POST['id_producto']);
+        $nuevoStock = $this->limpiarCadena($_POST['stock']);  // La cantidad adicional de stock a agregar
+    
+        // Verificando producto
+        $datos = $this->ejecutarConsulta("SELECT * FROM productos WHERE id_producto='$id'");
+        if ($datos->rowCount() <= 0) {
+            return json_encode([
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "No hemos encontrado el producto en el sistema",
+                "icono" => "error"
+            ]);
+        } else {
+            $datos = $datos->fetch();
+            $stockActual = $datos['stock'];  // Stock actual del producto
+        }
+    
+        // Actualizar el stock en la tabla de productos
+        $stockFinal = $stockActual + $nuevoStock;
+        $actualizarProducto = $this->ejecutarConsulta("UPDATE productos SET stock = '$stockFinal' WHERE id_producto='$id'");
+    
+        // Actualizar el stock en la tabla stock_almacenes para el almacén general (id_almacen = 1)
+        $datosAlmacen = $this->ejecutarConsulta("SELECT stock FROM stock_almacen WHERE id_producto='$id' AND id_almacen = 1");
+        if ($datosAlmacen->rowCount() > 0) {
+            $filaAlmacen = $datosAlmacen->fetch();
+            $stockAlmacenActual = $filaAlmacen['stock'];
+            $stockAlmacenFinal = $stockAlmacenActual + $nuevoStock;
+            $actualizarAlmacen = $this->ejecutarConsulta("UPDATE stock_almacen SET stock = '$stockAlmacenFinal' WHERE id_producto='$id' AND id_almacen = 1");
+        }
+    
+        if ($actualizarProducto && $actualizarAlmacen) {
+            return json_encode([
+                "tipo" => "recargar",
+                "titulo" => "Producto actualizado",
+                "texto" => "Los datos del producto se actualizaron correctamente",
+                "icono" => "success"
+            ]);
+        } else {
+            return json_encode([
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "No hemos podido actualizar los datos del producto, por favor intente nuevamente",
+                "icono" => "error"
+            ]);
+        }
+    }
+    
+
 
 
 

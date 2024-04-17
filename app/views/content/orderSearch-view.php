@@ -65,7 +65,7 @@
     </div>
     <?php
         // Muestra los resultados de la búsqueda
-        echo $insProduct->listarOrderControlador($url[1],15,$url[0],$_SESSION[$url[0]]);
+        echo $insProduct->listarOrderControlador($url[1],100,$url[0],$_SESSION[$url[0]]);
         }
     ?>
     

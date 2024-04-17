@@ -54,6 +54,15 @@
                 <input type="text" class="form-control" id="nombre_producto" name="nombre_producto"  value="<?php echo htmlspecialchars($datos['nombre_producto'], ENT_QUOTES, 'UTF-8'); ?>" required>
             </div>
 
+            <!-- Campo de selección para el tipo de moneda del producto -->
+            <div class="mb-3">
+                    <label for="id_categoria" class="form-label">Categorias</label>
+                    <select class="form-control" name="id_categoria" id="id_categoria" required>
+                        <option value="">Seleccione una categoria</option>
+                        <?php echo $opcionesCategorias; ?>
+                    </select>
+                </div>
+
             <!-- Campo para el precio del producto -->
             <div class="mb-3">
                 <label for="precio" class="form-label">Precio $:</label>

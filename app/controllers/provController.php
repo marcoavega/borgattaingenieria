@@ -50,17 +50,7 @@ class provController extends mainModel
             exit();
         }
 
-        # Verificando integridad de los datos #
-        if ($this->verificarDatos("[a-zA-Z0-9 ]{3,100}", $proveedor)) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "El nombre de proveedor no coincide con el formato solicitado",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
+        
         if ($this->verificarDatos("[a-zA-Z0-9 ]{3,100}", $RFC)) {
             $alerta = [
                 "tipo" => "simple",
@@ -92,27 +82,9 @@ class provController extends mainModel
             exit();
         }
 
-        if ($this->verificarDatos("[a-zA-Z0-9 ]{3,500}", $direccion)) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "La dirección del proveedor no coincide con el formato solicitado",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
+       
         
-        if ($this->verificarDatos("[a-zA-Z0-9 ]{3,500}", $contacto)) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "El contacto del proveedor no coincide con el formato solicitado",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
+       
 
         # Verificando proveedor #
         $check_proveedor = $this->ejecutarConsulta("SELECT nombre_proveedor FROM proveedores WHERE nombre_proveedor='$proveedor'");
@@ -332,29 +304,19 @@ class provController extends mainModel
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No ha llenado algun dato",
+                "texto" => "Favor de llenar todos los campos",
                 "icono" => "error"
             ];
             return json_encode($alerta);
             exit();
         }
 
-        # Verificando integridad de los datos #
-        if ($this->verificarDatos("[a-zA-Z0-9 ]{3,100}", $proveedor)) {
+       
+        if ($this->verificarDatos("[a-zA-Z0-9 ]{12,14}", $RFC)) {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
-                "texto" => "El nombre de proveedor no coincide con el formato solicitado",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
-        if ($this->verificarDatos("[a-zA-Z0-9 ]{3,100}", $RFC)) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "El nombre de proveedor no coincide con el formato solicitado",
+                "texto" => "El RFC de proveedor no coincide con el formato solicitado",
                 "icono" => "error"
             ];
             return json_encode($alerta);
@@ -370,31 +332,11 @@ class provController extends mainModel
             return json_encode($alerta);
             exit();
         }
-        if ($this->verificarDatos("[a-zA-Z0-9 ]{8,20}", $telefono)) {
+        if ($this->verificarDatos("[a-zA-Z0-9 ]{5,20}", $telefono)) {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
                 "texto" => "El teléfono de proveedor no coincide con el formato solicitado",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
-        if ($this->verificarDatos("[a-zA-Z0-9 @]{3,500}", $direccion)) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "La dirección del proveedor no coincide con el formato solicitado",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
-        if ($this->verificarDatos("[a-zA-Z0-9 ]{3,500}", $contacto)) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "El contacto del proveedor no coincide con el formato solicitado",
                 "icono" => "error"
             ];
             return json_encode($alerta);

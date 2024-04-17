@@ -22,9 +22,27 @@ if (isset($_GET['views'])) {
 <head>
     <?php require_once "./app/views/inc/head.php"; ?>
 </head>
-
 <body>
+    <style> body {
+     font-family: "Bakbak One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
 
+.card-img-top-container {
+    width: 100%; /* Ajusta el ancho al 100% del contenedor */
+    padding-top: 56.25%; /* Relación de aspecto de 16:9 */
+    position: relative;
+}
+
+.card-img-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Esto asegura que la imagen cubra el área sin deformarse */
+}</style>
     <?php
 
     // Incluyendo SVG y controladores
@@ -59,24 +77,3 @@ if (isset($_GET['views'])) {
 </body>
 
 </html>
-<?php
-/*
-$html=ob_get_clean();
-echo $html;
-
-// Incluye el archivo
-require_once "./app/views/libreriapdf/dompdf/autoload.inc.php";
-use Dompdf\Dompdf;
-$dompdf = new Dompdf();
-
-$options = $dompdf->getOptions();
-$options->set(array('isRemoteEnable' => true));
-$dompdf->setOptions($options);
-
-$dompdf->loadHtml($html);
-//$dompdf->setPaper('letter');
-$dompdf->setPaper('A4');
-$dompdf->render();
-$dompdf->stream("archivo_.pdf",array("Attachment"=>false));
-*/
-?>
