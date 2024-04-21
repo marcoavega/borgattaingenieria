@@ -43,12 +43,12 @@
         <input type="hidden" name="modulo_Inventory" value="registrar">
         <input type="hidden" name="id_producto" value="<?php echo $datos['id_producto']; ?>">
 
-        <!-- Campo para el código del producto -->
+        <!-- Campo para el código del producto 
         <div class="mb-3">
             <label for="id_producto" class="form-label">Id Producto</label>
             <input type="text" class="form-control" id="id_producto" name="id_producto" maxlength="100"
-                value="<?php echo $datos['id_producto']; ?>" required readonly>
-        </div>
+                value="<?php // echo $datos['id_producto']; ?>" required readonly>
+        </div>-->
 
         <!-- Campo para mostrar el nombre del producto -->
 <div class="mb-3">
@@ -62,7 +62,7 @@ $datos = $insLogin->seleccionarDatos2("Unico", "productos", "id_producto", $id);
 if ($datos->rowCount() > 0) {
     while ($fila = $datos->fetch(PDO::FETCH_ASSOC)) {
         echo '<div>';
-        echo '<p>Stock en ' . $fila['nombre_almacen'] . ': ' . $fila['stock'] . '</p>';
+        echo '<input type="text" class="form-control w-100" name="stock_' . htmlspecialchars($fila['nombre_almacen'], ENT_QUOTES, 'UTF-8') . '" value="Stock en ' . htmlspecialchars($fila['nombre_almacen'], ENT_QUOTES, 'UTF-8') . ': ' . htmlspecialchars($fila['stock'], ENT_QUOTES, 'UTF-8') . '" readonly>';
         echo '</div>';
     }
 } else {
@@ -72,17 +72,17 @@ if ($datos->rowCount() > 0) {
        
        <!-- Campo de selección para el almacén de origen -->
 <div class="mb-3">
-    <label for="id_almacen_origen" class="form-label">Almacén de origen</label>
+    <label for="id_almacen_origen" class="form-label">Almacén</label>
     <select class='form-control' name='id_almacen_origen' id='id_almacen_origen' required>
-        <option value="">Selecciona un almacén de origen</option>
+        <option value="">Selecciona un almacén a descontar</option>
         <?php echo $opcionesAlmacenes; ?>
     </select>
 </div>
 
 <!-- Campo para la cantidad de producto a descontar -->
 <div class="mb-3">
-    <label for="cantidad" class="form-label">Cantidad a descontar:</label>
-    <input type="number" class="form-control" id="cantidad" name="cantidad" required>
+    <label for="stock" class="form-label">Cantidad a descontar:</label>
+    <input type="number" class="form-control" id="stock" name="stock" required>
 </div>
        
 
@@ -99,3 +99,123 @@ if ($datos->rowCount() > 0) {
     }
     ?>
 </div>
+<script>
+   // Seleccionamos todos los formularios con la clase ".FormularioAjax"
+const formularios_ajax = document.querySelectorAll(".FormularioAjax");
+
+// Iteramos sobre cada formulario encontrado
+formularios_ajax.forEach(formularios => {
+
+    // Añadimos un event listener para el evento submit de cada formulario
+    formularios.addEventListener("submit",function(e){
+        
+        // Prevenimos el comportamiento por defecto del evento submit
+        e.preventDefault();
+
+        // Usamos la librería SweetAlert para mostrar un mensaje de confirmación
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Quieres realizar la acción solicitada",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, realizar',
+            cancelButtonText: 'No, cancelar'
+        }).then((result) => {
+            if (result.isConfirmed){
+                // Si el usuario confirma, recogemos los datos del formulario
+                let data = new FormData(this);
+                let method = this.getAttribute("method");
+                let action = this.getAttribute("action");
+
+                // Configuramos los headers de la petición
+                let encabezados = new Headers();
+
+                // Configuramos la petición
+                let config = {
+                    method: method,
+                    headers: encabezados,
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    body: data
+                };
+
+                // Realizamos la petición
+                fetch(action,config)
+                .then(respuesta => respuesta.json())
+                .then(respuesta =>{ 
+                    // Llamamos a la función alertas_ajax con la respuesta recibida
+                    return alertas_ajax(respuesta);
+                });
+            }
+        });
+    });
+});
+
+// Esta función muestra diferentes alertas dependiendo del tipo de alerta recibida
+function alertas_ajax(alerta){
+    if(alerta.tipo=="simple"){
+        Swal.fire({
+            icon: alerta.icono,
+            title: alerta.titulo,
+            text: alerta.texto,
+            confirmButtonText: 'Aceptar'
+        });
+    }else if(alerta.tipo=="recargar"){
+        Swal.fire({
+            icon: alerta.icono,
+            title: alerta.titulo,
+            text: alerta.texto,
+            confirmButtonText: 'Aceptar'
+        }).then((result) => {
+            if(result.isConfirmed){
+                // Si el usuario confirma, recargamos la página
+                location.reload();
+            }
+        });
+    } else if(alerta.tipo=="limpiar"){
+        Swal.fire({
+            icon: alerta.icono,
+            title: alerta.titulo,
+            text: alerta.texto,
+            confirmButtonText: 'Aceptar'
+        }).then((result) => {
+            if(result.isConfirmed){
+                // Si el usuario confirma, recargamos la página
+                location.reload();
+            }
+        });
+    }else if(alerta.tipo=="redireccionar"){
+        // Si el tipo de alerta es redireccionar, redirigimos al usuario a la url especificada
+        window.location.href=alerta.url;
+    }
+}
+
+// Seleccionamos el botón con id "btn_exit"
+let btn_exit=document.getElementById("btn_exit");
+
+// Añadimos un event listener para el evento click del botón
+btn_exit.addEventListener("click", function(e){
+    // Prevenimos el comportamiento por defecto del evento click
+    e.preventDefault();
+    
+    Swal.fire({
+        title: '¿Quieres salir del sistema?',
+        text: "La sesión actual se cerrará y saldrás del sistema",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, salir',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Si el usuario confirma, le redirigimos a la url especificada en el href del botón
+            let url=this.getAttribute("href");
+            window.location.href=url;
+        }
+    });
+});
+
+</script>

@@ -37,27 +37,82 @@ class inventoryController extends mainModel
 
     /*----------  Controlador registrar proveedor  ----------*/
     public function descontarInventarioControlador() {
+
+        
+        # Almacenando datos#
+
         $id_producto = $this->limpiarCadena($_POST['id_producto']);
         $id_almacen_origen = $this->limpiarCadena($_POST['id_almacen_origen']);
-        $cantidad = $this->limpiarCadena($_POST['cantidad']);
-        
-        $stock_actual = $this->obtenerStock($id_producto, $id_almacen_origen);
-        
-        if ($stock_actual && $stock_actual['stock'] >= $cantidad) {
-            $nuevo_stock = $stock_actual['stock'] - $cantidad;
-            $this->actualizarStock($id_producto, $id_almacen_origen, $nuevo_stock);
-             // Después de actualizar el inventario, redirigir a la página principal o a una página específica
-        header("Location: " . APP_URL);
-        exit();
+        $stock = $this->limpiarCadena($_POST['stock']);
+
+
+        // Validar que los campos no estén vacíos
+        if (empty($id_producto) || empty($id_almacen_origen) || empty($stock) ) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "No has llenado todos los campos que son obligatorios" ,
+                "icono" => "error"
+            ];
+
+            return json_encode($alerta);
         }
+        $stock_actual = $this->obtenerStock($id_producto, $id_almacen_origen);
+        if ($stock_actual && $stock_actual['stock'] >= $stock) {
+            //     $nuevo_stock = $stock_actual['stock'] - $stock;
+
+          //Restar stock del almacén de origen
+          $restarStockOrigen = "UPDATE stock_almacen SET stock = stock - $stock WHERE id_producto = $id_producto AND id_almacen = $id_almacen_origen";
+
+
+          $resultadoRestar = $this->ejecutarConsulta($restarStockOrigen);
+          if ($resultadoRestar->rowCount() == 1) {
+              $alerta = [
+                  "tipo" => "limpiar",
+                  "titulo" => "Movimiento registrado",
+                  "texto" => "El movimiento de salida se registro con exito",
+                  "icono" => "success"
+              ];
+          } else {
+  
+              $alerta = [
+                  "tipo" => "simple",
+                  "titulo" => "Ocurrió un error inesperado",
+                  "texto" => "No se pudo registrar el movimiento de salida, por favor intente nuevamente",
+                  "icono" => "error"
+              ];
+          }
+
+          return json_encode($alerta);
+
+        } else {
+  
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "No se pudo registrar el movimiento de salida, la cantidad es mayor al disponible",
+                "icono" => "error"
+            ];
+        }
+
+        return json_encode($alerta);
+
+    //    $id_producto = $this->limpiarCadena($_POST['id_producto']);
+      //  $id_almacen_origen = $this->limpiarCadena($_POST['id_almacen_origen']);
+      //  $stock = $this->limpiarCadena($_POST['stock']);
+       // $stock_actual = $this->obtenerStock($id_producto, $id_almacen_origen);
+        
+       // if ($stock_actual && $stock_actual['stock'] >= $stock) {
+       //     $nuevo_stock = $stock_actual['stock'] - $stock;
+        //    $this->actualizarStock($id_producto, $id_almacen_origen, $nuevo_stock);
+             // Después de actualizar el inventario, redirigir a la página principal o a una página específica
+       // header("Location: " . APP_URL);
+      //  exit();
+      //  }
     
         // Después de actualizar el inventario, redirigir a la página principal o a una página específica
-        header("Location: " . APP_URL);
-        exit();
-    }
-    
-    
-
-
-
+      //  header("Location: " . APP_URL);
+      //  exit();
+   }
+   
 }

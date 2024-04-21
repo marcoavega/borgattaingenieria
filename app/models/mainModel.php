@@ -282,6 +282,7 @@ class mainModel
 
 	// Método para actualizar el stock de un producto en un almacén específico
 	// Método para actualizar el stock de un producto en un almacén específico
+	/*
 public function actualizarStock($id_producto, $id_almacen, $nuevo_stock)
 {
     $consulta = "UPDATE stock_almacen SET stock = :nuevo_stock WHERE id_producto = :id_producto AND id_almacen = :id_almacen";
@@ -290,7 +291,7 @@ public function actualizarStock($id_producto, $id_almacen, $nuevo_stock)
     $stmt->bindParam(":id_producto", $id_producto);
     $stmt->bindParam(":id_almacen", $id_almacen);
     return $stmt->execute(); // Retorna true si la actualización fue exitosa, false en caso contrario
-}
+}*/
 
 
 

@@ -151,7 +151,7 @@ class movController extends mainModel
 
 
 
-        # Verificando usuario #
+        # Verificando #
         $check_inventario = $this->ejecutarConsulta("SELECT * FROM stock_almacen");
         if ($check_inventario->rowCount() <= 0) {
             $alerta = [

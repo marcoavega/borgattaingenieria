@@ -2,31 +2,54 @@
 const formularios_ajax = document.querySelectorAll(".FormularioAjax");
 
 // Iteramos sobre cada formulario encontrado
-formulario.addEventListener("submit", function(e) {
-    e.preventDefault();
-    let data = new FormData(this);
-    let action = this.getAttribute("action");
-    let method = this.getAttribute("method");
+formularios_ajax.forEach(formularios => {
 
-    fetch(action, {
-        method: method,
-        body: data
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.tipo === "success") {
-            window.location.reload();  // Recarga la página para reflejar los cambios en el stock
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: data.texto
-            });
-        }
-    })
-    .catch(error => console.error('Error:', error));
+    // Añadimos un event listener para el evento submit de cada formulario
+    formularios.addEventListener("submit",function(e){
+        
+        // Prevenimos el comportamiento por defecto del evento submit
+        e.preventDefault();
+
+        // Usamos la librería SweetAlert para mostrar un mensaje de confirmación
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Quieres realizar la acción solicitada",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, realizar',
+            cancelButtonText: 'No, cancelar'
+        }).then((result) => {
+            if (result.isConfirmed){
+                // Si el usuario confirma, recogemos los datos del formulario
+                let data = new FormData(this);
+                let method = this.getAttribute("method");
+                let action = this.getAttribute("action");
+
+                // Configuramos los headers de la petición
+                let encabezados = new Headers();
+
+                // Configuramos la petición
+                let config = {
+                    method: method,
+                    headers: encabezados,
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    body: data
+                };
+
+                // Realizamos la petición
+                fetch(action,config)
+                .then(respuesta => respuesta.json())
+                .then(respuesta =>{ 
+                    // Llamamos a la función alertas_ajax con la respuesta recibida
+                    return alertas_ajax(respuesta);
+                });
+            }
+        });
+    });
 });
-
 
 // Esta función muestra diferentes alertas dependiendo del tipo de alerta recibida
 function alertas_ajax(alerta){
@@ -49,7 +72,7 @@ function alertas_ajax(alerta){
                 location.reload();
             }
         });
-    }else if(alerta.tipo=="limpiar"){
+    } else if(alerta.tipo=="limpiar"){
         Swal.fire({
             icon: alerta.icono,
             title: alerta.titulo,
@@ -57,8 +80,8 @@ function alertas_ajax(alerta){
             confirmButtonText: 'Aceptar'
         }).then((result) => {
             if(result.isConfirmed){
-                // Si el usuario confirma, limpiamos el formulario
-                document.querySelector(".FormularioAjax").reset();
+                // Si el usuario confirma, recargamos la página
+                location.reload();
             }
         });
     }else if(alerta.tipo=="redireccionar"){
@@ -90,27 +113,5 @@ btn_exit.addEventListener("click", function(e){
             let url=this.getAttribute("href");
             window.location.href=url;
         }
-    });
-});
-
-document.querySelectorAll(".FormularioAjax").forEach(formulario => {
-    formulario.addEventListener("submit", function(e) {
-        e.preventDefault(); // Prevenir el comportamiento por defecto de enviar formulario
-        let data = new FormData(this); // Crear un FormData con los datos del formulario
-        fetch(this.getAttribute("action"), {
-            method: this.getAttribute("method"), // Método POST generalmente
-            body: data  // Datos del formulario
-        })
-        .then(response => {
-            if(response.ok) {
-                window.location.reload(); // Recargar la página si la respuesta es exitosa
-            } else {
-                throw new Error('Algo salió mal en el servidor.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error: No se pudo completar la solicitud.'); // Alerta simple si hay un error
-        });
     });
 });
