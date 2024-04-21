@@ -7,9 +7,6 @@ use app\models\mainModel;
 class searchOrdenController extends mainModel
 {
 
-
-
-	
 	/*----------  Controlador modulos de busquedas  ----------*/
 	public function modulosBusquedaControlador($modulo)
 	{

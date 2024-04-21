@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-04-2024 a las 00:47:24
+-- Tiempo de generación: 17-04-2024 a las 00:39:55
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -119,7 +119,6 @@ INSERT INTO `cpi_art_af` (`id_cpi_art_af`, `nombre`, `descripcion`) VALUES
 CREATE TABLE `detalle_orden_compra` (
   `id_detalle_orden` int(11) NOT NULL,
   `id_orden_compra` int(11) DEFAULT NULL,
-  `id_moneda` int(11) DEFAULT NULL,
   `numero_partida` int(11) DEFAULT NULL,
   `nombre_producto` varchar(1000) DEFAULT NULL,
   `cantidad` int(11) DEFAULT NULL,
@@ -132,24 +131,56 @@ CREATE TABLE `detalle_orden_compra` (
 -- Volcado de datos para la tabla `detalle_orden_compra`
 --
 
-INSERT INTO `detalle_orden_compra` (`id_detalle_orden`, `id_orden_compra`, `id_moneda`, `numero_partida`, `nombre_producto`, `cantidad`, `id_unidad`, `precio_sin_IVA`, `total`) VALUES
-(1, 1, 1, 1, 'uno', 5, 1, 20.00, 100.00),
-(3, 2, 1, 1, 'unoss', 4, 1, 25.00, 100.00),
-(4, 1, 1, 2, 'Broca serie extra larga con zanco cilíndrico, diámetro 0.1252\" 1/8 con longitudtotal de 160mm y longitud de filo de 100mm según norma BS 328 con puntacónica 118°, HSS con acabado vaporizado y hélice normal 10xD para aladradosin picado, MCA.DORMER', 5, 1, 3563.00, 17815.00),
-(5, 4, 1, 1, 'machuelo', 3, 1, 500.00, 1500.00),
-(6, 5, 1, 1, 'RETAZO DE TRAPO BLANCO (GRANDE)', 20, 2, 95.00, 1900.00),
-(7, 5, 1, 2, 'GASOLINA BLANCA', 20, 7, 90.00, 1800.00),
-(8, 5, 1, 3, 'AIP', 20, 7, 90.00, 1800.00),
-(9, 5, 1, 4, 'THINNER', 20, 7, 70.00, 1400.00),
-(10, 6, 1, 1, 'CORTADOR RECTO DE CARBURO 1/8\" 4 FL ESTANDAR', 2, 1, 280.00, 560.00),
-(11, 6, 1, 2, 'CORTADOR RECTO DE CARBURO 1/8\" 4 FL LARGO', 1, 1, 716.80, 716.80),
-(12, 6, 1, 3, 'BOQUILLA ER32 1/8\"', 2, 1, 539.00, 1078.00),
-(13, 6, 1, 4, 'BOQUILLA ER40 1/8\"', 1, 1, 580.00, 580.00),
-(14, 7, 2, 1, 'VASTAGO MITUTOYO AM GAGE Marca Mitutoyo, VASTAGO C/TUERCA\r\nD8, PARA INDICADOR.', 2, 1, 97.50, 195.00),
-(15, 7, 2, 2, '9437925KL25SW7 BROCA DE CENTROS N1', 5, 1, 6.42, 32.10),
-(16, 7, 2, 3, '3KL792579SRHG4 MACHUELO HELICOIDAL 1/8-40', 5, 1, 50.82, 254.10),
-(17, 7, 2, 4, 'ASRHG434343KLB BROCA HSS NUMERICA 37 ', 12, 1, 2.19, 26.28),
-(18, 7, 2, 5, 'R79792579SRMMS BROCA HSS NUMERICA 38 ', 12, 1, 2.19, 26.28);
+INSERT INTO `detalle_orden_compra` (`id_detalle_orden`, `id_orden_compra`, `numero_partida`, `nombre_producto`, `cantidad`, `id_unidad`, `precio_sin_IVA`, `total`) VALUES
+(1, 1, 1, 'uno', 5, 1, 20.00, 100.00),
+(3, 2, 1, 'unoss', 4, 1, 25.00, 100.00),
+(4, 1, 2, 'Broca serie extra larga con zanco cilíndrico, diámetro 0.1252\" 1/8 con longitudtotal de 160mm y longitud de filo de 100mm según norma BS 328 con puntacónica 118°, HSS con acabado vaporizado y hélice normal 10xD para aladradosin picado, MCA.DORMER', 5, 1, 3563.00, 17815.00),
+(5, 4, 1, 'machuelo', 3, 1, 500.00, 1500.00),
+(6, 5, 1, 'RETAZO DE TRAPO BLANCO (GRANDE)', 20, 2, 95.00, 1900.00),
+(7, 5, 2, 'GASOLINA BLANCA', 20, 7, 90.00, 1800.00),
+(8, 5, 3, 'AIP', 20, 7, 90.00, 1800.00),
+(9, 5, 4, 'THINNER', 20, 7, 70.00, 1400.00),
+(10, 6, 1, 'CORTADOR RECTO DE CARBURO 1/8\" 4 FL ESTANDAR', 2, 1, 280.00, 560.00),
+(11, 6, 2, 'CORTADOR RECTO DE CARBURO 1/8\" 4 FL LARGO', 1, 1, 716.80, 716.80),
+(12, 6, 3, 'BOQUILLA ER32 1/8\"', 2, 1, 539.00, 1078.00),
+(13, 6, 4, 'BOQUILLA ER40 1/8\"', 1, 1, 580.00, 580.00),
+(14, 7, 1, 'VASTAGO MITUTOYO AM GAGE Marca Mitutoyo, VASTAGO C/TUERCA\r\nD8, PARA INDICADOR.', 2, 1, 97.50, 195.00),
+(15, 7, 2, '9437925KL25SW7 BROCA DE CENTROS N1', 5, 1, 6.42, 32.10),
+(16, 7, 3, '3KL792579SRHG4 MACHUELO HELICOIDAL 1/8-40', 5, 1, 50.82, 254.10),
+(17, 7, 4, 'ASRHG434343KLB BROCA HSS NUMERICA 37 ', 12, 1, 2.19, 26.28),
+(18, 7, 5, 'R79792579SRMMS BROCA HSS NUMERICA 38 ', 12, 1, 2.19, 26.28),
+(19, 8, 1, 'FABRICACION DE HERRAMIENTAS DE CARBURO PARA CHAMFER MEDIANTE AFILADORA UNIVERSAL  A 45°', 5, 1, 1200.00, 6000.00),
+(20, 9, 1, 'M-33X Cinta de aislar 19 mm x 18 m', 5, 1, 18.97, 94.85),
+(21, 9, 2, 'DR-1/4X6TP Desarmador mango transparente', 1, 1, 29.31, 29.31),
+(22, 9, 3, 'DR-5/16X6TP Desarmador mango transparent', 1, 1, 42.24, 42.24),
+(23, 9, 4, 'DP-1/8X6 Desarmador phillips de 1/8\"', 1, 1, 33.62, 33.62),
+(24, 9, 5, 'DP-3/16X6 Desarmador phillips de 3/16\"', 1, 1, 42.24, 42.24),
+(25, 9, 6, 'DP-1/4X6 Desarmador phillips de 1/4\"', 1, 1, 50.86, 50.86),
+(26, 9, 7, 'E-8X12 Escuadra cantero profesional 8\"', 1, 1, 59.49, 59.49),
+(27, 9, 8, 'CTR-150 Cinta transparente de 48 mm x 15M', 2, 1, 50.86, 101.72),
+(28, 9, 9, 'CIN-1810N Cinchos negros de plástico en bolsa de 100 piezas', 4, 1, 14.65, 58.60),
+(29, 9, 10, 'LIME-120 Lija de esmeril grano 120', 10, 1, 11.21, 112.10),
+(30, 9, 11, 'LIME-80 Lija de esmeril grano 80', 4, 1, 12.50, 50.00),
+(31, 9, 12, 'LIMER-120 Lija de esmeril grano 120 roja', 10, 1, 13.36, 133.60),
+(32, 9, 13, 'LIMER-100 Lija de esmeril grano 100 ', 5, 1, 13.36, 66.80),
+(33, 9, 14, 'LIAG-600 Lija de agua grano 600', 7, 1, 7.33, 51.31),
+(34, 9, 15, 'LIAG-240 Lija de agua grano 240', 6, 1, 7.33, 43.98),
+(35, 9, 16, 'LIAG-180 Lija de agua grano 180', 8, 1, 7.33, 58.64),
+(37, 10, 1, 'Extensión reforzada aterrizada 8 m 3x14 AWG, Volteck', 1, 1, 219.82, 219.82),
+(38, 10, 2, 'Extensión reforzada aterrizada 4 m 3x14 AWG, Volteck', 1, 1, 107.75, 107.75),
+(39, 10, 3, 'Pinza de presión 9\", punta larga, Truper', 1, 1, 139.65, 139.65),
+(40, 10, 4, 'Lima redonda muza 8\", Truper', 2, 1, 38.79, 77.58),
+(41, 10, 5, 'Lima redonda muza 10\", Truper', 1, 1, 53.44, 53.44),
+(42, 10, 6, 'Lima media caña muzas 8\", Truper', 1, 1, 62.06, 62.06),
+(43, 10, 7, 'Lima media caña muzas 10\", Truper', 1, 1, 111.20, 111.20),
+(44, 10, 8, 'Cinta de empaque 48 mm x 150 m transparente, Pretul', 6, 1, 37.93, 227.58),
+(45, 10, 9, 'Pinza punta recta 7\" para abrir anillos, mango de PVC', 1, 1, 171.55, 171.55),
+(46, 10, 10, 'Lija de agua grano 240 de carburo de silicio, Truper', 6, 1, 7.32, 43.92),
+(47, 10, 11, 'Lija de agua grano 120 de carburo de silicio, Truper', 5, 1, 7.75, 38.75),
+(48, 10, 12, 'Lija de agua grano 280 de carburo de silicio, Truper', 4, 1, 7.32, 29.28),
+(49, 11, 1, 'LIGAS DE NITRILO DE 3/32 FABRICACION ESPECIAL', 1000, 1, 5.50, 5500.00),
+(50, 12, 1, 'MACHUELO HELICOIDAL 3/8\" X 24 ', 2, 1, 680.00, 1360.00),
+(51, 13, 112116, 'Fresa de punta esférica, 2 canales, diámetro corte 1/16\", longitud de corte 1/4\", longitud total 1-1/2\", radio completo 1/32\", zanco cilíndrico 1/8\", metal duro en acabado brillante, hélice 30°, fresado en copia en acero, inoxidable, cobre, no ferrosos, MCA. DORMER.', 5, 1, 19.50, 97.50);
 
 -- --------------------------------------------------------
 
@@ -279,7 +310,22 @@ INSERT INTO `movimientos` (`id_movimiento`, `id_producto`, `id_almacen_origen`, 
 (90, 404, 1, 2, 1, 9, 'Se requiere en area', '2024-04-05'),
 (91, 347, 1, 2, 1, 10, 'SE REQUIERE EN EL AREA', '2024-04-05'),
 (92, 191, 1, 2, 1, 8, 'Se utiliza en area', '2024-04-07'),
-(93, 369, 1, 2, 1, 8, 'se requiere en maquinados', '2024-04-09');
+(93, 369, 1, 2, 1, 8, 'se requiere en maquinados', '2024-04-09'),
+(94, 285, 1, 2, 1, 8, 'Lo solicita Jonathan', '2024-04-12'),
+(95, 458, 1, 3, 1, 1, 'Solicitada en el area de ensamble', '2024-04-15'),
+(96, 450, 1, 2, 1, 8, 'REEMPLAZO DE GUANTES', '2024-04-15'),
+(97, 352, 3, 1, 36, 5, 'CONTEO DE INVENTARIO', '2024-04-15'),
+(98, 352, 2, 1, 4, 5, 'CONTEO DE INVENTARIO', '2024-04-15'),
+(99, 183, 1, 2, 1, 8, 'SE ENTREGA PARA USO', '2024-04-16'),
+(100, 482, 1, 3, 1, 1, 'SE REQUIERE EN EL AREA DE ENSAMBLE', '2024-04-16'),
+(101, 264, 1, 3, 42, 1, 'SE REQUIEREN PARA ENSAMBLE DE LOS 5 ARTICULADORES DE ABRIL', '2024-04-16'),
+(102, 483, 1, 3, 19, 1, 'SE DAN A ENSAMBLE UNA SE UTILIZO YA EN EL EQUIPO PARA MERCADOTECNIA', '2024-04-16'),
+(103, 485, 1, 2, 1, 9, 'SE ENTREGO PARA SOLDAR', '2024-04-16'),
+(104, 486, 1, 2, 1, 9, 'SE ENTREGA PARA SOLDAR', '2024-04-16'),
+(105, 487, 1, 3, 20, 1, 'SE QUEDAN EN EL AREA DE ENSAMBLE', '2024-04-16'),
+(106, 295, 1, 3, 1, 1, 'SE REQUIERE EN EL AREA', '2024-04-16'),
+(107, 367, 1, 2, 2, 9, 'SE NECESITA EN EL AREA', '2024-04-16'),
+(108, 259, 1, 3, 82, 1, 'PARA ARMADO DE 20 ARTICULADORES', '2024-04-16');
 
 -- --------------------------------------------------------
 
@@ -291,21 +337,28 @@ CREATE TABLE `ordenes_compra` (
   `id_orden_compra` int(11) NOT NULL,
   `numero_orden` varchar(20) DEFAULT NULL,
   `fecha` date DEFAULT current_timestamp(),
-  `id_proveedor` int(11) DEFAULT NULL
+  `id_proveedor` int(11) DEFAULT NULL,
+  `id_moneda` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
 
 --
 -- Volcado de datos para la tabla `ordenes_compra`
 --
 
-INSERT INTO `ordenes_compra` (`id_orden_compra`, `numero_orden`, `fecha`, `id_proveedor`) VALUES
-(1, 'JJHJ', '2024-02-12', 4),
-(2, 'ROC-001', '2024-02-14', 2),
-(3, 'ROC-002', '2024-02-16', 2),
-(4, 'ROC-003', '2024-03-20', 2),
-(5, 'ROC-004', '2024-04-03', 16),
-(6, 'ROC-047', '2024-04-03', 2),
-(7, 'ROC-048', '2024-04-11', 11);
+INSERT INTO `ordenes_compra` (`id_orden_compra`, `numero_orden`, `fecha`, `id_proveedor`, `id_moneda`) VALUES
+(1, 'JJHJ', '2024-02-12', 4, 1),
+(2, 'ROC-001', '2024-02-14', 2, 1),
+(3, 'ROC-002', '2024-02-16', 2, 1),
+(4, 'ROC-003', '2024-03-20', 2, 1),
+(5, 'ROC-004', '2024-04-03', 16, 1),
+(6, 'ROC-047', '2024-04-03', 2, 1),
+(7, 'ROC-048', '2024-04-11', 11, 2),
+(8, 'ROC-049', '2024-04-12', 18, 1),
+(9, 'ROC-050', '2024-04-15', 17, 1),
+(10, 'ROC-051', '2024-04-15', 17, 1),
+(11, 'ROC-052', '2024-04-16', 23, 1),
+(12, 'ROC-053', '2024-04-16', 2, 1),
+(13, 'ROC-054', '2024-04-16', 11, 2);
 
 -- --------------------------------------------------------
 
@@ -466,7 +519,7 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (180, 'H-0089', 'Lima triangular de uso regular 5\"', 1.00, 1, '2024-01-08 00:00:00', 1, 1, 1, 1, '6525bfc39a576_IMG_20231010_140110_037.jpg'),
 (181, 'H-0090', 'Lima plana 5\"', 1.00, 1, '2024-01-08 00:00:00', 1, 2, 1, 1, '6525c0e41ba0b_IMG_20231010_140231_563.jpg'),
 (182, 'H-0091', 'Bomba desoldadora Extractor', 1.00, 1, '2024-01-08 00:00:00', 1, 2, 1, 1, '6525c13eddb97_IMG_20231010_140308_697.jpg'),
-(183, 'H-0092', 'Maneral ajustable 1/16\" X 1/4\"', 1.00, 1, '2024-01-08 00:00:00', 1, 2, 1, 1, '6525c1d3111fa_IMG_20231010_140321_313.jpg'),
+(183, 'H-0092', 'Maneral ajustable 1/16\" X 1/4\"', 1.00, 0, '2024-01-08 00:00:00', 1, 2, 1, 1, '6525c1d3111fa_IMG_20231010_140321_313.jpg'),
 (184, 'H-0093', 'Lima bastarda de media caña 5\"', 1.00, 1, '2024-01-08 00:00:00', 1, 2, 1, 1, '6525c259c5ab7_IMG_20231010_140403_929.jpg'),
 (185, 'H-0094', 'Broca para concreto 1/4\" X 12', 85.00, 0, '2024-01-08 00:00:00', 1, 2, 1, 1, '6525c2e3e549b_IMG_20231010_140424_912.jpg'),
 (186, 'H-0095', 'Segueta Diente fino', 1.00, 1, '2024-01-08 00:00:00', 1, 2, 1, 1, '6525c36f1b8b4_IMG_20231010_140447_425.jpg'),
@@ -522,22 +575,22 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (241, 'I-0036', 'Gas butano Gas butano Pretul', 1.00, 2, '2024-01-08 00:00:00', 5, 2, 1, 1, '6536f76a9dc4b_IMG_20231010_160737_064.jpg'),
 (242, 'I-0037', 'WD40 WD40', 1.00, 1, '2024-01-08 00:00:00', 5, 2, 1, 1, '6536f79498c77_IMG_20231010_160757_880.jpg'),
 (243, 'MPM-001', 'Barra redonda INOX 1/8\" X 1.20cm Barra redonda INOX 1/8\" X 1.20cm', 80.00, 5, '2024-01-08 00:00:00', 6, 1, 1, 1, '6536f804ad445_IMG-20231016-WA0001.jpg'),
-(245, 'MARC001-5B', 'Tornillo mesa incisal ', 20.00, 20, '2024-01-08 00:00:00', 8, 3, 1, 1, '653ad8eb74bfc_IMG_20231010_16081.jpg'),
+(245, 'MARC001-5B', 'TORNILLO PARA MESA INCISAL', 20.00, 20, '2024-01-08 00:00:00', 9, 3, 1, 1, '653ad8eb74bfc_IMG_20231010_16081.jpg'),
 (246, 'I-0038', 'Bolsas para basura. Bolsas para basura, para desperdicio de maquinado.', 50.00, 10, '2024-01-08 00:00:00', 2, 4, 1, 1, '653ad8eb74bfc_IMG_20231010_160813_434.jpg'),
-(247, 'MARC001-5Ñ', 'Cóndilo Cóndilo sin pulir.', 20.00, 48, '2024-01-08 00:00:00', 8, 3, 1, 1, '653ada08abb5c_condilo.jpg'),
-(248, 'MARC001-4J', 'Tornillo para elastómero Tornillo para elastómero sin pulir.', 20.00, 0, '2024-01-08 00:00:00', 8, 3, 1, 1, '653ade70bc6c0_dhjasdkjadljAFKADADKADLKahjkdahdkahd12651.jpg'),
+(247, 'MARC001-5Ñ', 'CONDILO', 20.00, 0, '2024-01-08 00:00:00', 9, 3, 1, 1, '653ada08abb5c_condilo.jpg'),
+(248, 'MARC001-4J', 'PERNO PARA LIGA DE CONTRACCION', 20.00, 0, '2024-01-08 00:00:00', 9, 3, 1, 1, '653ade70bc6c0_dhjasdkjadljAFKADADKADLKahjkdahdkahd12651.png'),
 (253, 'H-0134', 'Boquilla ER25 1/2\" ER25 1/2\"', 532.50, 2, '2024-01-08 00:00:00', 3, 2, 1, 1, '20231027_162509.jpg'),
 (254, 'H-0135', 'Cortador 5/8\" HSS 5/8\" HSS', 1032.40, 0, '2024-01-08 00:00:00', 3, 2, 1, 1, '20231027_162528.jpg'),
 (255, 'H-0136', 'Broca 28 Broca 28', 50.75, 3, '2024-01-08 00:00:00', 3, 2, 1, 1, '20231027_162546.jpg'),
 (256, 'H-0137', 'Broca 29 Broca 29', 50.75, 3, '2024-01-08 00:00:00', 3, 2, 1, 1, '20231027_162601.jpg'),
 (257, 'H-0138', 'Broca 30 Broca 30', 50.75, 0, '2024-01-08 00:00:00', 3, 2, 1, 1, '20231027_162608.jpg'),
 (258, 'H-0139', 'Broca para metal 7/32\" Broca para metal 7/32\"', 80.75, 5, '2024-01-08 00:00:00', 3, 2, 1, 1, 'IMG_20231030_132125_501_hdr.jpg'),
-(259, 'MARC001-5X', 'Porta platina Porta platina MARC001-5X ', 40.00, 44, '2024-01-08 00:00:00', 8, 3, 1, 1, 'IMG_20231031_085206_665_hdr.jpg'),
-(260, 'MARC001-5Q', 'Tornillo para varilla de soporte Tornillo para varilla de soporte MARC001-5Q', 8.00, 20, '2024-01-08 00:00:00', 8, 3, 1, 1, 'IMG_20231031_085129_359_hdr.jpg'),
-(261, 'MARC001-6D', 'Tornillo para retención de base superior. Tornillo para retención de base superior. (TORNILLO SUJECION 3) MARC001-6D', 8.00, 27, '2024-01-08 00:00:00', 8, 3, 1, 1, 'IMG_20231031_085117_602_hdr.jpg'),
-(262, 'MARC001-4Ñ', 'VARILLA DE SOPORTE VARILLA DE SOPORTE MARC001-4ñ', 40.00, 0, '2024-01-08 00:00:00', 8, 3, 1, 1, 'IMG_20231031_085158_182_hdr.jpg'),
-(263, 'MARC001-4W', 'Perno 4 sujecion nivel Tornillo para varilla niveladora (área de nivel de altura)', 35.00, 0, '2024-01-08 00:00:00', 8, 3, 1, 1, 'IMG_20231031_085140_134_hdr.jpg'),
-(264, 'MARC001-5C', 'Pernos para sujeción de porta platina Pernos para sujeción de porta platina, MARC001-5C', 10.00, 0, '2024-01-08 00:00:00', 9, 3, 1, 1, 'pernos.jpg'),
+(259, 'MARC001-5X', 'PORTA PLATINA', 40.00, 74, '2024-01-08 00:00:00', 9, 3, 1, 1, 'IMG_20231031_085206_665_hdr.jpg'),
+(260, 'MARC001-5Q', 'TORNILLO DE FIJACION TORNILLO 1', 8.00, 0, '2024-01-08 00:00:00', 9, 3, 1, 1, 'IMG_20231031_085129_359_hdr.jpg'),
+(261, 'MARC001-6D', 'TORNILLO SUJECION 3', 8.00, 0, '2024-01-08 00:00:00', 9, 3, 1, 1, 'IMG_20231031_085117_602_hdr.jpg'),
+(262, 'MARC001-4Ñ', 'VARILLA DE SOPORTE', 40.00, 0, '2024-01-08 00:00:00', 9, 3, 1, 1, 'IMG_20231031_085158_182_hdr.jpg'),
+(263, 'MARC001-4W', 'PERNO 4 SUJECION NIVEL', 35.00, 0, '2024-01-08 00:00:00', 9, 3, 1, 1, 'IMG_20231031_085140_134_hdr.jpg'),
+(264, 'MARC001-5C', 'PERNO DE POSICION (3/16\" x .470\")', 10.00, 106, '2024-01-08 00:00:00', 9, 3, 1, 1, 'pernos.jpg'),
 (265, 'I-0039', 'Kola loka Pegamento kola loka', 20.00, 10, '2024-01-08 00:00:00', 11, 4, 1, 1, 'IMG_20231101_080204_317_hdr.jpg'),
 (266, 'I-0040', 'Disco para esmeriladora angular para corte de metal 4 1/2\" Disco para esmeriladora angular para corte de metal 4 1/2\"  marca maxtool', 50.00, 3, '2024-01-08 00:00:00', 11, 4, 1, 1, 'IMG_20231101_120033_192_hdr.jpg'),
 (267, 'P-0001', 'Hojas Blancas paquete 500 hojas Hojas Blancas paquete 500 hojas', 1.00, 3, '2024-01-08 00:00:00', 6, 5, 1, 1, 'IMG_20231108_124600_652_hdr.jpg'),
@@ -558,7 +611,7 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (282, 'P-0016', 'Bolígrafo azor punto fino color rojo Bolígrafo azor punto fino color rojo', 1.00, 6, '2024-01-08 00:00:00', 6, 5, 1, 1, 'IMG_20231108_131146_164_hdr.jpg'),
 (283, 'P-0017', 'Bolígrafo Azor punto fino color azul Bolígrafo Azor punto fino color azul', 1.00, 6, '2024-01-08 00:00:00', 6, 5, 1, 1, 'IMG_20231108_131236_084_hdr.jpg'),
 (284, 'P-0018', 'Marcador Esterbrook negro Marcador Esterbrook negro', 28.12, 4, '2024-01-08 00:00:00', 6, 5, 1, 1, 'IMG_20231108_131330_455_hdr.jpg'),
-(285, 'P-0019', 'Marcador Esterbrook color azul Marcador Esterbrook color azul', 28.12, 4, '2024-01-08 00:00:00', 6, 5, 1, 1, 'IMG_20231108_131521_459_hdr.jpg'),
+(285, 'P-0019', 'Marcador Esterbrook color azul Marcador Esterbrook color azul', 28.12, 3, '2024-01-08 00:00:00', 4, 5, 1, 1, 'IMG_20231108_131521_459_hdr.jpg'),
 (286, 'P-0020', 'Marcador Esterbrook color rojo Marcador Esterbrook color rojo', 28.12, 2, '2024-01-08 00:00:00', 6, 5, 1, 1, 'IMG_20231108_132237_713_hdr.jpg'),
 (287, 'P-0021', 'Boligrafo BIC color negro punto fino Boligrafo BIC color negro punto fino', 1.00, 4, '2024-01-08 00:00:00', 6, 5, 1, 1, 'IMG_20231108_131634_257_hdr.jpg'),
 (288, 'P-0022', 'Bolígrafo BIC color negro punto mediano Bolígrafo BIC color negro punto mediano', 1.00, 5, '2024-01-08 00:00:00', 6, 5, 1, 1, 'IMG_20231108_131711_565_hdr.jpg'),
@@ -579,11 +632,11 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (303, 'H-0147', 'Broca HSS #20 Cleveland Broca HSS #20 Cleveland', 50.75, 5, '2024-01-08 00:00:00', 3, 2, 1, 1, 'IMG20231110133410.jpg'),
 (304, 'H-0148', 'Cortador vertical de HSS 4F 1/8\" CLEV Cortador vertical de HSS 4F 1/8\" CLEV', 340.75, 0, '2024-01-08 00:00:00', 3, 2, 1, 1, 'IMG20231110133343.jpg'),
 (305, 'I-0041', 'Plasti Loka Plasti Loka', 25.00, 2, '2024-01-08 00:00:00', 11, 4, 1, 1, 'IMG20231114083449.jpg'),
-(306, 'MARC001-6M', 'Tornillo de sujeción 2, (tornillo para Portaplatina y base de calibración. Tornillo de sujeción 2, (tornillo para Portaplatina y base de calibración.', 10.00, 40, '2024-01-08 00:00:00', 8, 3, 1, 1, 'IMG_20231003_085415_568_hdr.jpg'),
-(307, 'MARC001-6G', 'Soporte para pantalla central Soporte para pantalla central', 25.00, 31, '2024-01-08 00:00:00', 8, 3, 1, 1, 'IMG_20231027_075910_962_hdr.jpg'),
-(308, 'MARC001-5J', 'Pantalla de Registro Derecha Pantalla de Registro Derecha', 15.00, 34, '2024-01-08 00:00:00', 8, 3, 1, 1, 'IMG_20231010_075948_466.jpg'),
-(309, 'MARC001-5H', 'Pantalla de registro izquierda Pantalla de registro izquierda', 15.00, 34, '2024-01-08 00:00:00', 8, 3, 1, 1, 'pantallas derechas.jpg'),
-(310, 'MARC001-5A', 'Mesa Incisal Mesa Incisal', 25.00, 20, '2024-01-08 00:00:00', 8, 3, 1, 1, 'IMG_20230913_083850_991_hdr.jpg'),
+(306, 'MARC001-6M', 'TORNILLO SUJECION 2, (TORNILLO PARA PORTA PLATINA Y BASE DE CALIBRACION).', 10.00, 0, '2024-01-08 00:00:00', 9, 3, 1, 1, 'IMG_20231003_085415_568_hdr.jpg'),
+(307, 'MARC001-6G', 'SOPORTE DE PANTALLA CENTRAL', 25.00, 0, '2024-01-08 00:00:00', 9, 3, 1, 1, 'IMG_20231027_075910_962_hdr.jpg'),
+(308, 'MARC001-5J', 'PANTALLA DE REGISTRO DERECHA', 15.00, 0, '2024-01-08 00:00:00', 9, 3, 1, 1, 'IMG_20231010_075948_466.jpg'),
+(309, 'MARC001-5H', 'PANTALLA DE REGISTRO IZQUIERDA', 15.00, 0, '2024-01-08 00:00:00', 9, 3, 1, 1, 'pantallas derechas.jpg'),
+(310, 'MARC001-5A', 'MESA INCISAL', 25.00, 0, '2024-01-08 00:00:00', 9, 3, 1, 1, 'IMG_20230913_083850_991_hdr.jpg'),
 (311, 'MARC001-5T', 'Varilla para Sujeción Central Varilla para Sujeción Central', 25.00, 19, '2024-01-08 00:00:00', 9, 3, 1, 1, 'varillacentral.jpg'),
 (312, 'S/C', '', 0.00, 100, '2024-01-08 00:00:00', 1, 6, 1, 1, 'IMG20231122153955.jpg'),
 (313, 'I-0042', 'Gasolina Blanca Gasolina Blanca ', 90.00, 20, '2024-01-08 00:00:00', 2, 7, 1, 1, 'IMG20231114130100.jpg'),
@@ -618,7 +671,7 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (347, 'H-0167', 'RIMA HSS 3/16\"', 913.50, 0, '2024-01-08 00:00:00', 3, 2, 1, 1, 'IMG20240102134304.jpg'),
 (350, 'MARC001-6F', 'PERNO PARA PANTALLA CENTRAL DE 1 1/2\" x 1/4\"', 10.00, 68, '2024-01-08 00:00:00', 9, 3, 1, 1, 'PERNO_PARA_PANTALLA_46.jpg'),
 (351, 'MARC001-6N', 'PERNO 2 DE PANTALLA CENTRAL DE 1 1/4\" x 3/16\"', 10.00, 19, '2024-01-08 00:00:00', 9, 4, 1, 1, 'PERNO_2_DE_PANTALLA_CENTRAL_DE_1_1_4_x_3_16_63.jpg'),
-(352, 'MARC001-5W', 'PERNO 2 PARA PANTALLA DERECHA O IZQUIERDA DE 1\" x 5/16\"', 10.00, 36, '2024-01-08 00:00:00', 9, 4, 1, 1, 'PERNO_2_PARA_PANTALLA_DERECHA_O_IZQUIERDA_DE_1_pulgada_x_5-16_pulgadas_89.jpg'),
+(352, 'MARC001-5W', 'PERNO 2 PARA PANTALLA DERECHA O IZQUIERDA DE 1\" x 5/16\"', 8.21, 60, '2024-01-08 00:00:00', 9, 4, 1, 1, 'PERNO_2_PARA_PANTALLA_DERECHA_O_IZQUIERDA_DE_1_pulgada_x_5-16_pulgadas_89.jpg'),
 (353, 'MARC001-4X', 'IMAN DE NEODIMIO CUADRADO DE 15X15X3MM', 14.09, 96, '2024-01-08 00:00:00', 9, 4, 1, 1, 'IMAN_DE_NEODIMIO_DE_15X15X3MM_96.jpg'),
 (354, 'MARC001-5D', 'BASE INFERIOR', 116.17, 21, '2024-01-08 00:00:00', 8, 3, 1, 1, 'BASE_INFERIOR_32.png'),
 (355, 'MARC001-6H', 'PANTALLA CENTRAL', 113.18, 21, '2024-01-08 00:00:00', 8, 3, 1, 1, 'PANTALLA_CENTRAL_28.png'),
@@ -644,7 +697,7 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (376, 'MARC001-5K', 'VARILLA DE NIVEL', 4.63, 16, '2024-01-18 00:00:00', 8, 3, 1, 1, 'VARILLA_DE_NIVEL_18.png'),
 (377, 'MARC001-5Y', 'BASE COLUMNA DE CALIBRACION', 158.50, 21, '2024-01-18 00:00:00', 8, 3, 1, 1, 'BASE_COLUMNA_DE_CALIBRACION_97.png'),
 (378, 'MARC001-5G', 'BASE SUPERIOR CPI', 258.06, 21, '2024-01-23 00:00:00', 8, 3, 1, 1, 'BASE_SUPERIOR_CPI_10.png'),
-(379, 'MARC001-5C', 'PERNO DE POSICION', 10.00, 47, '2024-01-24 00:00:00', 8, 3, 1, 1, 'PERNO_DE_POSICION_79.png'),
+(379, 'MARC001-4A', 'MARCO PARA ANALOGO', 10.00, 0, '2024-01-24 00:00:00', 9, 3, 1, 1, 'PERNO_DE_POSICION_79.png'),
 (380, 'H-0178', 'SET DE BOQUILLAS ER 32 ORION', 233.50, 1, '2024-01-24 00:00:00', 3, 11, 1, 2, 'SET_DE_BOQUILLAS_ER_32_ORION_60.jpg'),
 (381, 'H-0179', 'CONO CAT 40 A ER16, PROYECCIÓN DE 101.6mm, MCA. SANDVIK', 149.90, 3, '2024-01-24 00:00:00', 3, 11, 1, 2, 'CONO_CAT_40_A_ER16,_PROYECCIÓN_DE_101.6mm,_MCA._SANDVIK_77.jpg'),
 (382, 'H-0180', 'LLAVE PARA TUERCA CONO CAT 40 A ER16, MCA. Sandvik', 27.40, 1, '2024-01-24 00:00:00', 3, 11, 1, 2, 'LLAVE_PARA_TUERCA_CONO_CAT_40_A_ER16,_MCA._Sandvik_4.png'),
@@ -687,10 +740,10 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (420, 'H-0210', 'BROCA DE CENTROS 3mm, EXTRA LARGA, ACERO AL COBALTO (HSS+E), MCA. GARANT. TECNOLOGIA ALEMANA.', 20.50, 2, '2024-03-19 13:48:03', 3, 11, 1, 2, 'BROCA_DE_CENTROS_3mm,_EXTRA_LARGA,_ACERO_AL_COBALTO_(HSS+E),_MCA._GARANT._TECNOLOGIA_ALEMANA._41.jpg'),
 (421, 'MARC001-6J', 'TORNILLO PARA PANTALLA CENTRAL (3/16)', 5.00, 25, '2024-03-21 14:49:06', 8, 13, 1, 1, 'TORNILLO_PARA_PANTALLA_CENTRAL_3_16_93.jpg'),
 (422, 'MARC001-6E', 'OPRESOR 1/4\"', 4.00, 101, '2024-03-21 14:54:37', 8, 13, 1, 1, 'OPRESOR_14_41.jpg'),
-(423, 'MARC001-8C', 'ORING PARA TRAVESAÑO, PERNOS', 2.50, 128, '2024-03-21 15:28:26', 8, 13, 1, 1, 'ORING_PARA_TRAVESAÑO,_PERNOS_5.jpg');
-INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `precio`, `stock`, `fecha_registro`, `id_categoria`, `id_proveedor`, `id_unidad`, `id_moneda`, `url_imagen`) VALUES
+(423, 'MARC001-8C', 'ORING PARA TRAVESAÑO, PERNOS', 2.50, 128, '2024-03-21 15:28:26', 8, 13, 1, 1, 'ORING_PARA_TRAVESAÑO,_PERNOS_5.jpg'),
 (424, 'I-0053', 'MOCHILA PARA ARTICULADOR', 400.00, 152, '2024-03-22 14:52:12', 8, 4, 1, 1, 'MOCHILA_PARA_ARTICULADOR_93.jpg'),
-(425, 'pru-001', 'prueba', 10.00, 2, '2024-03-29 23:14:07', 10, 4, 1, 1, 'prueba_93.png'),
+(425, 'pru-001', 'prueba', 10.00, 2, '2024-03-29 23:14:07', 10, 4, 1, 1, 'prueba_93.png');
+INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `precio`, `stock`, `fecha_registro`, `id_categoria`, `id_proveedor`, `id_unidad`, `id_moneda`, `url_imagen`) VALUES
 (426, 'H-0211', 'Escariador manual con cuchillas de hélice lenta a izquierda, diámetro 4.76mm (3/16\") longitud total 87mm, longitud de cuchilla de 44mm, Para escariar agujeros tolerancia H7, HSS DOMER', 45.00, 1, '2024-04-01 12:27:17', 3, 11, 1, 2, 'Escariador_manual_con_cuchillas_de_h_lice_lenta_a_izquierda_di_metro_4_76mm_3_16_longitud_total_87mm_longitud_de_cuchilla_de_44mm_Para_escariar_agujeros_tolerancia_H7_HSS_DOMER_11.jpg'),
 (427, 'H-0212', 'PRENSA ESQUINERA DE ALUMINIO 3\"', 233.80, 2, '2024-04-01 16:25:27', 1, 2, 1, 1, 'PRENSA_ESQUINERA_DE_ALUMINIO_3__60.jpg'),
 (428, 'H-0213', 'LLAVE TORX T9 BANDERA', 105.00, 2, '2024-04-01 16:27:28', 1, 2, 1, 1, 'LLAVE_TORX_T9_BANDERA_39.jpg'),
@@ -716,7 +769,47 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (448, 'IC-0003', 'GU-121P Guante de nylon recubierto de nitrilo medianos', 28.45, 1, '2024-04-11 16:14:24', 2, 17, 8, 1, 'GU_121P_Guante_de_nylon_recubierto_de_nitrilo_medianos_57.jpg'),
 (449, 'CI-0004', 'GU-122P Guante de nylon recubierto de nitrilo chicos', 28.45, 1, '2024-04-11 16:15:38', 2, 17, 8, 1, 'GU_122P_Guante_de_nylon_recubierto_de_nitrilo_chicos_68.jpg'),
 (450, 'CI-0005', 'GU-113P Guante de nylon recubierto de poliuretano medianos', 25.00, 5, '2024-04-11 16:18:34', 2, 17, 8, 1, 'GU_113P_Guante_de_nylon_recubierto_de_poliuretano_medianos_57.jpg'),
-(451, 'CI-0006', 'GU-112P Guante de nylon recubierto de poliuretano grandes', 25.00, 5, '2024-04-11 16:22:39', 2, 17, 8, 1, 'GU_112P_Guante_de_nylon_recubierto_de_poliuretano_grandes_86.jpg');
+(451, 'CI-0006', 'GU-112P Guante de nylon recubierto de poliuretano grandes', 25.00, 5, '2024-04-11 16:22:39', 2, 17, 8, 1, 'GU_112P_Guante_de_nylon_recubierto_de_poliuretano_grandes_86.jpg'),
+(452, 'IC-0007', 'M-33X Cinta de aislar 19 mm x 18 m', 18.97, 5, '2024-04-12 14:52:57', 2, 17, 1, 1, 'M_33X_Cinta_de_aislar_19_mm_x_18_m_6.jpg'),
+(453, 'H-0227', 'DR-1/4X6TP Desarmador Plano mango transparente 1/4\" X 6\"', 29.31, 1, '2024-04-12 15:00:03', 1, 17, 1, 1, 'DR_1_4X6TP_Desarmador_Plano_mango_transparente_1_4_X_6__12.jpg'),
+(454, 'H-0228', 'DR-5/16X6TP Desarmador plano mango transparente 5/16\" x 6\" ', 42.24, 1, '2024-04-12 15:02:16', 1, 17, 1, 1, 'DR_5_16X6TP_Desarmador_plano_mango_transparente_5_16_x_6__39.jpg'),
+(455, 'H-0229', 'DP-1/8X6 Desarmador phillips de 1/8\" x 6\"', 33.62, 1, '2024-04-12 15:03:40', 1, 17, 1, 1, 'DP_1_8X6_Desarmador_phillips_de_1_8_x_6__0.jpg'),
+(456, 'H-0230', 'DP-3/16X6 Desarmador phillips de 3/16\" x 6\"', 42.24, 1, '2024-04-12 15:05:06', 1, 17, 1, 1, 'DP_3_16X6_Desarmador_phillips_de_3_16_x_6__54.jpg'),
+(457, 'H-0231', 'DP-1/4X6 Desarmador phillips de 1/4\" X 6\"', 50.86, 1, '2024-04-12 15:06:48', 1, 17, 1, 1, 'DP_1_4X6_Desarmador_phillips_de_1_4_X_6__63.jpg'),
+(458, 'H-0232', 'E-8X12 Escuadra cantero profesional 8\" x 12\" ', 59.49, 1, '2024-04-12 15:08:45', 1, 17, 1, 1, 'E_8X12_Escuadra_cantero_profesional_8_x_12__3.jpg'),
+(459, 'IC-0008', 'CTR-150 Cinta transparente de 48 mm x 15M', 50.86, 2, '2024-04-15 10:15:12', 2, 17, 1, 1, 'CTR_150_Cinta_transparente_de_48_mm_x_15M_17.jpg'),
+(460, 'IC-0009', 'CIN-1810N Cinchos negros de plástico de 100mm x 2.5mm paquete de 100 cinchos', 14.65, 4, '2024-04-15 10:21:33', 2, 17, 1, 1, 'CIN_1810N_Cinchos_negros_de_pl_stico_de_100mm_x_2_5mm_paquete_de_100_cinchos_97.jpg'),
+(461, 'IC-0010', 'LIME-120 Lija de esmeril grano 120', 11.21, 10, '2024-04-15 10:25:29', 2, 17, 1, 1, 'LIME_120_Lija_de_esmeril_grano_120_12.jpg'),
+(462, 'IC-0011', 'LIME-80 Lija de esmeril grano 80', 12.50, 4, '2024-04-15 10:28:02', 2, 17, 1, 1, 'LIME_80_Lija_de_esmeril_grano_80_46.jpg'),
+(463, 'IC-0012', 'LIMER-120 Lija de esmeril grano 120 roja', 13.36, 11, '2024-04-15 10:30:05', 2, 17, 1, 1, 'LIMER_120_Lija_de_esmeril_grano_120_roja_1.jpg'),
+(464, 'IC-0013', 'LIMER-100 Lija de esmeril grano 100', 13.36, 5, '2024-04-15 10:33:48', 2, 17, 1, 1, 'LIMER_100_Lija_de_esmeril_grano_100_36.jpg'),
+(465, 'IC-0014', 'LIAG-600 Lija de agua grano 600', 7.33, 7, '2024-04-15 10:35:17', 2, 17, 1, 1, 'LIAG_600_Lija_de_agua_grano_600_4.jpg'),
+(466, 'IC-0015', 'LIAG-240 Lija de agua grano 240', 7.33, 8, '2024-04-15 10:37:38', 2, 17, 1, 1, 'LIAG_240_Lija_de_agua_grano_240_36.jpg'),
+(467, 'IC-0016', 'LIAG-180 Lija de agua grano 180', 7.33, 8, '2024-04-15 10:39:19', 2, 17, 1, 1, 'LIAG_180_Lija_de_agua_grano_180_29.jpg'),
+(468, 'IC-0017', 'LIJA DE AGUA 120', 7.33, 2, '2024-04-15 10:42:04', 2, 17, 1, 1, 'LIJA_DE_AGUA_120_80.jpg'),
+(469, 'IC-0018', 'LIJA DE AGUA 800', 7.33, 5, '2024-04-15 10:43:00', 2, 17, 1, 1, 'LIJA_DE_AGUA_800_51.jpg'),
+(470, 'IC-0019', 'LIJA DE AGUA 1200', 7.33, 10, '2024-04-15 10:45:14', 2, 17, 1, 1, 'LIJA_DE_AGUA_1200_73.jpg'),
+(471, 'IC-0020', 'LIJA DE AGUA 1500', 7.33, 9, '2024-04-15 10:46:47', 2, 17, 1, 1, 'LIJA_DE_AGUA_1500_26.jpg'),
+(472, 'MARC001-6N', 'PERNO PARA CLIP, PERNO SOLIDO RECTIFICADO 3/8\" X 1-1/4\"', 12.17, 50, '2024-04-15 15:45:02', 9, 14, 1, 1, 'PERNO_PARA_CLIP_PERNO_SOLIDO_RECTIFICADO_3_8_X_1_1_4__55.jpg'),
+(473, 'MARC001-4M', 'PERNO CENTRADOR PARA CLIP, PERNO SOLIDO RECTIFICADO 1/8 \" X 1\"', 2.82, 100, '2024-04-15 16:21:38', 9, 14, 1, 1, 'PERNO_CENTRADOR_PARA_CLIP_PERNO_SOLIDO_RECTIFICADO_1_8_X_1__72.jpg'),
+(474, 'MARC001-7Ñ', 'TORNILLO PARA CONECTOR, TORNILLO ALLEN SOCKET CILINDRO INOXIDABLE A2 M4x20M', 0.94, 50, '2024-04-15 16:25:37', 9, 14, 1, 1, 'TORNILLO_PARA_CONECTOR_TORNILLO_ALLEN_SOCKET_CILINDRO_INOXIDABLE_A2_M4x20M_90.jpg'),
+(475, 'MARC001-5S', 'INSERTO, OPRESOR ALLEN INOXIDABLE A2 MILIMETRICO M5 X 6MM', 0.53, 300, '2024-04-15 16:36:20', 9, 14, 1, 1, 'INSERTO_OPRESOR_ALLEN_INOXIDABLE_A2_MILIMETRICO_M5_X_6M_8.jpg'),
+(476, 'MARC001-6B', 'TORNILLO 1 (M3), TORNILLO ALLEN SOCKET CILINDRO INOXIDABLE A2 M3 x 6MM', 0.48, 200, '2024-04-16 09:20:16', 9, 14, 1, 1, 'TORNILLO_1_M3_TORNILLO_ALLEN_SOCKET_CILINDRO_INOXIDABLE_A2_M3_x_6MM_41.jpg'),
+(477, 'MARC001-9B', 'LLAVE EXAGONAL ALLEN TIPO \"L\" METRICA M3.0 (3MM)', 2.89, 30, '2024-04-16 09:39:42', 9, 14, 1, 1, 'LLAVE_EXAGONAL_ALLEN_TIPO_L_METRICA_M3_0_3MM__7.jpg'),
+(478, 'MARC001-8Y', 'LLAVE EXAGONAL ALLEN TIPO \"L\" METRICA M2.5 (2.5MM)', 2.54, 20, '2024-04-16 09:41:37', 9, 14, 1, 1, 'LLAVE_EXAGONAL_ALLEN_TIPO_L_METRICA__43.jpg'),
+(479, 'IC-0021', 'ADHESIVO EPOXICO EN JERINGA 25 ML (0.84 OZ) TRANSPARENTE 5 MINUTOS', 115.56, 2, '2024-04-16 09:47:27', 2, 14, 1, 1, 'ADHESIVO_EPOXICO_EN_JERINGA_25_ML_0_84_OZ_TRANSPARENTE_5_MINUTOS_43.jpg'),
+(480, 'H-0233', 'MANERAL PARA MACHUELO AJUSTABLE 1/16\" A 3/8\"', 62.02, 1, '2024-04-16 09:51:08', 1, 14, 1, 1, 'MANERAL_PARA_MACHUELO_AJUSTABLE_1_16_A_3_8__20.jpg'),
+(481, 'H-0234', 'MANERAL PARA MACHUELO AJUSTABLE 3/32\" A 3/8\"', 81.40, 1, '2024-04-16 09:52:07', 1, 14, 1, 1, 'MANERAL_PARA_MACHUELO_AJUSTABLE_3_32_A_3_8__31.jpg'),
+(482, 'H-0235', 'CALIBRADOR VERNIER DIGITAL 152MM/0-6\" DE ACERO INOXIDABLE', 640.22, 1, '2024-04-16 09:53:29', 1, 14, 1, 1, 'CALIBRADOR_VERNIER_DIGITAL_152MM_0_6_DE_ACERO_INOXIDABLE_50.png'),
+(483, 'MARC001-4T', 'SOPORTE ANALOGO ', 498.00, 20, '2024-04-16 11:12:49', 9, 19, 1, 1, 'SOPORTE_ANALOGO__29.png'),
+(484, 'MARC001-8D', 'APUNTADOR ORBITAL', 95.00, 20, '2024-04-16 11:15:50', 9, 19, 1, 1, 'APUNTADOR_ORBITAL_72.png'),
+(485, 'MARC001-7E', 'HORQUILLA DOBLADA', 90.00, 20, '2024-04-16 11:17:47', 9, 19, 1, 1, 'HORQUILLA_DOBLADA_13.png'),
+(486, 'MARC001-7R', 'HORQUILLA PLANA', 70.00, 20, '2024-04-16 11:22:59', 9, 19, 1, 1, 'HORQUILLA_PLANA_64.png'),
+(487, 'MARC001-7B', 'TIJERA DERECHA', 215.00, 20, '2024-04-16 11:36:02', 9, 19, 1, 1, 'TIJERA_DERECHA_74.png'),
+(488, 'MARC001-7C', 'TIJERA IZQUIERDA', 215.00, 20, '2024-04-16 11:38:27', 9, 19, 1, 1, 'TIJERA_IZQUIERDA_61.png'),
+(489, 'MARC001-4Q', 'SEGURO (CON DOBLES Y ACABADO)', 20.00, 20, '2024-04-16 11:39:52', 9, 19, 1, 1, 'SEGURO_CON_DOBLES_Y_ACABADO__10.png'),
+(490, 'MARC001-4Z', 'LIGA (LIGA DE NITRILO 3/32 MEDIDA ESPECIAL)', 5.50, 1000, '2024-04-16 11:55:35', 9, 23, 1, 1, 'LIGA_LIGA_DE_NITRILO_3_32_MEDIDA_ESPECIAL__1.jpg'),
+(491, 'MARC001-5C-MP', 'PERNO BOTADOR 3/16\" x 10\" PARA FABRICAR PERNO DE POSICION (3/16\" x .470\")', 46.00, 35, '2024-04-16 13:18:51', 6, 24, 1, 1, 'PERNO_BOTADOR_3_16_x_10_PARA_FABRICAR_PERNO_DE_POSICION_3_16_x_470__36.jpg');
 
 -- --------------------------------------------------------
 
@@ -766,10 +859,14 @@ INSERT INTO `proveedores` (`id_proveedor`, `nombre_proveedor`, `RFC_proveedor`, 
 (11, 'DISTRIBUIDORA DE HERRAMIENTAS INGHECO S DE RL DE CV', 'DHI160120JA1', 'francisco.gonzalez@ingheco.com.mx', '5519531412', 'Calle y número: Avenida Hacienda El Roble Mz. 5 Lt. 31 Cond. 70 Int. 297\r\nColonia: Hacienda Cuautitlán Delegación y Municipio: Cuautitlán México\r\nCódigo postal: 54803 Entidad Federativa: Estado de México', 'Francisco Gonzalez Gutierrez'),
 (12, 'Quantum', 'PMI190325T31', 'thalia.zilch@gpoquantum.com', '5574615084', 'Jorge Washington No 2 PB Col Moderna CP 03510 Ciudad de Mexico Benito Juarez Ciudad de Mexico Mexico', 'Thalia M Zilch Cruz'),
 (13, 'FIJATEC CITY', 'FCI110511SV8', 'city@fijatec.com', '5555617279', 'Av Azcapotzalco No 742  local A', 'Edgar Medina'),
-(14, 'prueba', 'FCI110511SV8', 'prueba@jfiod.com', '555555555', 'unondpjfhlsa 12521', 'prueba'),
+(14, 'TORNILLOS TOREC FRANCISCO JOEL CELIS MORALES', 'CEMF971008948', 'ventas1@torec.mx', '3323940278', 'AV. ADOLFO LOPEZ MATEOS SUR 1310 CP. 44500 CHAPALITA GUADALAJARA JALISCO', 'DIEGO ALBERTO BARAJAS MARTINEZ'),
 (15, 'INDUSTRIA ANODIZADORA NACIONAL', 'rfc', 'electropintarq@gmail.com', '5572580254', 'San Francisco 3 col San Francisco Tlaltenco Tlahuac 13400 CDMX Mexico', 'Sergio Hernandez'),
 (16, 'FRANCISCO PAEZ RAMIREZ', 'PARF710917AZ1', 'paez.francisco@gmail.com', '5614303630', 'Sin direccion', 'Francisco Paez Ramirez'),
-(17, 'FIX FERRETERIA 95 94 MEXICO', 'NMQ050902HW8', 'comprasonline@fixferreterias.com', '5516723590', 'Direccion: Lago Alberto Exterior: 442 T A, Interior: Nivel 7\r\nCol: Anáhuac I Sección\r\nDelegación:Miguel Hidalgo\r\nMéxico, Ciudad de México\r\nC.P.: 54170', 'COMPRAS POR INTERNET');
+(17, 'FIX FERRETERIA 95 94 MEXICO', 'NMQ050902HW8', 'comprasonline@fixferreterias.com', '5516723590', 'Direccion: Lago Alberto Exterior: 442 T A, Interior: Nivel 7\r\nCol: Anáhuac I Sección\r\nDelegación:Miguel Hidalgo\r\nMéxico, Ciudad de México\r\nC.P.: 54170', 'COMPRAS POR INTERNET'),
+(18, 'Marco Antonio Garcia Chavez', 'GACM690326AA5', 'garciachavezmarcoantonio69@gmail.com', '5546744164', 'No definida', 'Marco Antonio Garcia Chavez'),
+(19, 'METAL ARTS (ISRAEL EDMUNDO AÑVAREZ ALVAREZ)', 'AAAI8001235ZA', 'PORDEFINIR@GMAIL.COM', '55555555', 'IZTAPALAPA', 'ISRAEL EDMUNDO ALVEREZ ALVAREZ'),
+(23, 'CAJAS Y SERVICIOS MELGAR', 'MERP850326HY2', 'PORDEFINIR2@GMAIL.COM', '558862538', 'AV. INDEPENDENCIA 1 CERRO DEL TEJOLOTE CD 56567 IXTAPALUCA ESTADO DE MEXICO', 'PEDRO MEJIA RAMIREZ'),
+(24, 'CPACSA COMERCIALIZADORA DE PORTATROQUELES Y ACCESORIOS', 'CPT840820M37', 'daniel@cpacsa.com', '5557524551', 'AV 45 METROS N.651 SAN BARTOLO ATEPEHUACAN CP. 07730 GUSTAVO A MADERO CIUDAD DE MEXICO', 'DANIEL');
 
 -- --------------------------------------------------------
 
@@ -1133,8 +1230,8 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (182, 1, 1),
 (182, 2, 0),
 (182, 3, 0),
-(183, 1, 1),
-(183, 2, 0),
+(183, 1, 0),
+(183, 2, 1),
 (183, 3, 0),
 (184, 1, 1),
 (184, 2, 0),
@@ -1309,8 +1406,8 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (246, 3, 0),
 (247, 1, 0),
 (247, 2, 0),
-(247, 3, 20),
-(248, 1, 4),
+(247, 3, 0),
+(248, 1, 0),
 (248, 2, 0),
 (248, 3, 0),
 (253, 1, 2),
@@ -1331,24 +1428,24 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (258, 1, 5),
 (258, 2, 0),
 (258, 3, 0),
-(259, 1, 8),
+(259, 1, 0),
 (259, 2, 0),
-(259, 3, 0),
+(259, 3, 82),
 (260, 1, 0),
 (260, 2, 0),
-(260, 3, 20),
+(260, 3, 0),
 (261, 1, 0),
 (261, 2, 0),
-(261, 3, 27),
-(262, 1, 1),
+(261, 3, 0),
+(262, 1, 0),
 (262, 2, 0),
 (262, 3, 0),
-(263, 1, 1),
+(263, 1, 0),
 (263, 2, 0),
 (263, 3, 0),
-(264, 1, 12),
+(264, 1, 76),
 (264, 2, 0),
-(264, 3, 0),
+(264, 3, 42),
 (265, 1, 10),
 (265, 2, 0),
 (265, 3, 0),
@@ -1409,8 +1506,8 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (284, 1, 4),
 (284, 2, 0),
 (284, 3, 0),
-(285, 1, 4),
-(285, 2, 0),
+(285, 1, 3),
+(285, 2, 1),
 (285, 3, 0),
 (286, 1, 2),
 (286, 2, 0),
@@ -1439,9 +1536,9 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (294, 1, 6),
 (294, 2, 0),
 (294, 3, 0),
-(295, 1, 5),
+(295, 1, 4),
 (295, 2, 0),
-(295, 3, 0),
+(295, 3, 1),
 (296, 1, 2),
 (296, 2, 0),
 (296, 3, 0),
@@ -1474,19 +1571,19 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (305, 3, 0),
 (306, 1, 0),
 (306, 2, 0),
-(306, 3, 24),
-(307, 1, 6),
+(306, 3, 0),
+(307, 1, 0),
 (307, 2, 0),
-(307, 3, 0),
-(308, 1, 13),
+(307, 3, 16),
+(308, 1, 0),
 (308, 2, 0),
-(308, 3, 0),
-(309, 1, 12),
+(308, 3, 23),
+(309, 1, 0),
 (309, 2, 0),
-(309, 3, 0),
-(310, 1, 13),
+(309, 3, 24),
+(310, 1, 0),
 (310, 2, 0),
-(310, 3, 0),
+(310, 3, 41),
 (311, 1, 0),
 (311, 2, 0),
 (311, 3, 20),
@@ -1589,9 +1686,9 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (351, 1, 0),
 (351, 2, 0),
 (351, 3, 19),
-(352, 1, 0),
-(352, 2, 4),
-(352, 3, 36),
+(352, 1, 50),
+(352, 2, 0),
+(352, 3, 0),
 (353, 1, 96),
 (353, 2, 0),
 (353, 3, 4),
@@ -1611,18 +1708,28 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (359, 2, 2),
 (359, 3, 38),
 (360, 1, 1),
+(360, 2, 0),
+(360, 3, 0),
 (361, 1, 2),
+(361, 2, 0),
+(361, 3, 0),
 (362, 1, 2),
+(362, 2, 0),
+(362, 3, 0),
 (363, 1, 2),
+(363, 2, 0),
+(363, 3, 0),
 (364, 1, 0),
 (364, 2, 0),
 (364, 3, 0),
 (365, 1, 1),
+(365, 2, 0),
+(365, 3, 0),
 (366, 1, 0),
 (366, 2, 2),
 (366, 3, 0),
-(367, 1, 2),
-(367, 2, 4),
+(367, 1, 0),
+(367, 2, 6),
 (367, 3, 0),
 (368, 1, 2),
 (368, 2, 2),
@@ -1856,12 +1963,132 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (449, 1, 1),
 (449, 2, 0),
 (449, 3, 0),
-(450, 1, 5),
-(450, 2, 0),
+(450, 1, 4),
+(450, 2, 1),
 (450, 3, 0),
 (451, 1, 5),
 (451, 2, 0),
-(451, 3, 0);
+(451, 3, 0),
+(452, 1, 5),
+(452, 2, 0),
+(452, 3, 0),
+(453, 1, 1),
+(453, 2, 0),
+(453, 3, 0),
+(454, 1, 1),
+(454, 2, 0),
+(454, 3, 0),
+(455, 1, 1),
+(455, 2, 0),
+(455, 3, 0),
+(456, 1, 1),
+(456, 2, 0),
+(456, 3, 0),
+(457, 1, 1),
+(457, 2, 0),
+(457, 3, 0),
+(458, 1, 0),
+(458, 2, 0),
+(458, 3, 1),
+(459, 1, 2),
+(459, 2, 0),
+(459, 3, 0),
+(460, 1, 4),
+(460, 2, 0),
+(460, 3, 0),
+(461, 1, 10),
+(461, 2, 0),
+(461, 3, 0),
+(462, 1, 4),
+(462, 2, 0),
+(462, 3, 0),
+(463, 1, 11),
+(463, 2, 0),
+(463, 3, 0),
+(464, 1, 5),
+(464, 2, 0),
+(464, 3, 0),
+(465, 1, 7),
+(465, 2, 0),
+(465, 3, 0),
+(466, 1, 8),
+(466, 2, 0),
+(466, 3, 0),
+(467, 1, 8),
+(467, 2, 0),
+(467, 3, 0),
+(468, 1, 2),
+(468, 2, 0),
+(468, 3, 0),
+(469, 1, 5),
+(469, 2, 0),
+(469, 3, 0),
+(470, 1, 10),
+(470, 2, 0),
+(470, 3, 0),
+(471, 1, 9),
+(471, 2, 0),
+(471, 3, 0),
+(472, 1, 50),
+(472, 2, 0),
+(472, 3, 0),
+(473, 1, 100),
+(473, 2, 0),
+(473, 3, 0),
+(474, 1, 50),
+(474, 2, 0),
+(474, 3, 0),
+(475, 1, 300),
+(475, 2, 0),
+(475, 3, 0),
+(476, 1, 200),
+(476, 2, 0),
+(476, 3, 0),
+(477, 1, 30),
+(477, 2, 0),
+(477, 3, 0),
+(478, 1, 20),
+(478, 2, 0),
+(478, 3, 0),
+(479, 1, 2),
+(479, 2, 0),
+(479, 3, 0),
+(480, 1, 1),
+(480, 2, 0),
+(480, 3, 0),
+(481, 1, 1),
+(481, 2, 0),
+(481, 3, 0),
+(482, 1, 0),
+(482, 2, 0),
+(482, 3, 1),
+(483, 1, 1),
+(483, 2, 0),
+(483, 3, 19),
+(484, 1, 20),
+(484, 2, 0),
+(484, 3, 0),
+(485, 1, 19),
+(485, 2, 1),
+(485, 3, 0),
+(486, 1, 19),
+(486, 2, 1),
+(486, 3, 0),
+(487, 1, 0),
+(487, 2, 0),
+(487, 3, 20),
+(488, 1, 20),
+(488, 2, 0),
+(488, 3, 0),
+(489, 1, 20),
+(489, 2, 0),
+(489, 3, 0),
+(490, 1, 1000),
+(490, 2, 0),
+(490, 3, 0),
+(491, 1, 35),
+(491, 2, 0),
+(491, 3, 0);
 
 -- --------------------------------------------------------
 
@@ -1967,7 +2194,6 @@ ALTER TABLE `cpi_art_af`
 ALTER TABLE `detalle_orden_compra`
   ADD PRIMARY KEY (`id_detalle_orden`),
   ADD KEY `id_orden_compra` (`id_orden_compra`),
-  ADD KEY `detalleorden-tipomoneda` (`id_moneda`),
   ADD KEY `detalleorden-unidades` (`id_unidad`);
 
 --
@@ -2001,7 +2227,8 @@ ALTER TABLE `movimientos`
 ALTER TABLE `ordenes_compra`
   ADD PRIMARY KEY (`id_orden_compra`),
   ADD UNIQUE KEY `numero_orden` (`numero_orden`),
-  ADD KEY `id_proveedor` (`id_proveedor`);
+  ADD KEY `id_proveedor` (`id_proveedor`),
+  ADD KEY `id_moneda` (`id_moneda`);
 
 --
 -- Indices de la tabla `permisos`
@@ -2085,7 +2312,7 @@ ALTER TABLE `cpi_art_af`
 -- AUTO_INCREMENT de la tabla `detalle_orden_compra`
 --
 ALTER TABLE `detalle_orden_compra`
-  MODIFY `id_detalle_orden` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id_detalle_orden` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT de la tabla `empleados`
@@ -2103,13 +2330,13 @@ ALTER TABLE `montos_orden_compra`
 -- AUTO_INCREMENT de la tabla `movimientos`
 --
 ALTER TABLE `movimientos`
-  MODIFY `id_movimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+  MODIFY `id_movimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
 
 --
 -- AUTO_INCREMENT de la tabla `ordenes_compra`
 --
 ALTER TABLE `ordenes_compra`
-  MODIFY `id_orden_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_orden_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `permisos`
@@ -2121,13 +2348,13 @@ ALTER TABLE `permisos`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=452;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=492;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedores`
 --
 ALTER TABLE `proveedores`
-  MODIFY `id_proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id_proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT de la tabla `tipos_moneda`
@@ -2156,7 +2383,6 @@ ALTER TABLE `usuario`
 --
 ALTER TABLE `detalle_orden_compra`
   ADD CONSTRAINT `detalle_orden_compra_ibfk_1` FOREIGN KEY (`id_orden_compra`) REFERENCES `ordenes_compra` (`id_orden_compra`),
-  ADD CONSTRAINT `detalleorden-tipomoneda` FOREIGN KEY (`id_moneda`) REFERENCES `tipos_moneda` (`id_moneda`),
   ADD CONSTRAINT `detalleorden-unidades` FOREIGN KEY (`id_unidad`) REFERENCES `unidades_medida` (`id_unidad`);
 
 --

@@ -62,7 +62,7 @@
       <div class="banner-texto">
         <h1 class="display-4">ALMACEN</h1>
         <p class="lead">CONSULTAR.</p>
-        <a href="#" class="btn btn-primary">ENTRAR</a>
+        <a href="<?php echo APP_URL; ?>menuStorage/" class="btn btn-primary">ENTRAR</a>
       </div>
     </div>
   </div>

@@ -14,7 +14,7 @@
         // Previene el comportamiento por defecto del evento de clic
         e.preventDefault();
         // Regresa al usuario a la página anterior
-        window.location.href = '/borgattaingenieria/dashboard';
+        window.location.href = '<?php echo APP_URL; ?>/dashboard';
         //window.history.back();
     });
 </script>

@@ -21,7 +21,7 @@
 <div class="container py-4">
     <?php
         // Incluye el botón de regreso
-        include "./app/views/inc/btn_back.php";
+        include "./app/views/inc/btn_back2.php";
 
         // Obtiene los datos del usuario a actualizar
         $datos=$insLogin->seleccionarDatos("Unico","usuario","usuario_id",$id);

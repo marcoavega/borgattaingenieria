@@ -397,24 +397,27 @@ WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%';
             <p class="card-text">Id: ' . $rows['id_producto'] . '</p> <!-- ID del producto -->
             <p class="card-text">Código: ' . $rows['codigo_producto'] . '</p> <!-- Código del producto -->
             <p class="card-text">Precio: ' . $rows['precio'] . '</p> <!-- Precio del producto -->
+            <p class="card-text">Moneda: ' . $rows['nombre_moneda'] . '</p> <!-- Moneda en la que se valora el producto -->
+             <p class="card-text">Unidad de Medida: ' . $rows['nombre_unidad'] . '</p> <!-- Unidad de medida del producto -->
             <p class="card-text">Stock Almacén General: ' . $rows['stock_general'] . ' <!-- Stock en almacén general -->
                 <br> Almacén Maquinados: ' . $rows['stock_maquinados'] . ' <!-- Stock en almacén de maquinados -->
                 <br> Almacén Ensamble: ' . $rows['stock_ensamble'] . '</p> <!-- Stock en almacén de ensamble -->
             <p class="card-text">Categoría: ' . $rows['nombre_categoria'] . '</p> <!-- Categoría del producto -->
             <p class="card-text">Proveedor: ' . $rows['nombre_proveedor'] . '</p> <!-- Proveedor del producto -->
-            <p class="card-text">Unidad de Medida: ' . $rows['nombre_unidad'] . '</p> <!-- Unidad de medida del producto -->
-            <p class="card-text">Moneda: ' . $rows['nombre_moneda'] . '</p> <!-- Moneda en la que se valora el producto -->
         </div>
 
         ' . ($_SESSION['permiso'] == 1 ? ' <!-- Condición para mostrar los botones solo si el usuario tiene permiso -->
         <div class="card-footer d-flex flex-column align-items-center"> <!-- Pie de tarjeta con botones centrados y en columna -->
-            <div class="btn-group w-100" role="group" style="gap: 10px;"> <!-- Grupo de botones con un espacio entre ellos y ancho completo -->
+            <div class="btn-group w-100" role="group" style="gap: 4px;"> <!-- Grupo de botones con un espacio entre ellos y ancho completo -->
                 <a href="' . APP_URL . 'productPhoto/' . $rows['id_producto'] . '/" class="btn btn-warning rounded">Foto</a>
-                <a href="' . APP_URL . 'productUpdate/' . $rows['id_producto'] . '/" class="btn btn-info rounded">Actualizar</a>
+                <a href="' . APP_URL . 'productUpdate/' . $rows['id_producto'] . '/" class="btn btn-success rounded">Actualizar</a>
                 <a href="' . APP_URL . 'productEntrance/' . $rows['id_producto'] . '/" class="btn btn-light rounded">Entrada</a>
             </div>
             <div class="btn-group w-100" role="group" style="gap: 10px; margin-top: 10px;"> <!-- Segundo grupo de botones con margen superior para nueva fila -->
-                <a href="' . APP_URL . 'movUpdate/' . $rows['id_producto'] . '/" class="btn btn-success rounded">Movimientos</a>
+                <a href="' . APP_URL . 'movUpdate/' . $rows['id_producto'] . '/" class="btn btn-info rounded">Movimiento Entre Almacenes</a>
+            </div>
+            <div class="btn-group w-100" role="group" style="gap: 10px; margin-top: 10px;"> <!-- Segundo grupo de botones con margen superior para nueva fila -->
+                <a href="' . APP_URL . 'descInventory/' . $rows['id_producto'] . '/" class="btn btn-danger rounded">Descontar inventario</a>
             </div>
         </div>' : '') . ' <!-- Fin de la condicional de permisos -->
     </div>

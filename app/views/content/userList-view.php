@@ -11,7 +11,7 @@
     <div class="mb-4"></div>
     <?php
             // Incluye el botón de regreso
-            include "./app/views/inc/btn_back.php";
+            include "./app/views/inc/btn_back2.php";
            
         // Importa el controlador de usuarios
         use app\controllers\userController;

@@ -15,7 +15,7 @@
         use app\controllers\provController;
        
     // Incluye el botón de regreso
-    include "./app/views/inc/btn_back.php";
+    include "./app/views/inc/btn_back2.php";
     
         $insProveedor = new provController();
 

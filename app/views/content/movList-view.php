@@ -13,7 +13,7 @@
         use app\controllers\movController;
     
         // Incluye el botón de regreso
-        include "./app/views/inc/btn_back.php";
+        include "./app/views/inc/btn_back2.php";
         
         // Crea una instancia del controlador
         $insMov = new movController();

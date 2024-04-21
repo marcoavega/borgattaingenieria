@@ -303,6 +303,7 @@ class movController extends mainModel
         <tbody>';
 
 foreach ($datos as $rows) {
+    $fechaFormateada = date('d/m/Y', strtotime($rows['fecha_movimiento'])); // Convierte la fecha al formato deseado
     $tabla .= '
         <tr>
             <td>' . $rows['nombre_producto'] . '</td>
@@ -310,7 +311,7 @@ foreach ($datos as $rows) {
             <td>' . $rows['nombre_almacen_destino'] . '</td>
             <td>' . $rows['cantidad'] . '</td>
             <td>' . $rows['nombre_empleado'] . '</td>
-            <td>' . $rows['fecha_movimiento'] . '</td>
+            <td>' . $fechaFormateada . '</td>  <!-- Usar la fecha formateada aquí -->
         </tr>';
     $contador++;
 }

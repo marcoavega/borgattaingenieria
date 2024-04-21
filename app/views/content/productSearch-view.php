@@ -20,7 +20,7 @@
     ?>
       <?php
             // Incluye el botón de regreso
-            include "./app/views/inc/btn_back.php";
+            include "./app/views/inc/btn_back2.php";
             ?>
     <!-- Formulario de búsqueda -->
     <form class="FormularioAjax row g-3 mb-4" action="<?php echo APP_URL; ?>app/ajax/buscadorAjax.php" method="POST" autocomplete="off" >

@@ -23,7 +23,7 @@
             ?>
             <?php
             // Incluye el botón de regreso
-            include "./app/views/inc/btn_back.php";
+            include "./app/views/inc/btn_back2.php";
             ?>
             <!-- Formulario de creación de orden -->
             <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/ordenCompraAjax.php" method="POST" autocomplete="off" enctype="multipart/form-data">
