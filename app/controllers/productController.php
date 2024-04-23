@@ -376,7 +376,7 @@ WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%';
 
     $numeroPaginas = ceil($total / $registros);
 
-    $tabla .= '<div class="row row-cols-1 row-cols-md-3 g-4 p-5">';
+    $tabla .= '<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 g-4 p-5">';
 
     if ($total >= 1 && $pagina <= $numeroPaginas) {
         $contador = $inicio + 1;
@@ -385,11 +385,11 @@ WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%';
             
            // Concatenación de la cadena que contiene el HTML
            $tabla .= '
-<div class="col-md-6 col-lg-4"> <!-- Clases de Bootstrap para controlar el ancho de la columna en diferentes tamaños de pantalla -->
+<div class="col"> <!-- Clases de Bootstrap para controlar el ancho de la columna en diferentes tamaños de pantalla -->
     <div class="card h-100"> <!-- Tarjeta de Bootstrap con altura completa -->
 
         <div class="card-img-top-container"> <!-- Contenedor personalizado para la imagen -->
-            <img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="card-img-top" alt="..."> <!-- Imagen del producto -->
+            <img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="card-img-top img-fluid" alt="..."> <!-- Imagen del producto -->
         </div>
 
         <div class="card-body"> <!-- Cuerpo de la tarjeta donde se muestra la información del producto -->
@@ -408,18 +408,12 @@ WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%';
 
         ' . ($_SESSION['permiso'] == 1 ? ' <!-- Condición para mostrar los botones solo si el usuario tiene permiso -->
         <div class="card-footer d-flex flex-column align-items-center"> <!-- Pie de tarjeta con botones centrados y en columna -->
-            <div class="btn-group w-100" role="group" style="gap: 4px;"> <!-- Grupo de botones con un espacio entre ellos y ancho completo -->
-                <a href="' . APP_URL . 'productPhoto/' . $rows['id_producto'] . '/" class="btn btn-warning rounded">Foto</a>
-                <a href="' . APP_URL . 'productUpdate/' . $rows['id_producto'] . '/" class="btn btn-success rounded">Actualizar</a>
-                <a href="' . APP_URL . 'productEntrance/' . $rows['id_producto'] . '/" class="btn btn-light rounded">Entrada</a>
-            </div>
-            <div class="btn-group w-100" role="group" style="gap: 10px; margin-top: 10px;"> <!-- Segundo grupo de botones con margen superior para nueva fila -->
-                <a href="' . APP_URL . 'movUpdate/' . $rows['id_producto'] . '/" class="btn btn-info rounded">Movimiento Entre Almacenes</a>
-            </div>
-            <div class="btn-group w-100" role="group" style="gap: 10px; margin-top: 10px;"> <!-- Segundo grupo de botones con margen superior para nueva fila -->
-                <a href="' . APP_URL . 'descInventory/' . $rows['id_producto'] . '/" class="btn btn-danger rounded">Descontar inventario</a>
-            </div>
-        </div>' : '') . ' <!-- Fin de la condicional de permisos -->
+        <a href="' . APP_URL . 'productPhoto/' . $rows['id_producto'] . '/" class="btn btn-warning w-100 mb-2 rounded">Foto</a>
+        <a href="' . APP_URL . 'productUpdate/' . $rows['id_producto'] . '/" class="btn btn-success w-100 mb-2 rounded">Actualizar</a>
+        <a href="' . APP_URL . 'productEntrance/' . $rows['id_producto'] . '/" class="btn btn-light w-100 mb-2 rounded">Entrada</a>
+        <a href="' . APP_URL . 'movUpdate/' . $rows['id_producto'] . '/" class="btn btn-info w-100 mb-2 rounded">Movimiento Entre Almacenes</a>
+        <a href="' . APP_URL . 'descInventory/' . $rows['id_producto'] . '/" class="btn btn-danger w-100 rounded">Descontar inventario</a>
+    </div>' : '') . ' <!-- Fin de la condicional de permisos -->
     </div>
 </div>';
 

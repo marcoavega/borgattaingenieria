@@ -5,7 +5,7 @@ namespace app\controllers;
 
 use app\models\mainModel;
 
-class ordenCompraController extends mainModel
+class ordenGastoController extends mainModel
 {
 
 
@@ -66,7 +66,7 @@ class ordenCompraController extends mainModel
     }
 
     /*----------  Controlador registrar usuario  ----------*/
-    public function registrarOrdenCompraControlador()
+    public function registrarOrdenGastoControlador()
     {
         # Generando número de orden automático
         /*$ultimoNumeroOrden = $this->obtenerUltimoNumeroOrden();
@@ -75,7 +75,7 @@ class ordenCompraController extends mainModel
 
         // Generando número de orden automático
         $ultimoNumeroOrden = $this->obtenerUltimoNumeroOrden();
-        $numero_orden = 'ROC-' . str_pad($ultimoNumeroOrden + 1, 3, '0', STR_PAD_LEFT);
+        $numero_orden = 'ROG-' . str_pad($ultimoNumeroOrden + 1, 3, '0', STR_PAD_LEFT);
 
         # Almacenando datos
         $id_proveedor = $_POST['id_proveedor'];
@@ -133,7 +133,7 @@ class ordenCompraController extends mainModel
 
     private function obtenerUltimoNumeroOrden()
     {
-        $consulta_ultimo_numero = "SELECT MAX(SUBSTRING(numero_orden, 5)) AS ultimo_numero FROM ordenes_compra";
+        $consulta_ultimo_numero = "SELECT MAX(SUBSTRING(numero_orden, 5)) AS ultimo_numero FROM ordenes_gasto";
         $resultado = $this->ejecutarConsulta($consulta_ultimo_numero)->fetch();
         return $resultado ? intval($resultado['ultimo_numero']) : 0;
     }
@@ -166,8 +166,10 @@ class ordenCompraController extends mainModel
         $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
 
         $consulta_datos = "SELECT
-        detalle_orden_compra.*,
-        
+        detalle_orden_gasto.*,
+        montos_orden_compra.subtotal_sin_IVA,
+        montos_orden_compra.IVA,
+        montos_orden_compra.total_con_IVA,
         ordenes_compra.numero_orden,
         proveedores.nombre_proveedor,
         proveedores.RFC_proveedor,
@@ -183,6 +185,7 @@ class ordenCompraController extends mainModel
         
     FROM
         detalle_orden_compra
+    LEFT JOIN montos_orden_compra ON detalle_orden_compra.id_orden_compra = montos_orden_compra.id_orden_compra
     LEFT JOIN ordenes_compra ON detalle_orden_compra.id_orden_compra = ordenes_compra.id_orden_compra
     LEFT JOIN proveedores ON ordenes_compra.id_proveedor = proveedores.id_proveedor
     LEFT JOIN unidades_medida ON detalle_orden_compra.id_unidad = unidades_medida.id_unidad

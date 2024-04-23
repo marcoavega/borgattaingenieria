@@ -4,7 +4,7 @@ namespace app\controllers;
 
 use app\models\mainModel;
 
-class movController extends mainModel
+class movController2 extends mainModel
 {
 
     public function obtenerOpcionesProductos()
@@ -54,179 +54,16 @@ class movController extends mainModel
         $opciones_movimientos = "";
 
         while ($movimientos = $datos_movimientos->fetch()) {
-            $opciones_movimientos .= '<option value="' . $movimientos['id_movimiento'] . '">'
-                . $movimientos['fecha_movimiento'] . '</option>';
+            $opciones_movimientos .= '<option value="' . $movimientos['id_movimiento'] . '">
+            '. $movimientos['id_movimiento'] . ''."  ".''. $movimientos['fecha_movimiento'] . '</option>';
         }
 
         return $opciones_movimientos;
     }
 
-    /*----------  Controlador registrar proveedor  ----------*/
-    public function registrarMovimientoControlador()
-    {
-
-        $id = $this->limpiarCadena($_POST['id_producto']);
-
-        # Verificando usuario #
-        $datos = $this->ejecutarConsulta("SELECT * FROM productos WHERE id_producto='$id'");
-        if ($datos->rowCount() <= 0) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No hemos encontrado el productos en el sistema",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        } else {
-            $datos = $datos->fetch();
-        }
-
-
-        # Almacenando datos#
-
-        $id_producto = $this->limpiarCadena($_POST['id_producto']);
-        $id_almacen_origen = $this->limpiarCadena($_POST['id_almacen_origen']);
-        $id_almacen_destino = $this->limpiarCadena($_POST['id_almacen_destino']);
-        $cantidad = $this->limpiarCadena($_POST['cantidad']);
-        $id_empleado = $this->limpiarCadena($_POST['id_empleado']);
-        $nota = $this->limpiarCadena($_POST['nota']);
-
-
-        // Validar que los campos no estén vacíos
-        if (empty($id_producto) || empty($id_almacen_origen) || empty($id_almacen_destino) || empty($cantidad) || empty($nota) || empty($id_empleado)) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No has llenado todos los campos que son obligatorios" ,
-                "icono" => "error"
-            ];
-
-            return json_encode($alerta);
-        }
-
-
-        $movimiento_datos_reg = [
-
-            [
-                "campo_nombre" => "id_producto",
-                "campo_marcador" => ":Producto",
-                "campo_valor" => $id_producto
-            ],
-            [
-                "campo_nombre" => "id_almacen_origen ",
-                "campo_marcador" => ":Origen",
-                "campo_valor" => $id_almacen_origen
-            ],
-            [
-                "campo_nombre" => "id_almacen_destino",
-                "campo_marcador" => ":Destino",
-                "campo_valor" => $id_almacen_destino
-            ],
-            [
-                "campo_nombre" => "cantidad",
-                "campo_marcador" => ":Cantidad",
-                "campo_valor" => $cantidad
-            ],
-            [
-                "campo_nombre" => "id_empleado",
-                "campo_marcador" => ":Empleado",
-                "campo_valor" => $id_empleado
-            ],
-            [
-                "campo_nombre" => "nota_movimiento",
-                "campo_marcador" => ":Nota",
-                "campo_valor" => $nota
-            ]
-
-        ];
-
-
-
-        $registrar_movimiento = $this->guardarDatos("movimientos", $movimiento_datos_reg);
-
-        if ($registrar_movimiento->rowCount() == 1) {
-            $alerta = [
-                "tipo" => "limpiar",
-                "titulo" => "Movimiento registrado",
-                "texto" => "El movimiento se registro con exito",
-                "icono" => "success"
-            ];
-        } else {
-
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No se pudo registrar el movimiento, por favor intente nuevamente",
-                "icono" => "error"
-            ];
-        }
-
-
-
-        # Verificando #
-        $check_inventario = $this->ejecutarConsulta("SELECT * FROM stock_almacen");
-        if ($check_inventario->rowCount() <= 0) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No hay registros favor de contactar con el administrador",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
-        //Restar stock del almacén de origen
-        $restarStockOrigen = "UPDATE stock_almacen SET stock = stock - $cantidad WHERE id_producto = $id_producto AND id_almacen = $id_almacen_origen";
-
-
-        $resultadoRestar = $this->ejecutarConsulta($restarStockOrigen);
-        if ($resultadoRestar->rowCount() == 1) {
-            $alerta = [
-                "tipo" => "limpiar",
-                "titulo" => "Movimiento registrado",
-                "texto" => "El movimiento de salida se registro con exito",
-                "icono" => "success"
-            ];
-        } else {
-
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No se pudo registrar el movimiento de salida, por favor intente nuevamente",
-                "icono" => "error"
-            ];
-        }
-        //Sumar stock al almacén de destino
-        $sumarStockDestino = "UPDATE stock_almacen SET stock = stock + $cantidad WHERE id_producto = $id_producto AND id_almacen = $id_almacen_destino";
-
-        $resultadoSumar = $this->ejecutarConsulta($sumarStockDestino);
-        if ($resultadoSumar->rowCount() == 1) {
-            $alerta = [
-                "tipo" => "limpiar",
-                "titulo" => "Movimiento registrado",
-                "texto" => "El movimiento de entrada se registro con exito",
-                "icono" => "success"
-            ];
-        } else {
-
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No se pudo registrar el movimiento de entrada, por favor intente nuevamente",
-                "icono" => "error"
-            ];
-        }
-
-
-        return json_encode($alerta);
-
-    }
-
-
-
+   
  /*----------  Controlador listar  ----------*/
- public function listarMovControlador($pagina, $registros, $url, $busqueda)
+ public function listarMovControlador2($pagina, $registros, $url, $busqueda)
  {
  
      $pagina = $this->limpiarCadena($pagina);
@@ -261,7 +98,7 @@ class movController extends mainModel
  JOIN
      empleados ON movimientos.id_empleado = empleados.id_empleado
  WHERE
- empleados.id_empleado LIKE '%$busqueda%'
+ movimientos.id_movimiento LIKE '%$busqueda%'
  GROUP BY
      movimientos.id_movimiento
  ORDER BY
@@ -279,7 +116,7 @@ class movController extends mainModel
  JOIN almacenes AS origen ON movimientos.id_almacen_origen = origen.id_almacen
  JOIN almacenes AS destino ON movimientos.id_almacen_destino = destino.id_almacen
  JOIN empleados ON movimientos.id_empleado = empleados.id_empleado
- WHERE empleados.id_empleado LIKE '%$busqueda%';        
+ WHERE movimientos.id_movimiento LIKE '%$busqueda%';        
  ";
  
  
@@ -302,6 +139,9 @@ class movController extends mainModel
  
      $tabla .= '
 <div class="table-responsive w-100">
+
+
+
     <table class="table w-100">
         <thead>
             <tr>
@@ -318,6 +158,21 @@ class movController extends mainModel
 foreach ($datos as $rows) {
     $fechaFormateada = date('d/m/Y', strtotime($rows['fecha_movimiento'])); // Convierte la fecha al formato deseado
     $tabla .= '
+
+    <div style="display: flex; align-items: center;justify-content: space-between;">
+            <img src="' . APP_URL . 'app/views/fotos/logo_orden.png" alt="logo" style="width:250px; height:auto; margin-right: 20px;">
+            <div>
+                <h5>Movimiento de almacen: ' . $rows['id_movimiento'] . '</h5>
+                <p><strong>Fecha:</strong> ' . date('d/m/Y', strtotime($rows['fecha_movimiento'])) . '</p>
+            </div>
+        </div>
+        <div style="margin-top: 1px; margin-bottom: 10px;">
+            <p style="margin-top: 0; margin-bottom: 0;">RADIOTECNOLOGÍA INDUSTRIAL S.A. DE C.V.</p>
+            <p style="margin-top: 0; margin-bottom: 0;">RFC: RIN070219R38</p>
+            <p style="margin-top: 0; margin-bottom: 0;">Calle Puebla Sur. Manzana 4. Lote 5 Nave B Int. 2 Col. Jardín Industrial</p>
+            <p style="margin-top: 0; margin-bottom: 0;">Ixtapaluca. Edo. de México, C.P. 56535</p>
+        </div>
+
         <tr>
             <td>' . $rows['nombre_producto'] . '</td>
             <td>' . $rows['nombre_almacen_origen'] . '</td>
@@ -333,6 +188,20 @@ $tabla .= '
     </tbody>
 </table>
 </div>
+
+<!-- Área de firma al final del documento, justo después de la tabla -->
+<div style="width: 100%; padding: 20px; margin-top: 50%;">
+    <div class="d-flex justify-content-between">
+        <div style="flex: 1;">
+            <label>Firma de Recibido:</label>
+        </div>
+        <div style="flex: 1;">
+            <label>Fecha de Recibido:</label>
+            <span>' . date("d/m/Y") . '</span>
+        </div>
+    </div>
+</div>
+
 </div>
 
 <script>
@@ -370,7 +239,7 @@ function imprimirArea(id) {
      } else {
          $tabla .= '
              <div class="col">
-                 No hay registros en el sistema
+                 No hay registros en el sistemaaaa
              </div>
          ';
      }

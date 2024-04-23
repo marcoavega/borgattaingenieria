@@ -4,14 +4,14 @@ namespace app\controllers;
 
 use app\models\mainModel;
 
-class searchMovController extends mainModel
+class searchMovController2 extends mainModel
 {
 
 	/*----------  Controlador modulos de busquedas  ----------*/
-	public function modulosBusquedaControlador($modulo)
+	public function modulosBusquedaControlador2($modulo)
 	{
 
-		$listaModulos = ['userSearch', 'orderSearch', 'movSearch'];
+		$listaModulos = ['userSearch', 'orderSearch', 'movSearch', 'movSearch2'];
 
 		if (in_array($modulo, $listaModulos)) {
 			return false;
@@ -22,13 +22,13 @@ class searchMovController extends mainModel
 
 
 	/*----------  Controlador iniciar busqueda  ----------*/
-	public function iniciarBuscadorControlador()
+	public function iniciarBuscadorControlador2()
 	{
 
 		$url = ($_POST['modulo_url']);
 		$texto = ($_POST['txt_buscador']);
 
-		if ($this->modulosBusquedaControlador($url)) {
+		if ($this->modulosBusquedaControlador2($url)) {
 			$alerta = [
 				"tipo" => "simple",
 				"titulo" => "Ocurrió un error inesperado",
@@ -64,12 +64,12 @@ class searchMovController extends mainModel
 
 
 	/*----------  Controlador eliminar busqueda  ----------*/
-	public function eliminarBuscadorControlador()
+	public function eliminarBuscadorControlador2()
 	{
 
 		$url = ($_POST['modulo_url']);
 
-		if ($this->modulosBusquedaControlador($url)) {
+		if ($this->modulosBusquedaControlador2($url)) {
 			$alerta = [
 				"tipo" => "simple",
 				"titulo" => "Ocurrió un error inesperado",

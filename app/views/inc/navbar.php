@@ -69,6 +69,7 @@
                         <?php } ?>
                         <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movList/">Consultar Todos</a></li>
                         <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movSearch/">Buscar por nombre</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movSearch2/">Buscar por movimiento</a></li>
                     </ul>
 
                 </li>
@@ -91,12 +92,25 @@
                 <?php if ($_SESSION['permiso'] == 1) { ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Ordenes de compra
+                            Ordenes de Compra
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderCNew/">Nueva orden</a></li>
                             <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderCPNew/">Alta de productos en orden</a></li>
                             <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderSearch/">Consultar</a></li>
+                        </ul>
+                    </li>
+                <?php } ?>
+                 <!-- Menú desplegable para las acciones relacionadas con los proveedores -->
+                 <?php if ($_SESSION['permiso'] == 1) { ?>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Ordenes de Gasto
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderGNew/">Nueva orden</a></li>
+                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderGPNew/">Alta de productos en orden</a></li>
+                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderGSearch/">Consultar</a></li>
                         </ul>
                     </li>
                 <?php } ?>

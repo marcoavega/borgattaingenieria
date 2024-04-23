@@ -19,11 +19,15 @@
                             "movUpdate",
                             "orderCNew","orderCPNew","orderSearch",
                             "movList","movSearch",
+                            "movList2","movSearch2",
                             "busqueda",
                             "kitArticulador",
                             "productEntrance",
                             "menuStorage",
-                            "descInventory"
+                            "descInventory",
+                            "orderGNew",
+                            "orderGPNew",
+                            "orderGSearch"
                         ];
 
             // Comprueba si la vista solicitada está en la lista blanca

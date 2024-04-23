@@ -4,17 +4,17 @@
 	require_once "../views/inc/session_start.php";
 	require_once "../../autoload.php";
 	
-	use app\controllers\searchMovController;
+	use app\controllers\searchMovController2;
 
 	if(isset($_POST['modulo_buscador'])){
 
-		$insBuscador = new searchMovController();
+		$insBuscador = new searchMovController2();
 
 		if($_POST['modulo_buscador']=="buscar"){
-			echo $insBuscador->iniciarBuscadorControlador();
+			echo $insBuscador->iniciarBuscadorControlador2();
 		}
 		if($_POST['modulo_buscador']=="eliminar"){
-			echo $insBuscador->eliminarBuscadorControlador();
+			echo $insBuscador->eliminarBuscadorControlador2();
 		}
 		
 	}else{
