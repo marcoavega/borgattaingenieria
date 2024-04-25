@@ -1,6 +1,6 @@
 <!-- Contenedor principal -->
 <div class="container-fluid py-4">
-   
+
     <!-- Título de la página -->
     <h1 class="display-4 text-center">Orden de Gasto</h1>
     <!-- Subtítulo de la página -->
@@ -20,13 +20,15 @@
             // Obtiene las opciones de proveedores.
             $opcionesProveedores = $insProduct->obtenerOpcionesProveedores();
             $opcionesTiposMoneda = $insMoneda->obtenerOpcionesMonedas();
+            $opcionesEmpleados = $insProduct->obtenerEmpleados();
             ?>
             <?php
             // Incluye el botón de regreso
             include "./app/views/inc/btn_back2.php";
             ?>
             <!-- Formulario de creación de orden -->
-            <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/ordenGastoAjax.php" method="POST" autocomplete="off" enctype="multipart/form-data">
+            <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/ordenGastoAjax.php"
+                method="POST" autocomplete="off" enctype="multipart/form-data">
                 <!-- Campo oculto para el módulo de orden compra -->
                 <input type="hidden" name="modulo_orden_gasto" value="registrar">
 
@@ -49,15 +51,22 @@
                     </div>
                 </div><!-- termina row -->
 
-                 <!-- Campo de selección -->
-        <div class="mb-3">
-            <label for="id_moneda" class="form-label">Tipos de moneda</label>
-            <select class='form-control' name='id_moneda' id='id_moneda' required>
-                <option value="">Selecciona un tipo de moneda</option>
-                <?php echo $opcionesTiposMoneda; ?>
-            </select>
-        </div>
-
+                <!-- Campo de selección -->
+                <div class="mb-3">
+                    <label for="id_moneda" class="form-label">Tipos de moneda</label>
+                    <select class='form-control' name='id_moneda' id='id_moneda' required>
+                        <option value="">Selecciona un tipo de moneda</option>
+                        <?php echo $opcionesTiposMoneda; ?>
+                    </select>
+                </div>
+                <!-- Campo de selección para el nombre de empleado -->
+                <div class="form-group mt-3">
+                    <label for="id_almacen_origen" class="form-label">Nombre de empleado que solicita:</label>
+                    <select class='form-control' name='id_empleado' id='id_empleado' required>
+                        <option value="">Empleado que solicita</option>
+                        <?php echo $opcionesEmpleados; ?>
+                    </select>
+                </div>
                 <!-- Botón para enviar el formulario -->
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
                     <button type="submit" class="btn btn-primary">Guardar</button>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-04-2024 a las 21:43:08
+-- Tiempo de generación: 25-04-2024 a las 04:55:29
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.0.28
 
@@ -183,7 +183,35 @@ INSERT INTO `detalle_orden_compra` (`id_detalle_orden`, `id_orden_compra`, `nume
 (51, 13, 112116, 'Fresa de punta esférica, 2 canales, diámetro corte 1/16\", longitud de corte 1/4\", longitud total 1-1/2\", radio completo 1/32\", zanco cilíndrico 1/8\", metal duro en acabado brillante, hélice 30°, fresado en copia en acero, inoxidable, cobre, no ferrosos, MCA. DORMER.', 5, 1, 19.50, 97.50),
 (52, 14, 1, 'MACHUELO HEMICOIDAL M4 x 0.7 ROYCO', 3, 1, 769.50, 2308.50),
 (53, 15, 1, 'Cortador largo, 4 gavilanes, diámetro corte 3/8\", longitud de corte 1\", longitud total 4\", longitud zanco reducido 1-3/8\", CARBURO, hélice 30°, para fresado profundo.', 4, 1, 124.50, 498.00),
-(54, 15, 2, 'Cortador largo, 4 gavilanes, diámetro corte 1/4\", longitud de corte 1\", longitud total 4\", longitud zanco reducido 1-1/4\", CARBURO, hélice 30°, para fresado profundo.', 4, 1, 89.50, 358.00);
+(54, 15, 2, 'Cortador largo, 4 gavilanes, diámetro corte 1/4\", longitud de corte 1\", longitud total 4\", longitud zanco reducido 1-1/4\", CARBURO, hélice 30°, para fresado profundo.', 4, 1, 89.50, 358.00),
+(55, 16, 4, 'MACHUELO HSS 1/8-40 ROYCO ', 10, 1, 154.00, 1540.00),
+(56, 17, 1, 'TUBO ACERO INOX CAL 20 C/C DE 1/4\" x 6 MTS', 3, 1, 490.00, 1470.00),
+(57, 18, 1, 'Barra de acero inoxidable 316 de 1-1/8\" x 1 M', 1, 3, 170.00, 170.00);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `detalle_orden_gasto`
+--
+
+CREATE TABLE `detalle_orden_gasto` (
+  `id_detalle_orden` int(11) NOT NULL,
+  `id_orden_gasto` int(11) NOT NULL,
+  `numero_partida` int(11) NOT NULL,
+  `nombre_producto` varchar(1000) NOT NULL,
+  `cantidad` int(11) NOT NULL,
+  `id_unidad` int(11) NOT NULL,
+  `precio_sin_IVA` decimal(10,2) NOT NULL,
+  `total` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `detalle_orden_gasto`
+--
+
+INSERT INTO `detalle_orden_gasto` (`id_detalle_orden`, `id_orden_gasto`, `numero_partida`, `nombre_producto`, `cantidad`, `id_unidad`, `precio_sin_IVA`, `total`) VALUES
+(1, 1, 1, 'aaaaa', 2, 1, 2.00, 4.00),
+(2, 2, 3, 'REFRACTOMETRO ANALOGO MARCA ARIANA, 0-32%, PARA LA DETERMINACION RAPIDA Y EXACTA DE CONCENTRACION DE EMULSIONES.', 1, 1, 150.87, 150.87);
 
 -- --------------------------------------------------------
 
@@ -213,22 +241,6 @@ INSERT INTO `empleados` (`id_empleado`, `nombre_empleado`, `puesto`, `area`) VAL
 (8, 'JONATHAN', 'AUXILIAR MAQUINADOS', 1),
 (9, 'ABRAHAM VILLEGAS', 'SUPERVISOR, AUX.', 1),
 (10, 'LUIS ANTONIO', 'SUPERVISOR MAQUINADOS', 1);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `montos_orden_compra`
---
-
-CREATE TABLE `montos_orden_compra` (
-  `id_montos` int(11) NOT NULL,
-  `id_orden_compra` int(11) DEFAULT NULL,
-  `subtotal_sin_IVA` decimal(10,2) DEFAULT NULL,
-  `IVA` decimal(10,2) DEFAULT NULL,
-  `total_con_IVA` decimal(10,2) DEFAULT NULL,
-  `id_moneda` int(11) DEFAULT NULL,
-  `cantidad_en_texto` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
 
 -- --------------------------------------------------------
 
@@ -345,7 +357,48 @@ INSERT INTO `movimientos` (`id_movimiento`, `id_producto`, `id_almacen_origen`, 
 (122, 501, 1, 3, 60, 1, 'SE ENTREGAN PARA ENSAMBLE', '2024-04-17'),
 (123, 502, 1, 3, 60, 1, 'SE ENTREGAN PARA ARMADO', '2024-04-17'),
 (124, 503, 1, 3, 5, 1, 'PARA ARMADO', '2024-04-17'),
-(125, 518, 1, 2, 1, 9, 'SE UTILIZA EN EL AREA', '2024-04-19');
+(125, 518, 1, 2, 1, 9, 'SE UTILIZA EN EL AREA', '2024-04-19'),
+(126, 510, 1, 2, 2, 8, 'Se Entrega para su uso en el area', '2024-04-22'),
+(127, 397, 1, 3, 27, 1, 'Se utilizan en Armado de kits', '2024-04-22'),
+(128, 510, 1, 2, 2, 8, 'Lo solicita jonathan en el area', '2024-04-22'),
+(129, 396, 1, 3, 30, 1, 'Se entregan para ensamble', '2024-04-23'),
+(130, 466, 1, 3, 1, 4, 'Se utiliza en el area', '2024-04-23'),
+(131, 216, 1, 2, 1, 8, 'Se requiere para el area', '2024-04-23'),
+(132, 474, 1, 3, 1, 1, 'PARA ENSAMBLE', '2024-04-23'),
+(133, 112, 1, 2, 1, 8, 'Se utiliza en area', '2024-04-24'),
+(134, 499, 1, 3, 1, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(135, 473, 1, 3, 2, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(136, 527, 1, 3, 2, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(137, 489, 1, 3, 1, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(138, 353, 1, 3, 2, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(139, 474, 1, 3, 2, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(140, 503, 1, 3, 1, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(141, 490, 1, 3, 2, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(142, 397, 1, 3, 5, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(143, 358, 1, 3, 4, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(144, 505, 1, 3, 2, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(145, 475, 1, 3, 12, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(146, 352, 1, 3, 2, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(147, 359, 1, 3, 2, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(148, 396, 1, 3, 8, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(149, 476, 1, 3, 8, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(150, 350, 1, 3, 2, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(151, 421, 1, 3, 1, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(152, 507, 1, 3, 4, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(153, 472, 1, 3, 1, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(154, 525, 1, 3, 8, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(155, 526, 1, 3, 4, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(156, 531, 1, 3, 2, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(157, 398, 1, 3, 1, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(158, 540, 1, 3, 2, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(159, 541, 1, 3, 2, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(160, 423, 1, 3, 10, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(161, 484, 1, 3, 1, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(162, 422, 1, 3, 4, 1, 'para armado de kit de procedimiento', '2024-04-24'),
+(163, 567, 1, 2, 1, 9, 'SE REQUIERE EN AREA', '2024-04-24'),
+(164, 508, 1, 2, 1, 10, 'SE REQUIERE EN AREA', '2024-04-24'),
+(165, 563, 1, 2, 1, 10, 'SE REQUIERE EN AREA', '2024-04-24'),
+(166, 564, 1, 2, 1, 10, 'SE REQUIERE EN AREA', '2024-04-24');
 
 -- --------------------------------------------------------
 
@@ -358,29 +411,56 @@ CREATE TABLE `ordenes_compra` (
   `numero_orden` varchar(20) DEFAULT NULL,
   `fecha` date DEFAULT current_timestamp(),
   `id_proveedor` int(11) DEFAULT NULL,
-  `id_moneda` int(11) NOT NULL
+  `id_moneda` int(11) NOT NULL,
+  `id_empleado` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
 
 --
 -- Volcado de datos para la tabla `ordenes_compra`
 --
 
-INSERT INTO `ordenes_compra` (`id_orden_compra`, `numero_orden`, `fecha`, `id_proveedor`, `id_moneda`) VALUES
-(1, 'JJHJ', '2024-02-12', 4, 1),
-(2, 'ROC-001', '2024-02-14', 2, 1),
-(3, 'ROC-002', '2024-02-16', 2, 1),
-(4, 'ROC-003', '2024-03-20', 2, 1),
-(5, 'ROC-004', '2024-04-03', 16, 1),
-(6, 'ROC-047', '2024-04-03', 2, 1),
-(7, 'ROC-048', '2024-04-11', 11, 2),
-(8, 'ROC-049', '2024-04-12', 18, 1),
-(9, 'ROC-050', '2024-04-15', 17, 1),
-(10, 'ROC-051', '2024-04-15', 17, 1),
-(11, 'ROC-052', '2024-04-16', 23, 1),
-(12, 'ROC-053', '2024-04-16', 2, 1),
-(13, 'ROC-054', '2024-04-16', 11, 2),
-(14, 'ROC-055', '2024-04-17', 2, 1),
-(15, 'ROC-056', '2024-04-17', 11, 2);
+INSERT INTO `ordenes_compra` (`id_orden_compra`, `numero_orden`, `fecha`, `id_proveedor`, `id_moneda`, `id_empleado`) VALUES
+(1, 'JJHJ', '2024-02-12', 4, 1, 6),
+(2, 'ROC-001', '2024-02-14', 2, 1, 6),
+(3, 'ROC-002', '2024-02-16', 2, 1, 6),
+(4, 'ROC-003', '2024-03-20', 2, 1, 6),
+(5, 'ROC-004', '2024-04-03', 16, 1, 6),
+(6, 'ROC-047', '2024-04-03', 2, 1, 6),
+(7, 'ROC-048', '2024-04-11', 11, 2, 6),
+(8, 'ROC-049', '2024-04-12', 18, 1, 6),
+(9, 'ROC-050', '2024-04-15', 17, 1, 6),
+(10, 'ROC-051', '2024-04-15', 17, 1, 6),
+(11, 'ROC-052', '2024-04-16', 23, 1, 6),
+(12, 'ROC-053', '2024-04-16', 2, 1, 6),
+(13, 'ROC-054', '2024-04-16', 11, 2, 6),
+(14, 'ROC-055', '2024-04-17', 2, 1, 6),
+(15, 'ROC-056', '2024-04-17', 11, 2, 6),
+(16, 'ROC-057', '2024-04-23', 2, 1, 6),
+(17, 'ROC-058', '2024-04-23', 1, 1, 6),
+(18, 'ROC-059', '2024-04-24', 1, 1, 6);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `ordenes_gasto`
+--
+
+CREATE TABLE `ordenes_gasto` (
+  `id_orden_gasto` int(11) NOT NULL,
+  `numero_orden` varchar(20) NOT NULL,
+  `fecha` date NOT NULL DEFAULT current_timestamp(),
+  `id_proveedor` int(11) NOT NULL,
+  `id_moneda` int(11) NOT NULL,
+  `id_empleado` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `ordenes_gasto`
+--
+
+INSERT INTO `ordenes_gasto` (`id_orden_gasto`, `numero_orden`, `fecha`, `id_proveedor`, `id_moneda`, `id_empleado`) VALUES
+(1, 'ROG-001', '2024-04-23', 4, 1, 2),
+(2, 'ROG-002', '2024-04-24', 11, 2, 10);
 
 -- --------------------------------------------------------
 
@@ -669,7 +749,7 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (318, 'H-0152', 'Broca HSS 1/8\" larga Broca HSS 1/8\" larga', 50.75, 0, '2024-01-08 00:00:00', 3, 2, 1, 1, 'IMG20231122115411.jpg'),
 (319, 'I-0044', 'Playo para empaque rollo chico Playo para empaque rollo chico', 40.00, 11, '2024-01-08 00:00:00', 2, 4, 1, 1, 'IMG20231114130404.jpg'),
 (320, 'ACTUALIZAR', 'ACTUALIZAR', 0.00, 0, '2024-01-08 00:00:00', 10, 3, 1, 1, 'IMG20231116145914.jpg'),
-(321, 'MARC001-4K', 'Varilla para Nivel Varilla para Nivel', 25.00, 0, '2024-01-08 00:00:00', 9, 3, 1, 1, 'Captura de pantalla 2023-11-23 140637.png'),
+(321, 'MARC001-4K', 'VARILLA PARA NIVEL', 25.00, 0, '2024-01-08 00:00:00', 9, 3, 1, 1, 'Captura de pantalla 2023-11-23 140637.png'),
 (322, 'MARC001-5R', 'Pin de Marca Central Pin de Marca Central', 10.00, 0, '2024-01-08 00:00:00', 8, 3, 1, 1, 'Captura de pantalla 2023-11-23 141330.png'),
 (323, 'I-0045', 'Cuchillas, Navajas de repuesto de 18mm Cuchillas, Navajas de repuesto de 18mm', 3.14, 17, '2024-01-08 00:00:00', 1, 4, 1, 1, '.trashed-1703363215-IMG20231123142433.jpg'),
 (324, 'H-0153', 'Lima Plana Muza de 8\" con mango Lima Plana Muza de 8\" con mango', 65.52, 2, '2024-01-08 00:00:00', 1, 4, 1, 1, 'IMG20231123143139.jpg'),
@@ -690,16 +770,16 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (344, 'H-0164', 'BROCA HSS NUMERICA \"#30\" CLEV', 43.50, 0, '2024-01-08 00:00:00', 3, 2, 1, 1, 'IMG20240102133730.jpg'),
 (345, 'H-0165', 'Broca HSS Alfabetica Letra \"N\" CLEV', 85.55, 5, '2024-01-08 00:00:00', 3, 2, 1, 1, 'IMG20240102134427.jpg'),
 (346, 'H-0166', 'Broca HSS Numerica \"#15\" CLEV', 50.75, 4, '2024-01-08 00:00:00', 3, 2, 1, 1, 'IMG20240102133812.jpg'),
-(347, 'H-0167', 'RIMA HSS 3/16\"', 913.50, 0, '2024-01-08 00:00:00', 3, 2, 1, 1, 'IMG20240102134304.jpg'),
-(350, 'MARC001-6F', 'PERNO PARA PANTALLA CENTRAL DE 1 1/2\" x 1/4\"', 10.00, 68, '2024-01-08 00:00:00', 9, 3, 1, 1, 'PERNO_PARA_PANTALLA_46.jpg'),
+(347, 'H-0167', 'RIMA HSS 3/16\"', 913.50, 2, '2024-01-08 00:00:00', 3, 2, 1, 1, 'IMG20240102134304.jpg'),
+(350, 'MARC001-6F', 'PERNO PARA PANTALLA CENTRAL DE 1/4\" x 1-1/2\", PERNO RECTIFICADO ACERO INOXIDABLE DE 1/4\" x 1-1/2\"', 10.00, 72, '2024-01-08 00:00:00', 9, 3, 1, 1, 'PERNO_PARA_PANTALLA_46.jpg'),
 (351, 'ACTUALIZAR', 'ACTUALIZAR', 0.00, 0, '2024-01-08 00:00:00', 10, 4, 1, 1, 'PERNO_2_DE_PANTALLA_CENTRAL_DE_1_1_4_x_3_16_63.jpg'),
-(352, 'MARC001-5W', 'PERNO 2 PARA PANTALLA DERECHA O IZQUIERDA DE 1\" x 5/16\"', 8.21, 60, '2024-01-08 00:00:00', 9, 4, 1, 1, 'PERNO_2_PARA_PANTALLA_DERECHA_O_IZQUIERDA_DE_1_pulgada_x_5-16_pulgadas_89.jpg'),
+(352, 'MARC001-5W', 'PERNO 2 PARA PANTALLA DERECHA O IZQUIERDA DE 5/16\" x 1\"', 8.21, 60, '2024-01-08 00:00:00', 9, 4, 1, 1, 'PERNO_2_PARA_PANTALLA_DERECHA_O_IZQUIERDA_DE_1_pulgada_x_5-16_pulgadas_89.jpg'),
 (353, 'MARC001-4X', 'IMAN DE NEODIMIO CUADRADO DE 15X15X3MM', 14.09, 96, '2024-01-08 00:00:00', 9, 12, 1, 1, 'IMAN_DE_NEODIMIO_DE_15X15X3MM_96.jpg'),
 (354, 'MARC001-5D', 'BASE INFERIOR', 116.17, 37, '2024-01-08 00:00:00', 9, 3, 1, 1, 'BASE_INFERIOR_32.png'),
 (355, 'MARC001-6H', 'PANTALLA CENTRAL', 113.18, 20, '2024-01-08 00:00:00', 9, 3, 1, 1, 'PANTALLA_CENTRAL_28.png'),
 (356, 'MARC001-5F', 'BASTIDOR MARCO CPI', 325.38, 25, '2024-01-08 00:00:00', 9, 3, 1, 1, 'BASTIDOR_MARCO_CPI_19.png'),
 (358, 'MARC001-5M', 'IMAN DE NEODIMIO REDONDO 3/4 x 0.100', 26.68, 95, '2024-01-14 00:00:00', 9, 25, 1, 1, 'IMG20231122153955.jpg'),
-(359, 'MARC001-5Z', 'PERNO 1 PARA PANTALLA DERECHA O IZQUIERDA, PERNO SOLIDO RECTIFICADO ACERO INOXIDABLE DE  1\" x 1/4\"', 10.00, 41, '2024-01-15 00:00:00', 9, 4, 1, 1, 'perno1pantalla.png'),
+(359, 'MARC001-5Z', 'PERNO 1 PARA PANTALLA DERECHA O IZQUIERDA, PERNO SOLIDO RECTIFICADO ACERO INOXIDABLE DE  1/4\" x 1\"', 10.00, 41, '2024-01-15 00:00:00', 9, 4, 1, 1, 'perno1pantalla.png'),
 (360, 'MARC001-7M', 'SOPORTE NASAL', 10.00, 0, '2024-01-16 00:00:00', 9, 3, 1, 1, 'SOPORTE_NASAL_77.png'),
 (361, 'MARC001-7W', 'CONECTOR 2 HORQUILLA', 10.00, 0, '2024-01-16 00:00:00', 9, 3, 1, 1, 'CONECTOR_2_HORQUILLA_28.png'),
 (362, 'MARC001-7K', 'CONECTOR 1 HORQUILLA', 10.00, 0, '2024-01-16 00:00:00', 9, 3, 1, 1, 'CONECTOR_1_HORQUILLA_12.png'),
@@ -707,13 +787,13 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (364, 'MARC001-7Y', 'TRAVESAÑO PARA PERNO', 20.00, 0, '2024-01-16 00:00:00', 8, 3, 1, 1, 'TRAVESAÑO_PARA_PERNO_39.png'),
 (365, 'MARC001-8A', 'PERNO AJUSTADOR GRANDE', 30.00, 0, '2024-01-16 00:00:00', 9, 3, 1, 1, 'TORNILLO_GRANDE_15.png'),
 (366, 'H-0168', 'BOQUILLA ER32 3/16\" (5-4)', 539.00, 0, '2024-01-16 00:00:00', 3, 2, 1, 1, 'BOQUILLA_ER32_17.jpg'),
-(367, 'H-0169', 'MACHUELO HELICOIDAL M4 x 0.7 ROYCO', 769.50, 2, '2024-01-16 00:00:00', 3, 2, 1, 1, 'MACHUELO_HELICOIDAL_M4_x_0.7_ROYCO_28.jpg'),
+(367, 'H-0169', 'MACHUELO HELICOIDAL M4 x 0.7 ROYCO', 769.50, 5, '2024-01-16 00:00:00', 3, 2, 1, 1, 'MACHUELO_HELICOIDAL_M4_x_0.7_ROYCO_28.jpg'),
 (368, 'H-0170', 'MACHUELO HELICOIDAL M5 x 0.8 ROYCO', 769.50, 2, '2024-01-16 00:00:00', 3, 2, 1, 1, 'MACHUELO_HELICOIDAL_M5_x_0.8_ROYCO_21.jpg'),
 (369, 'H-0171', 'MACHUELO HELICOIDAL M6 x 1 ROYCO', 769.50, 2, '2024-01-16 00:00:00', 3, 2, 1, 1, 'MACHUELO_HELICOIDAL_M6_x_1_ROYCO_68.jpg'),
 (370, 'H-0172', 'MACHUELO GUN 2F  3/16\" - 24 ROYCO 2B 2S/P', 152.25, 4, '2024-01-16 00:00:00', 3, 2, 1, 1, 'MACHUELO_GUN_2F__3_16_-_24_ROYCO_33.jpg'),
 (371, 'H-0173', 'CORTADOR VERTICAL RECTO 1/2\" 4FL ALTIN', 1222.00, 2, '2024-01-16 00:00:00', 3, 2, 1, 1, 'CORTADOR_VERTICAL_RECTO_1_2_4FL_ALTIN_27.jpg'),
 (372, 'H-0174', 'CORTADOR DE CARBURO LARGO 1/8\" x 4\" 4FL BRILLANTE', 504.00, 1, '2024-01-16 00:00:00', 3, 2, 1, 1, 'CORTADOR_DE_CARBURO_LARGO_1_8_x_4_4FL_BRILLANTE_75.jpg'),
-(373, 'H-0175', 'BROCA DE CENTRO #1 CLEV', 72.50, 1, '2024-01-16 00:00:00', 3, 2, 1, 1, 'BROCA_DE_CENTRO_1_CLEV_0.jpg'),
+(373, 'H-0175', 'BROCA DE CENTRO #1 CLEV', 72.50, 6, '2024-01-16 00:00:00', 3, 2, 1, 1, 'BROCA_DE_CENTRO_1_CLEV_0.jpg'),
 (374, 'H-0176', 'CORTADOR VERTOCAL A.V. 4F 3mm GREENFIELD', 145.00, 1, '2024-01-16 00:00:00', 3, 2, 1, 1, 'CORTADOR_VERTOCAL_A.V._4F_3mm_GREEBFIELD_59.jpg'),
 (375, 'H-0177', 'MACHUELO HELICOIDAL N10-24 ROYCO', 540.00, 2, '2024-01-16 00:00:00', 3, 2, 1, 1, 'MACHUELO_HELICOIDAL_N10-24_ROYCO_95.jpg'),
 (376, 'MARC001-5K', 'VARILLA DE NIVEL', 4.63, 0, '2024-01-18 00:00:00', 9, 3, 1, 1, 'VARILLA_DE_NIVEL_18.png'),
@@ -737,7 +817,7 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (394, 'MP-VC-250-8', 'CAPUCHON, ROUND VINYL CAPS, 0.250 X 0.350 X .0500', 0.26, 1000, '2024-02-07 10:06:02', 9, 10, 1, 2, 'CAPUCHON,_ROUND_VINYL_CAPS,_0.250_X_0.350_X_.0500_97.jpg'),
 (395, 'MP-VC-437-16', 'CAPUCHON ROUND VINYL CAPS 0.437 X 0.560 X 1.000', 0.16, 2500, '2024-02-07 10:08:05', 9, 10, 1, 2, 'CAPUCHON_ROUND_VINYL_CAPS_0.437_X_0.560_X_1.000_92.jpg'),
 (396, 'MARC001-6A', 'ARANDELA PLANA DIAMETRO 12.7MM, SPECIAL FLAT WASHER .750 X .193 X .040 W-07514', 0.12, 1000, '2024-02-07 10:10:09', 9, 10, 1, 2, 'ARANDELA_SPECIAL_FLAT_WASHER_.750_X_.193_X_.040_82.jpg'),
-(397, 'MARC001-5E', 'ARANDELA PLANA MESA, SPECIAL FLAT WASHER .500 X .265 X .031  W-5031', 0.06, 1000, '2024-02-07 10:12:24', 9, 10, 1, 2, 'ARANDELA_SPECIAL_FLAT_WASHER_.500_X_.265_X_.031_2.jpg'),
+(397, 'MARC001-5E', 'ARANDELA PLANA MESA, SPECIAL FLAT WASHER .500 X .265 X .031  W-5031', 0.06, 973, '2024-02-07 10:12:24', 9, 10, 1, 2, 'ARANDELA_SPECIAL_FLAT_WASHER_.500_X_.265_X_.031_2.jpg'),
 (398, 'MARC001-7D', 'ARANDELA PLANA 1.6MM, SPECIAL FLAT WASHER .750 X .257 X .062 W-07530', 0.08, 1000, '2024-02-07 10:17:52', 9, 10, 1, 2, 'ARANDELA_SPECIAL_FLAT_WASHER_.750_X_.257_X_.062_59.jpg'),
 (399, 'H-0192', 'INSERTO DE CARBURO NG2031RK KC5025 KENNAMETAL', 469.00, 10, '2024-02-07 12:23:14', 3, 2, 1, 1, 'INSERTO_DE_CARBURO_NG2031RK_KC5025_KENNAMETAL_82.jpg'),
 (400, 'H-0193', 'CORTADOR DE CARBURO 3/16 x 1 Y MEDIO CORTE x 4 LT 4 4FL BRILLANTE', 672.00, 1, '2024-02-08 10:35:15', 3, 2, 1, 1, 'CORTADOR_DE_CARBURO_3_16_x_1_Y_MEDIO_CORTE_x_4_LT_4_4FL_BRILLANTE_64.jpg'),
@@ -760,10 +840,10 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (418, 'H-0208', 'SIERRA CINTA LONGITUD DE 2,362mm (93\", FABRICACION ESPECIAL), DIENTE M42, COMBINADO, MCA. GARANT,, TECNOLOGIA ALEMANA', 44.96, 6, '2024-03-19 13:42:24', 3, 11, 1, 2, 'SIERRA_CINTA_LONGITUD_DE_2,362mm_(93,_FABRICACION_ESPECIAL),_DIENTE_M42,_COMBINADO,_MCA._GARANT,,_TECNOLOGIA_ALEMANA_90.jpg'),
 (419, 'H-0209', 'BROCA DE CENTROS 1.6mm, EXTRA LARGA, ACERO AL COBALTO (HSS+E), MCA. GARANT. TECNOLOGIA ALEMANA', 26.80, 2, '2024-03-19 13:46:50', 3, 11, 1, 2, 'BROCA_DE_CENTROS_1.6mm,_EXTRA_LARGA,_ACERO_AL_COBALTO_(HSS+E),_MCA._GARANT._TECNOLOGIA_ALEMANA_31.jpg'),
 (420, 'H-0210', 'BROCA DE CENTROS 3mm, EXTRA LARGA, ACERO AL COBALTO (HSS+E), MCA. GARANT. TECNOLOGIA ALEMANA.', 20.50, 2, '2024-03-19 13:48:03', 3, 11, 1, 2, 'BROCA_DE_CENTROS_3mm,_EXTRA_LARGA,_ACERO_AL_COBALTO_(HSS+E),_MCA._GARANT._TECNOLOGIA_ALEMANA._41.jpg'),
-(421, 'MARC001-6J', 'TORNILLO PARA PANTALLA CENTRAL (3/16)', 5.00, 65, '2024-03-21 14:49:06', 9, 13, 1, 1, 'TORNILLO_PARA_PANTALLA_CENTRAL_3_16_93.jpg'),
-(422, 'MARC001-8E', 'OPRESOR 1/4\"', 4.00, 100, '2024-03-21 14:54:37', 9, 14, 1, 1, 'OPRESOR_14_41.jpg'),
-(423, 'MARC001-8C', 'ORING PARA TRAVESAÑO, PERNOS', 2.50, 150, '2024-03-21 15:28:26', 9, 13, 1, 1, 'ORING_PARA_TRAVESAÑO,_PERNOS_5.jpg'),
-(424, 'I-0053', 'MOCHILA PARA ARTICULADOR', 400.00, 152, '2024-03-22 14:52:12', 8, 4, 1, 1, 'MOCHILA_PARA_ARTICULADOR_93.jpg'),
+(421, 'MARC001-6J', 'TORNILLO PARA PANTALLA CENTRAL, TORNILLO SOCKET CILINDRO NEGRO NC- 10-24 x 3/8\"', 5.00, 65, '2024-03-21 14:49:06', 9, 13, 1, 1, 'TORNILLO_PARA_PANTALLA_CENTRAL_3_16_93.jpg'),
+(422, 'MARC001-8E', 'OPRESOR 1/4\", ANILLO DE RETENCION 1/4\"', 4.00, 100, '2024-03-21 14:54:37', 9, 14, 1, 1, 'OPRESOR_14_41.jpg'),
+(423, 'MARC001-8C', 'ORING PARA TRAVESAÑO, PERNOS, D.I 1.78 D.E. 5.34', 2.50, 150, '2024-03-21 15:28:26', 9, 13, 1, 1, 'ORING_PARA_TRAVESAÑO,_PERNOS_5.jpg'),
+(424, 'MARC001-8X', 'MOCHILA PARA ARTICULADOR', 400.00, 149, '2024-03-22 14:52:12', 9, 4, 1, 1, 'MOCHILA_PARA_ARTICULADOR_93.jpg'),
 (425, 'pru-001', 'prueba', 10.00, 2, '2024-03-29 23:14:07', 10, 4, 1, 1, 'prueba_93.png');
 INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `precio`, `stock`, `fecha_registro`, `id_categoria`, `id_proveedor`, `id_unidad`, `id_moneda`, `url_imagen`) VALUES
 (426, 'H-0211', 'Escariador manual con cuchillas de hélice lenta a izquierda, diámetro 4.76mm (3/16\") longitud total 87mm, longitud de cuchilla de 44mm, Para escariar agujeros tolerancia H7, HSS DOMER', 45.00, 1, '2024-04-01 12:27:17', 3, 11, 1, 2, 'Escariador_manual_con_cuchillas_de_h_lice_lenta_a_izquierda_di_metro_4_76mm_3_16_longitud_total_87mm_longitud_de_cuchilla_de_44mm_Para_escariar_agujeros_tolerancia_H7_HSS_DOMER_11.jpg'),
@@ -812,13 +892,13 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (469, 'IC-0018', 'LIJA DE AGUA 800', 7.33, 5, '2024-04-15 10:43:00', 2, 17, 1, 1, 'LIJA_DE_AGUA_800_51.jpg'),
 (470, 'IC-0019', 'LIJA DE AGUA 1200', 7.33, 10, '2024-04-15 10:45:14', 2, 17, 1, 1, 'LIJA_DE_AGUA_1200_73.jpg'),
 (471, 'IC-0020', 'LIJA DE AGUA 1500', 7.33, 9, '2024-04-15 10:46:47', 2, 17, 1, 1, 'LIJA_DE_AGUA_1500_26.jpg'),
-(472, 'MARC001-6N', 'PERNO PARA CLIP, PERNO SOLIDO RECTIFICADO 3/8\" X 1-1/4\"', 12.17, 50, '2024-04-15 15:45:02', 9, 14, 1, 1, 'PERNO_PARA_CLIP_PERNO_SOLIDO_RECTIFICADO_3_8_X_1_1_4__55.jpg'),
+(472, 'MARC001-6N', 'PERNO PARA CLIP, PERNO SOLIDO RECTIFICADO ACERO ALEADO 3/8\" X 1-1/4\"', 12.17, 50, '2024-04-15 15:45:02', 9, 14, 1, 1, 'PERNO_PARA_CLIP_PERNO_SOLIDO_RECTIFICADO_3_8_X_1_1_4__55.jpg'),
 (473, 'MARC001-4M', 'PERNO CENTRADOR PARA CLIP, PERNO SOLIDO RECTIFICADO 1/8 \" X 1\"', 2.82, 100, '2024-04-15 16:21:38', 9, 14, 1, 1, 'PERNO_CENTRADOR_PARA_CLIP_PERNO_SOLIDO_RECTIFICADO_1_8_X_1__72.jpg'),
 (474, 'MARC001-7Ñ', 'TORNILLO PARA CONECTOR, TORNILLO ALLEN SOCKET CILINDRO INOXIDABLE A2 M4x20M', 0.94, 50, '2024-04-15 16:25:37', 9, 14, 1, 1, 'TORNILLO_PARA_CONECTOR_TORNILLO_ALLEN_SOCKET_CILINDRO_INOXIDABLE_A2_M4x20M_90.jpg'),
-(475, 'MARC001-5S', 'INSERTO, OPRESOR ALLEN INOXIDABLE A2 MILIMETRICO M5 X 6MM', 0.53, 300, '2024-04-15 16:36:20', 9, 14, 1, 1, 'INSERTO_OPRESOR_ALLEN_INOXIDABLE_A2_MILIMETRICO_M5_X_6M_8.jpg'),
+(475, 'MARC001-5S', 'INSERTO, OPRESOR ALLEN INOXIDABLE A2 MILIMETRICO M5 X 6MM', 0.53, 450, '2024-04-15 16:36:20', 9, 14, 1, 1, 'INSERTO_OPRESOR_ALLEN_INOXIDABLE_A2_MILIMETRICO_M5_X_6M_8.jpg'),
 (476, 'MARC001-6B', 'TORNILLO 1 (M3), TORNILLO ALLEN SOCKET CILINDRO INOXIDABLE A2 M3 x 6MM', 0.48, 200, '2024-04-16 09:20:16', 9, 14, 1, 1, 'TORNILLO_1_M3_TORNILLO_ALLEN_SOCKET_CILINDRO_INOXIDABLE_A2_M3_x_6MM_41.jpg'),
-(477, 'MARC001-9B', 'LLAVE EXAGONAL ALLEN TIPO \"L\" METRICA M3.0 (3MM)', 2.89, 30, '2024-04-16 09:39:42', 9, 14, 1, 1, 'LLAVE_EXAGONAL_ALLEN_TIPO_L_METRICA_M3_0_3MM__7.jpg'),
-(478, 'MARC001-8Y', 'LLAVE EXAGONAL ALLEN TIPO \"L\" METRICA M2.5 (2.5MM)', 2.54, 20, '2024-04-16 09:41:37', 9, 14, 1, 1, 'LLAVE_EXAGONAL_ALLEN_TIPO_L_METRICA__43.jpg'),
+(477, 'MARC001-9B', 'LLAVE HEXAGONAL ALLEN TIPO \"L\" METRICA M3.0 (3MM)', 2.89, 50, '2024-04-16 09:39:42', 9, 14, 1, 1, 'LLAVE_EXAGONAL_ALLEN_TIPO_L_METRICA_M3_0_3MM__7.jpg'),
+(478, 'MARC001-8Y', 'LLAVE EXAGONAL ALLEN TIPO \"L\" METRICA M2.5 (2.5MM)', 2.54, 40, '2024-04-16 09:41:37', 9, 14, 1, 1, 'LLAVE_EXAGONAL_ALLEN_TIPO_L_METRICA__43.jpg'),
 (479, 'IC-0021', 'ADHESIVO EPOXICO EN JERINGA 25 ML (0.84 OZ) TRANSPARENTE 5 MINUTOS', 115.56, 2, '2024-04-16 09:47:27', 2, 14, 1, 1, 'ADHESIVO_EPOXICO_EN_JERINGA_25_ML_0_84_OZ_TRANSPARENTE_5_MINUTOS_43.jpg'),
 (480, 'H-0233', 'MANERAL PARA MACHUELO AJUSTABLE 1/16\" A 3/8\"', 62.02, 1, '2024-04-16 09:51:08', 1, 14, 1, 1, 'MANERAL_PARA_MACHUELO_AJUSTABLE_1_16_A_3_8__20.jpg'),
 (481, 'H-0234', 'MANERAL PARA MACHUELO AJUSTABLE 3/32\" A 3/8\"', 81.40, 1, '2024-04-16 09:52:07', 1, 14, 1, 1, 'MANERAL_PARA_MACHUELO_AJUSTABLE_3_32_A_3_8__31.jpg'),
@@ -851,8 +931,8 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (508, 'H-0236', 'Fresa de punta esférica, 2 canales, diámetro corte 1/16\", longitud decorte 1/4\", Longitud total 1-1/2\", radio completo 1/32\", zanco cilíndrico1/8\", metal duro en acabado brillante,', 19.50, 5, '2024-04-19 12:23:19', 3, 11, 1, 2, 'Fresa_de_punta_esf_rica_2_canales_di_metro_corte_1_16_longitud_decorte_1_4_Longitud_total_1_1_2_radio_completo_1_32_zanco_cil_ndrico1_8_metal_duro_en_acabado_brillante__47.jpg'),
 (509, 'H-0237', 'BROCA DE CENTROS N1, 9437925KL25SW7', 6.42, 5, '2024-04-19 13:01:23', 3, 11, 1, 2, 'BROCA_DE_CENTROS_N1_9437925KL25SW7_85.jpg'),
 (510, 'H-0238', 'MACHUELO HELICOIDAL 1/8-40, 3KL792579SRHG4 ', 50.82, 5, '2024-04-19 13:37:19', 3, 11, 1, 2, 'MACHUELO_HELICOIDAL_1_8_40_3KL792579SRHG4__55.jpg'),
-(511, 'H-0239', 'BROCA HSS NUMERICA 37, ASRHG434343KLB ', 2.19, 12, '2024-04-19 13:54:33', 3, 11, 1, 2, 'BROCA_HSS_NUMERICA_37_ASRHG434343KLB__5.jpg'),
-(512, 'H-0240', 'BROCA HSS NUMERICA 38, R79792579SRMMS ', 2.19, 12, '2024-04-19 13:57:26', 3, 11, 1, 2, 'BROCA_HSS_NUMERICA_38_R79792579SRMMS__59.jpg'),
+(511, 'H-0239', 'BROCA HSS NUMERICA 37, ASRHG434343KLB ', 2.19, 18, '2024-04-19 13:54:33', 3, 11, 1, 2, 'BROCA_HSS_NUMERICA_37_ASRHG434343KLB__5.jpg'),
+(512, 'H-0240', 'BROCA HSS NUMERICA 38, R79792579SRMMS ', 2.19, 18, '2024-04-19 13:57:26', 3, 11, 1, 2, 'BROCA_HSS_NUMERICA_38_R79792579SRMMS__59.jpg'),
 (513, 'H-0241', 'Extensión reforzada aterrizada 8 m 3x14 AWG, Volteck', 219.82, 1, '2024-04-19 14:19:24', 5, 17, 1, 1, 'Extensi_n_reforzada_aterrizada_8_m_3x14_AWG_Volteck_48.jpg'),
 (514, 'H-0242', 'Extensión reforzada aterrizada 4 m 3x14 AWG, Volteck', 107.75, 1, '2024-04-19 15:06:11', 5, 17, 1, 1, 'Extensi_n_reforzada_aterrizada_4_m_3x14_AWG_Volteck_98.jpg'),
 (515, 'H-0243', 'Pinza de presión 9\", punta larga, Truper', 139.65, 1, '2024-04-19 15:20:55', 1, 17, 1, 1, 'Pinza_de_presi_n_9_punta_larga_Truper_30.jpg'),
@@ -864,7 +944,50 @@ INSERT INTO `productos` (`id_producto`, `codigo_producto`, `nombre_producto`, `p
 (521, 'H-0249', 'Pinza punta recta 7\" para abrir anillos, mango de PVC', 171.55, 1, '2024-04-19 15:42:48', 1, 17, 1, 1, 'Pinza_punta_recta_7_para_abrir_anillos_mango_de_PVC_87.jpg'),
 (522, 'H-0250', 'Lija de agua grano 240 de carburo de silicio, Truper', 7.32, 6, '2024-04-19 15:43:52', 2, 17, 1, 1, 'Lija_de_agua_grano_240_de_carburo_de_silicio_Truper_10.jpg'),
 (523, 'H-0251', 'ACTUALIZAR', 0.00, 0, '2024-04-19 15:46:07', 10, 17, 1, 1, 'Lija_de_agua_grano_120_de_carburo_de_silicio_Truper_39.jpg'),
-(524, 'H-0252', 'Lija de agua grano 280 de carburo de silicio, Truper', 7.32, 4, '2024-04-19 15:47:20', 2, 17, 1, 1, 'Lija_de_agua_grano_280_de_carburo_de_silicio_Truper_57.jpg');
+(524, 'H-0252', 'Lija de agua grano 280 de carburo de silicio, Truper', 7.32, 4, '2024-04-19 15:47:20', 2, 17, 1, 1, 'Lija_de_agua_grano_280_de_carburo_de_silicio_Truper_57.jpg'),
+(525, 'MARC001-6Ñ', 'CAMISA 1 (1/4\"), D.I. .250\", D.E. .350\" L. .500\"  MP-VC-250-8', 0.07, 980, '2024-04-22 10:17:42', 9, 10, 1, 2, 'CAMISA_1_1_4_D_I_250_D_E_350_L_500_MP_VC_250_8_58.png'),
+(526, 'MARC001-6P', 'CAMISA 2, D.I. 0.437\", D.E. 0.560\", L. 1\", MP-VC-437-16', 0.14, 2480, '2024-04-22 10:21:30', 9, 10, 1, 2, 'CAMISA_2_D_I_0_437_D_E_0_560_L_1_MP_VC_437_16_42.png'),
+(527, 'MARC001-6Q', 'ORING PARA CONDILO, D.I. 0.74mm, D.E. 2.78mm', 0.50, 95, '2024-04-22 10:27:31', 9, 4, 1, 1, 'ORING_PARA_CONDILO_D_I_0_74mm_D_E_2_78mm_84.png'),
+(528, 'MARC001-6R', 'SOPORTE HORIZONTAL PARA HORQUILLA', 15.00, 0, '2024-04-22 10:35:21', 9, 3, 1, 1, 'SOPORTE_HORIZONTAL_PARA_HORQUILLA_57.png'),
+(529, 'MARC001-6S', 'VARILLA VERTICAL PARA NIÑOS', 15.00, 0, '2024-04-22 10:38:21', 9, 3, 1, 1, 'VARILLA_VERTICAL_PARA_NI_OS_53.png'),
+(530, 'MARC001-6T', 'TORNILLO PARA VARILLA DE SOPORTE', 15.00, 0, '2024-04-22 10:40:27', 9, 3, 1, 1, 'TORNILLO_PARA_VARILLA_DE_SOPORTE_20.png'),
+(531, 'MARC001-6X', 'PERNO PARA CENTRADOR ANALOGO, PERNO SOLIDO RECTIFICADO ACERO INOXIDABLE, 1/16\" x 7/16\"', 7.48, 49, '2024-04-22 10:50:48', 9, 14, 1, 1, 'PERNO_PARA_CENTRADOR_ANALOGO_0.png'),
+(532, 'MARC001-6Y', 'BASE DE CALIBRACION SUPERIOR ANALOGO', 75.00, 0, '2024-04-22 10:59:55', 9, 3, 1, 1, 'BASE_DE_CALIBRACION_SUPERIOR_ANALOGO_63.png'),
+(533, 'MARC001-6Z', 'BASE DE CALIBRACION INFERIOR ANALOGO', 75.00, 0, '2024-04-22 11:02:27', 9, 3, 1, 1, 'BASE_DE_CALIBRACION_INFERIOR_ANALOGO_87.png'),
+(534, 'MARC001-7A', 'TRAVESAÑO PARA ARCO', 25.00, 0, '2024-04-22 11:04:26', 9, 3, 1, 1, 'TRAVESA_O_PARA_ARCO_7.png'),
+(535, 'MARC001-7F', 'TORNILLO PARA TRAVESAÑO', 10.00, 0, '2024-04-22 11:07:35', 9, 3, 1, 1, 'TORNILLO_PARA_TRAVESA_O_26.png'),
+(536, 'MARC001-7G', 'VARILLA VERTICAL PARA HORQUILLA', 25.00, 0, '2024-04-22 11:12:15', 9, 3, 1, 1, 'VARILLA_VERTICAL_PARA_HORQUILLA_63.png'),
+(537, 'MARC001-7H', 'TORNILLO PARA APUNTADOR ORBITAL', 10.00, 0, '2024-04-22 11:15:29', 9, 3, 1, 1, 'TORNILLO_PARA_APUNTADOR_ORBITAL_12.png'),
+(538, 'MARC001-7J', 'MESA DE TRANSFERENCIA', 15.00, 0, '2024-04-22 11:17:49', 9, 3, 1, 1, 'MESA_DE_TRANSFERENCIA_61.png'),
+(539, 'MARC001-7N', 'VARILLA PARA POSICIONADOR NASAL', 25.00, 0, '2024-04-22 11:21:00', 9, 3, 1, 1, 'VARILLA_PARA_POSICIONADOR_NASAL_49.png'),
+(540, 'MARC001-7P', 'NIVEL DE GOTA', 4.00, 85, '2024-04-22 11:23:59', 9, 4, 1, 1, 'NIVEL_DE_GOTA_70.png'),
+(541, 'MARC001-7Q', 'RONDANA GROWER, RONDANA ESTRELLA EXTERIOR GALVANIZADA - #10', 0.28, 1030, '2024-04-22 11:37:02', 9, 14, 1, 1, 'RONDANA_GROWER_RONDANA_ESTRELLA_EXTERIOR_GALVANIZADA_10_52.png'),
+(542, 'MARC001-7S', 'VARILLA PARA HORQUILLA', 25.00, 0, '2024-04-22 11:42:56', 9, 19, 1, 1, 'VARILLA_PARA_HORQUILLA_18.png'),
+(543, 'MARC001-7X', 'PERNO AJUSTADOR CHICO', 5.00, 0, '2024-04-22 11:45:10', 9, 3, 1, 1, 'PERNO_AJUSTADOR_CHICO_18.png'),
+(544, 'MARC001-7Z', 'PERNO AJUSTADOR MEDIANO', 20.00, 0, '2024-04-22 11:47:15', 9, 3, 1, 1, 'PERNO_AJUSTADOR_MEDIANO_67.png'),
+(545, 'MARC001-8B', 'APOYADOR NASAL', 8.00, 0, '2024-04-22 11:49:22', 9, 3, 1, 1, 'APOYADOR_NASAL_12.png'),
+(546, 'MARC001-8F', 'TORNILLO PARA POSICIONADOR NASAL', 5.00, 0, '2024-04-22 11:52:31', 9, 3, 1, 1, 'TORNILLO_PARA_POSICIONADOR_NASAL_14.png'),
+(547, 'MARC001-8G', 'TORNILLO FIJACION TIJERAS', 8.00, 0, '2024-04-22 11:55:38', 9, 3, 1, 1, 'TORNILLO_FIJACION_TIJERAS_16.png'),
+(548, 'MARC001-8H', 'ETIQUETA CPI', 5.00, 5000, '2024-04-22 11:59:33', 9, 4, 1, 1, 'ETIQUETA_CPI_92.png'),
+(549, 'MARC001-8J', 'HOJA DE TRABAJO', 5.00, 200, '2024-04-22 12:04:49', 9, 4, 1, 1, 'HOJA_DE_TRABAJO_66.png'),
+(550, 'MARC001-8K', 'MANUAL CPI', 0.00, 0, '2024-04-22 12:06:41', 9, 4, 1, 1, 'MANUAL_CPI_28.png'),
+(551, 'MARC001-8M', 'MANUAL DE CALIBRACION CPI', 0.00, 0, '2024-04-22 12:08:17', 9, 4, 1, 1, 'MANUAL_DE_CALIBRACION_CPI_31.png'),
+(552, 'MARC001-8N', 'MANUAL ANALOGO', 0.00, 0, '2024-04-22 12:10:06', 9, 4, 1, 1, 'MANUAL_ANALOGO_25.png'),
+(553, 'MARC001-8Ñ', 'MANUAL CALIBRACION ANALOGO', 0.00, 0, '2024-04-22 12:11:40', 9, 4, 1, 1, 'MANUAL_CALIBRACION_ANALOGO_36.png'),
+(554, 'MARC001-8P', 'BASE', 5.00, 0, '2024-04-22 12:12:58', 9, 3, 1, 1, 'BASE_63.png'),
+(555, 'MARC001-8Q', 'BASE MOVIL', 10.00, 0, '2024-04-22 12:14:51', 9, 3, 1, 1, 'BASE_MOVIL_64.png'),
+(556, 'MARC001-8R', 'VARILLA VERTICAL PA', 10.00, 0, '2024-04-22 12:16:54', 9, 3, 1, 1, 'VARILLA_VERTICAL_PA_36.png'),
+(557, 'MARC001-8S', 'PERNO', 6.00, 0, '2024-04-22 12:19:23', 9, 3, 1, 1, 'PERNO_45.png'),
+(558, 'MARC001-8T', 'MANUAL ARCO FACIAL', 0.00, 0, '2024-04-22 12:21:09', 9, 4, 1, 1, 'MANUAL_ARCO_FACIAL_53.png'),
+(559, 'MARC001-8W', 'MANUAL CALIBRACION ARCO FACIAL', 0.00, 0, '2024-04-22 12:22:52', 9, 4, 1, 1, 'MANUAL_CALIBRACION_ARCO_FACIAL_0.png'),
+(560, 'MARC001-8Z', 'HORQUILLA PARA NIÑOS', 30.00, 0, '2024-04-22 13:14:51', 9, 19, 1, 1, ''),
+(561, 'MARC001-9A', 'TORNILLO PARA CONDILO, TORNILLO CABEZA BOTON ALLEN 1/8\" X 1/2\"', 1.00, 500, '2024-04-22 13:46:27', 9, 14, 1, 1, 'TORNILLO_PARA_CONDILO_TORNILLO_CABEZA_BOTON_ALLEN_1_8_X_1_2__82.jpg'),
+(562, 'H-0253', 'VASTAGO MITUTOYO AM GAGE', 97.50, 2, '2024-04-24 11:47:09', 3, 11, 1, 2, 'VASTAGO_MITUTOYO_AM_GAGE_90.jpg'),
+(563, 'H-0254', 'Cortador largo, 4 gavilanes, diámetro corte 3/8\", longitud de corte 1\", longitud total 4\", longitud zanco reducido 1-3/8\", CARBURO, hélice 30°, para fresado profundo.', 124.50, 4, '2024-04-24 11:49:45', 3, 11, 1, 2, 'Cortador_largo_4_gavilanes_di_metro_corte_3_8_longitud_de_corte_1_longitud_total_4_longitud_zanco_reducido_1_3_8_CARBURO_h_lice_30_para_fresado_profundo__94.jpg'),
+(564, 'H-0255', 'Cortador largo, 4 gavilanes, diámetro corte 1/4\", longitud de corte 1\", longitud total 4\", longitud zanco reducido 1-1/4\", CARBURO, hélice 30°, para fresado profundo.', 89.50, 4, '2024-04-24 11:52:01', 3, 11, 1, 2, 'Cortador_largo_4_gavilanes_di_metro_corte_1_4_longitud_de_corte_1_longitud_total_4_longitud_zanco_reducido_1_1_4_CARBURO_h_lice_30_para_fresado_profundo__99.jpg'),
+(565, 'H-0256', 'MACHUELO HELICOIDAL 5-40', 764.10, 4, '2024-04-24 14:30:27', 3, 2, 1, 1, 'MACHUELO_HELICOIDAL_5_40_97.jpg'),
+(566, 'H-0257', 'RIMA RECTA 1/8\"', 675.00, 2, '2024-04-24 14:36:11', 3, 2, 1, 1, 'RIMA_RECTA_1_8__29.jpg'),
+(567, 'H-0258', 'MACHUELO HELICOIDAL 3/8\" - 24 ', 680.00, 1, '2024-04-24 14:38:09', 3, 2, 1, 1, 'MACHUELO_HELICOIDAL_3_8_24__34.jpg');
 
 -- --------------------------------------------------------
 
@@ -1113,8 +1236,8 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (111, 1, 10),
 (111, 2, 0),
 (111, 3, 0),
-(112, 1, 8),
-(112, 2, 0),
+(112, 1, 7),
+(112, 2, 1),
 (112, 3, 0),
 (114, 1, 7),
 (114, 2, 0),
@@ -1380,8 +1503,8 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (214, 1, 1),
 (214, 2, 0),
 (214, 3, 0),
-(216, 1, 1),
-(216, 2, 0),
+(216, 1, 0),
+(216, 2, 1),
 (216, 3, 0),
 (218, 1, 2),
 (218, 2, 0),
@@ -1502,7 +1625,7 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (263, 3, 0),
 (264, 1, 74),
 (264, 2, 0),
-(264, 3, 44),
+(264, 3, 176),
 (265, 1, 10),
 (265, 2, 0),
 (265, 3, 0),
@@ -1734,21 +1857,21 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (346, 1, 4),
 (346, 2, 1),
 (346, 3, 0),
-(347, 1, 0),
+(347, 1, 2),
 (347, 2, 1),
 (347, 3, 0),
-(350, 1, 49),
+(350, 1, 51),
 (350, 2, 0),
-(350, 3, 14),
+(350, 3, 16),
 (351, 1, 0),
 (351, 2, 0),
 (351, 3, 19),
-(352, 1, 50),
+(352, 1, 48),
 (352, 2, 0),
-(352, 3, 0),
-(353, 1, 91),
+(352, 3, 2),
+(353, 1, 89),
 (353, 2, 0),
-(353, 3, 9),
+(353, 3, 11),
 (354, 1, 0),
 (354, 2, 0),
 (354, 3, 37),
@@ -1758,12 +1881,12 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (356, 1, 0),
 (356, 2, 0),
 (356, 3, 25),
-(358, 1, 93),
+(358, 1, 89),
 (358, 2, 1),
-(358, 3, 6),
-(359, 1, 41),
+(358, 3, 10),
+(359, 1, 39),
 (359, 2, 0),
-(359, 3, 10),
+(359, 3, 12),
 (360, 1, 0),
 (360, 2, 0),
 (360, 3, 0),
@@ -1785,7 +1908,7 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (366, 1, 0),
 (366, 2, 2),
 (366, 3, 0),
-(367, 1, 0),
+(367, 1, 3),
 (367, 2, 6),
 (367, 3, 0),
 (368, 1, 2),
@@ -1799,7 +1922,7 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (371, 2, 1),
 (372, 1, 1),
 (372, 2, 2),
-(373, 1, 1),
+(373, 1, 6),
 (373, 2, 1),
 (373, 3, 0),
 (374, 1, 2),
@@ -1867,15 +1990,15 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (395, 1, 2500),
 (395, 2, 0),
 (395, 3, 0),
-(396, 1, 1000),
+(396, 1, 962),
 (396, 2, 0),
-(396, 3, 0),
-(397, 1, 1000),
+(396, 3, 38),
+(397, 1, 968),
 (397, 2, 0),
-(397, 3, 0),
-(398, 1, 1000),
+(397, 3, 32),
+(398, 1, 985),
 (398, 2, 0),
-(398, 3, 0),
+(398, 3, 15),
 (399, 1, 10),
 (399, 2, 0),
 (399, 3, 0),
@@ -1936,15 +2059,15 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (420, 1, 0),
 (420, 2, 2),
 (420, 3, 0),
-(421, 1, 65),
+(421, 1, 64),
 (421, 2, 0),
-(421, 3, 0),
-(422, 1, 100),
+(421, 3, 1),
+(422, 1, 96),
 (422, 2, 0),
-(422, 3, 0),
-(423, 1, 150),
+(422, 3, 4),
+(423, 1, 140),
 (423, 2, 0),
-(423, 3, 0),
+(423, 3, 10),
 (424, 1, 150),
 (424, 2, 0),
 (424, 3, 2),
@@ -2068,9 +2191,9 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (465, 1, 7),
 (465, 2, 0),
 (465, 3, 0),
-(466, 1, 8),
+(466, 1, 7),
 (466, 2, 0),
-(466, 3, 0),
+(466, 3, 1),
 (467, 1, 8),
 (467, 2, 0),
 (467, 3, 0),
@@ -2086,25 +2209,25 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (471, 1, 9),
 (471, 2, 0),
 (471, 3, 0),
-(472, 1, 45),
+(472, 1, 44),
 (472, 2, 0),
-(472, 3, 5),
-(473, 1, 90),
+(472, 3, 6),
+(473, 1, 88),
 (473, 2, 0),
-(473, 3, 10),
-(474, 1, 50),
+(473, 3, 12),
+(474, 1, 47),
 (474, 2, 0),
-(474, 3, 0),
-(475, 1, 300),
+(474, 3, 3),
+(475, 1, 438),
 (475, 2, 0),
-(475, 3, 0),
-(476, 1, 200),
+(475, 3, 12),
+(476, 1, 192),
 (476, 2, 0),
-(476, 3, 0),
-(477, 1, 29),
+(476, 3, 8),
+(477, 1, 49),
 (477, 2, 0),
 (477, 3, 1),
-(478, 1, 19),
+(478, 1, 39),
 (478, 2, 0),
 (478, 3, 1),
 (479, 1, 2),
@@ -2122,9 +2245,9 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (483, 1, 1),
 (483, 2, 0),
 (483, 3, 19),
-(484, 1, 20),
+(484, 1, 19),
 (484, 2, 0),
-(484, 3, 0),
+(484, 3, 1),
 (485, 1, 19),
 (485, 2, 1),
 (485, 3, 0),
@@ -2137,12 +2260,12 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (488, 1, 20),
 (488, 2, 0),
 (488, 3, 0),
-(489, 1, 20),
+(489, 1, 19),
 (489, 2, 0),
-(489, 3, 0),
-(490, 1, 998),
+(489, 3, 1),
+(490, 1, 996),
 (490, 2, 0),
-(490, 3, 0),
+(490, 3, 2),
 (491, 1, 27),
 (491, 2, 8),
 (491, 3, 0),
@@ -2167,9 +2290,9 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (498, 1, 0),
 (498, 2, 0),
 (498, 3, 45),
-(499, 1, 111),
+(499, 1, 110),
 (499, 2, 0),
-(499, 3, 5),
+(499, 3, 6),
 (500, 1, 0),
 (500, 2, 0),
 (500, 3, 0),
@@ -2179,34 +2302,34 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (502, 1, 0),
 (502, 2, 0),
 (502, 3, 60),
-(503, 1, 41),
+(503, 1, 40),
 (503, 2, 0),
-(503, 3, 5),
+(503, 3, 6),
 (504, 1, 0),
 (504, 2, 0),
 (504, 3, 0),
-(505, 1, 15),
+(505, 1, 13),
 (505, 2, 0),
-(505, 3, 0),
+(505, 3, 2),
 (506, 1, 0),
 (506, 2, 0),
 (506, 3, 0),
-(507, 1, 395),
+(507, 1, 391),
 (507, 2, 0),
-(507, 3, 0),
-(508, 1, 5),
-(508, 2, 0),
+(507, 3, 4),
+(508, 1, 4),
+(508, 2, 1),
 (508, 3, 0),
 (509, 1, 5),
 (509, 2, 0),
 (509, 3, 0),
-(510, 1, 5),
-(510, 2, 0),
+(510, 1, 1),
+(510, 2, 4),
 (510, 3, 0),
-(511, 1, 12),
+(511, 1, 18),
 (511, 2, 0),
 (511, 3, 0),
-(512, 1, 12),
+(512, 1, 18),
 (512, 2, 0),
 (512, 3, 0),
 (513, 1, 1),
@@ -2244,7 +2367,136 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (523, 3, 0),
 (524, 1, 4),
 (524, 2, 0),
-(524, 3, 0);
+(524, 3, 0),
+(525, 1, 963),
+(525, 2, 0),
+(525, 3, 37),
+(526, 1, 2492),
+(526, 2, 0),
+(526, 3, 8),
+(527, 1, 93),
+(527, 2, 0),
+(527, 3, 2),
+(528, 1, 0),
+(528, 2, 0),
+(528, 3, 0),
+(529, 1, 0),
+(529, 2, 0),
+(529, 3, 0),
+(530, 1, 0),
+(530, 2, 0),
+(530, 3, 0),
+(531, 1, 47),
+(531, 2, 0),
+(531, 3, 2),
+(532, 1, 0),
+(532, 2, 0),
+(532, 3, 0),
+(533, 1, 0),
+(533, 2, 0),
+(533, 3, 0),
+(534, 1, 0),
+(534, 2, 0),
+(534, 3, 0),
+(535, 1, 0),
+(535, 2, 0),
+(535, 3, 0),
+(536, 1, 0),
+(536, 2, 0),
+(536, 3, 0),
+(537, 1, 0),
+(537, 2, 0),
+(537, 3, 0),
+(538, 1, 0),
+(538, 2, 0),
+(538, 3, 0),
+(539, 1, 0),
+(539, 2, 0),
+(539, 3, 0),
+(540, 1, 88),
+(540, 2, 0),
+(540, 3, 12),
+(541, 1, 1028),
+(541, 2, 0),
+(541, 3, 2),
+(542, 1, 0),
+(542, 2, 0),
+(542, 3, 0),
+(543, 1, 0),
+(543, 2, 0),
+(543, 3, 0),
+(544, 1, 0),
+(544, 2, 0),
+(544, 3, 0),
+(545, 1, 0),
+(545, 2, 0),
+(545, 3, 0),
+(546, 1, 0),
+(546, 2, 0),
+(546, 3, 0),
+(547, 1, 0),
+(547, 2, 0),
+(547, 3, 0),
+(548, 1, 5000),
+(548, 2, 0),
+(548, 3, 0),
+(549, 1, 200),
+(549, 2, 0),
+(549, 3, 0),
+(550, 1, 0),
+(550, 2, 0),
+(550, 3, 0),
+(551, 1, 0),
+(551, 2, 0),
+(551, 3, 0),
+(552, 1, 0),
+(552, 2, 0),
+(552, 3, 0),
+(553, 1, 0),
+(553, 2, 0),
+(553, 3, 0),
+(554, 1, 0),
+(554, 2, 0),
+(554, 3, 0),
+(555, 1, 0),
+(555, 2, 0),
+(555, 3, 0),
+(556, 1, 0),
+(556, 2, 0),
+(556, 3, 0),
+(557, 1, 0),
+(557, 2, 0),
+(557, 3, 0),
+(558, 1, 0),
+(558, 2, 0),
+(558, 3, 0),
+(559, 1, 0),
+(559, 2, 0),
+(559, 3, 0),
+(560, 1, 0),
+(560, 2, 0),
+(560, 3, 0),
+(561, 1, 500),
+(561, 2, 0),
+(561, 3, 0),
+(562, 1, 2),
+(562, 2, 0),
+(562, 3, 0),
+(563, 1, 3),
+(563, 2, 1),
+(563, 3, 0),
+(564, 1, 3),
+(564, 2, 1),
+(564, 3, 0),
+(565, 1, 4),
+(565, 2, 0),
+(565, 3, 0),
+(566, 1, 2),
+(566, 2, 0),
+(566, 3, 0),
+(567, 1, 0),
+(567, 2, 1),
+(567, 3, 0);
 
 -- --------------------------------------------------------
 
@@ -2353,19 +2605,19 @@ ALTER TABLE `detalle_orden_compra`
   ADD KEY `detalleorden-unidades` (`id_unidad`);
 
 --
+-- Indices de la tabla `detalle_orden_gasto`
+--
+ALTER TABLE `detalle_orden_gasto`
+  ADD PRIMARY KEY (`id_detalle_orden`),
+  ADD KEY `id_orden_gasto` (`id_orden_gasto`),
+  ADD KEY `id_unidad` (`id_unidad`);
+
+--
 -- Indices de la tabla `empleados`
 --
 ALTER TABLE `empleados`
   ADD PRIMARY KEY (`id_empleado`),
   ADD KEY `emplead- area` (`area`);
-
---
--- Indices de la tabla `montos_orden_compra`
---
-ALTER TABLE `montos_orden_compra`
-  ADD PRIMARY KEY (`id_montos`),
-  ADD KEY `id_orden_compra` (`id_orden_compra`),
-  ADD KEY `id_moneda` (`id_moneda`);
 
 --
 -- Indices de la tabla `movimientos`
@@ -2384,7 +2636,17 @@ ALTER TABLE `ordenes_compra`
   ADD PRIMARY KEY (`id_orden_compra`),
   ADD UNIQUE KEY `numero_orden` (`numero_orden`),
   ADD KEY `id_proveedor` (`id_proveedor`),
-  ADD KEY `id_moneda` (`id_moneda`);
+  ADD KEY `id_moneda` (`id_moneda`),
+  ADD KEY `empleado` (`id_empleado`);
+
+--
+-- Indices de la tabla `ordenes_gasto`
+--
+ALTER TABLE `ordenes_gasto`
+  ADD PRIMARY KEY (`id_orden_gasto`),
+  ADD KEY `id_proveedor` (`id_proveedor`),
+  ADD KEY `empleado-orden` (`id_empleado`),
+  ADD KEY `moneda-orden` (`id_moneda`);
 
 --
 -- Indices de la tabla `permisos`
@@ -2468,7 +2730,13 @@ ALTER TABLE `cpi_art_af`
 -- AUTO_INCREMENT de la tabla `detalle_orden_compra`
 --
 ALTER TABLE `detalle_orden_compra`
-  MODIFY `id_detalle_orden` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id_detalle_orden` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+
+--
+-- AUTO_INCREMENT de la tabla `detalle_orden_gasto`
+--
+ALTER TABLE `detalle_orden_gasto`
+  MODIFY `id_detalle_orden` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `empleados`
@@ -2477,22 +2745,22 @@ ALTER TABLE `empleados`
   MODIFY `id_empleado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT de la tabla `montos_orden_compra`
---
-ALTER TABLE `montos_orden_compra`
-  MODIFY `id_montos` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `movimientos`
 --
 ALTER TABLE `movimientos`
-  MODIFY `id_movimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
+  MODIFY `id_movimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=167;
 
 --
 -- AUTO_INCREMENT de la tabla `ordenes_compra`
 --
 ALTER TABLE `ordenes_compra`
-  MODIFY `id_orden_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id_orden_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
+-- AUTO_INCREMENT de la tabla `ordenes_gasto`
+--
+ALTER TABLE `ordenes_gasto`
+  MODIFY `id_orden_gasto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `permisos`
@@ -2504,7 +2772,7 @@ ALTER TABLE `permisos`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=525;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=568;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedores`
@@ -2542,17 +2810,17 @@ ALTER TABLE `detalle_orden_compra`
   ADD CONSTRAINT `detalleorden-unidades` FOREIGN KEY (`id_unidad`) REFERENCES `unidades_medida` (`id_unidad`);
 
 --
+-- Filtros para la tabla `detalle_orden_gasto`
+--
+ALTER TABLE `detalle_orden_gasto`
+  ADD CONSTRAINT `detalle-unidades` FOREIGN KEY (`id_unidad`) REFERENCES `unidades_medida` (`id_unidad`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `detalleorden-orden` FOREIGN KEY (`id_orden_gasto`) REFERENCES `ordenes_gasto` (`id_orden_gasto`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Filtros para la tabla `empleados`
 --
 ALTER TABLE `empleados`
   ADD CONSTRAINT `emplead- area` FOREIGN KEY (`area`) REFERENCES `areas` (`id_area`);
-
---
--- Filtros para la tabla `montos_orden_compra`
---
-ALTER TABLE `montos_orden_compra`
-  ADD CONSTRAINT `montos_orden_compra_ibfk_1` FOREIGN KEY (`id_orden_compra`) REFERENCES `ordenes_compra` (`id_orden_compra`),
-  ADD CONSTRAINT `montos_orden_compra_ibfk_2` FOREIGN KEY (`id_moneda`) REFERENCES `tipos_moneda` (`id_moneda`);
 
 --
 -- Filtros para la tabla `movimientos`
@@ -2567,7 +2835,17 @@ ALTER TABLE `movimientos`
 -- Filtros para la tabla `ordenes_compra`
 --
 ALTER TABLE `ordenes_compra`
-  ADD CONSTRAINT `ordenes_compra_ibfk_1` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedores` (`id_proveedor`);
+  ADD CONSTRAINT `empleado` FOREIGN KEY (`id_empleado`) REFERENCES `empleados` (`id_empleado`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `moneda` FOREIGN KEY (`id_moneda`) REFERENCES `tipos_moneda` (`id_moneda`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ordenes_compra_ibfk_1` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedores` (`id_proveedor`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `ordenes_gasto`
+--
+ALTER TABLE `ordenes_gasto`
+  ADD CONSTRAINT `empleado-orden` FOREIGN KEY (`id_empleado`) REFERENCES `empleados` (`id_empleado`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `moneda-orden` FOREIGN KEY (`id_moneda`) REFERENCES `tipos_moneda` (`id_moneda`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `orden-provedores` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedores` (`id_proveedor`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `productos`

@@ -139,9 +139,6 @@ class movController2 extends mainModel
  
      $tabla .= '
 <div class="table-responsive w-100">
-
-
-
     <table class="table w-100">
         <thead>
             <tr>
@@ -188,20 +185,6 @@ $tabla .= '
     </tbody>
 </table>
 </div>
-
-<!-- Área de firma al final del documento, justo después de la tabla -->
-<div style="width: 100%; padding: 20px; margin-top: 50%;">
-    <div class="d-flex justify-content-between">
-        <div style="flex: 1;">
-            <label>Firma de Recibido:</label>
-        </div>
-        <div style="flex: 1;">
-            <label>Fecha de Recibido:</label>
-            <span>' . date("d/m/Y") . '</span>
-        </div>
-    </div>
-</div>
-
 </div>
 
 <script>
@@ -224,6 +207,22 @@ function imprimirArea(id) {
    ventanaImpresion.print();
 }
 </script>';
+
+
+$tabla .= '
+    <!-- Área de firma al final del documento, justo después de la tabla -->
+    <div class="w-100" style="padding: 20px; border-top: 1px solid #ccc; margin-top: 20px;">
+        <div class="d-flex justify-content-between">
+            <div>
+                <label>Firma de Recibido:</label>
+                <div style="width: 235px; height: 60px; border-bottom: 1px solid #000;margin-left: 35%;"></div> <!-- Espacio para la firma -->
+            </div>
+            <div>
+                <label style="margin-top: 20px;">Fecha de Impresión:</label>
+                <span>' . date("d/m/Y") . '</span>
+            </div>
+        </div>
+    </div>';
 
  
      $pag_final = $contador - 1;

@@ -65,6 +65,20 @@ class ordenCompraController extends mainModel
         return $opciones_monedas;
     }
 
+    public function obtenerEmpleados()
+    {
+        $consulta_empleados = "SELECT * FROM empleados ORDER BY nombre_empleado";
+        $datos_empleados = $this->ejecutarConsulta($consulta_empleados);
+        $opciones_empleados = "";
+
+        while ($empleados = $datos_empleados->fetch()) {
+            $opciones_empleados .= '<option value="' . $empleados['id_empleado'] . '">'
+                . $empleados['nombre_empleado'] . '</option>';
+        }
+
+        return $opciones_empleados;
+    }
+
     /*----------  Controlador registrar usuario  ----------*/
     public function registrarOrdenCompraControlador()
     {
@@ -80,6 +94,7 @@ class ordenCompraController extends mainModel
         # Almacenando datos
         $id_proveedor = $_POST['id_proveedor'];
         $id_moneda = $_POST['id_moneda'];
+        $id_empleado = $this->limpiarCadena($_POST['id_empleado']);
 
         # Verificando campos obligatorios
         if ($id_proveedor == "") {
@@ -107,6 +122,11 @@ class ordenCompraController extends mainModel
                 "campo_nombre" => "id_moneda",
                 "campo_marcador" => ":IdMoneda",
                 "campo_valor" => $id_moneda
+            ],
+            [
+                "campo_nombre" => "id_empleado",
+                "campo_marcador" => ":IdEmpleado",
+                "campo_valor" => $id_empleado
             ]
         ];
 
@@ -167,7 +187,6 @@ class ordenCompraController extends mainModel
 
         $consulta_datos = "SELECT
         detalle_orden_compra.*,
-        
         ordenes_compra.numero_orden,
         proveedores.nombre_proveedor,
         proveedores.RFC_proveedor,
@@ -179,7 +198,8 @@ class ordenCompraController extends mainModel
         unidades_medida.id_unidad,
         unidades_medida.nombre_unidad,
         tipos_moneda.id_moneda,
-        tipos_moneda.nombre_moneda
+        tipos_moneda.nombre_moneda,
+        empleados.nombre_empleado
         
     FROM
         detalle_orden_compra
@@ -187,6 +207,7 @@ class ordenCompraController extends mainModel
     LEFT JOIN proveedores ON ordenes_compra.id_proveedor = proveedores.id_proveedor
     LEFT JOIN unidades_medida ON detalle_orden_compra.id_unidad = unidades_medida.id_unidad
     LEFT JOIN tipos_moneda ON ordenes_compra.id_moneda = tipos_moneda.id_moneda
+    LEFT JOIN empleados ON ordenes_compra.id_empleado = empleados.id_empleado
     WHERE
         detalle_orden_compra.nombre_producto LIKE '%$busqueda%'
         OR ordenes_compra.numero_orden LIKE '%$busqueda%'
@@ -202,6 +223,7 @@ class ordenCompraController extends mainModel
     FROM detalle_orden_compra
     JOIN ordenes_compra ON detalle_orden_compra.id_orden_compra = ordenes_compra.id_orden_compra
     JOIN proveedores ON ordenes_compra.id_proveedor = proveedores.id_proveedor
+    JOIN empleados ON ordenes_compra.id_empleado = empleados.id_empleado
     WHERE detalle_orden_compra.nombre_producto LIKE '%$busqueda%'
     OR ordenes_compra.numero_orden LIKE '%$busqueda%';";
 
@@ -313,7 +335,13 @@ if ($ordenActual !== '') {
     </td>
 </tr>
 
-
+<tr>
+    <td colspan="6" style="text-align: right; white-space: nowrap;">
+        <strong>Empleado que solicita:</strong> 
+        <span style="margin-left: 20px;"></span>
+        <div style="display: inline;">' . $rows['nombre_empleado'] . '</div>
+    </td>
+</tr>
 
 </tfoot>
 

@@ -11,7 +11,7 @@ class ordenGastoController extends mainModel
 
     public function obtenerOpcionesOrdenes()
     {
-        $consulta_ordenes = "SELECT * FROM ordenes_compra ORDER BY id_orden_compra";
+        $consulta_ordenes = "SELECT * FROM ordenes_gasto ORDER BY id_orden_gasto";
         $datos_ordenes = $this->ejecutarConsulta($consulta_ordenes);
         $opciones_ordenes = "";
 
@@ -39,12 +39,12 @@ class ordenGastoController extends mainModel
 
     public function obtenerOpcionesOrdenCompra()
     {
-        $consulta_orden_compra = "SELECT * FROM ordenes_compra ORDER BY numero_orden";
+        $consulta_orden_compra = "SELECT * FROM ordenes_gasto ORDER BY numero_orden";
         $datos_orden = $this->ejecutarConsulta($consulta_orden_compra);
         $opciones_ordenes = "";
 
         while ($orden_compra = $datos_orden->fetch()) {
-            $opciones_ordenes .= '<option value="' . $orden_compra['id_orden_compra'] . '">'
+            $opciones_ordenes .= '<option value="' . $orden_compra['id_orden_gasto'] . '">'
                 . $orden_compra['numero_orden'] . '</option>';
         }
 
@@ -65,6 +65,20 @@ class ordenGastoController extends mainModel
         return $opciones_monedas;
     }
 
+    public function obtenerEmpleados()
+    {
+        $consulta_empleados = "SELECT * FROM empleados ORDER BY nombre_empleado";
+        $datos_empleados = $this->ejecutarConsulta($consulta_empleados);
+        $opciones_empleados = "";
+
+        while ($empleados = $datos_empleados->fetch()) {
+            $opciones_empleados .= '<option value="' . $empleados['id_empleado'] . '">'
+                . $empleados['nombre_empleado'] . '</option>';
+        }
+
+        return $opciones_empleados;
+    }
+
     /*----------  Controlador registrar usuario  ----------*/
     public function registrarOrdenGastoControlador()
     {
@@ -80,6 +94,7 @@ class ordenGastoController extends mainModel
         # Almacenando datos
         $id_proveedor = $_POST['id_proveedor'];
         $id_moneda = $_POST['id_moneda'];
+        $id_empleado = $this->limpiarCadena($_POST['id_empleado']);
 
         # Verificando campos obligatorios
         if ($id_proveedor == "") {
@@ -92,7 +107,7 @@ class ordenGastoController extends mainModel
             return json_encode($alerta);
         }
 
-        $orden_compra_datos_reg = [
+        $orden_gasto_datos_reg = [
             [
                 "campo_nombre" => "numero_orden",
                 "campo_marcador" => ":NumeroOrden",
@@ -107,23 +122,28 @@ class ordenGastoController extends mainModel
                 "campo_nombre" => "id_moneda",
                 "campo_marcador" => ":IdMoneda",
                 "campo_valor" => $id_moneda
+            ],
+            [
+                "campo_nombre" => "id_empleado",
+                "campo_marcador" => ":IdEmpleado",
+                "campo_valor" => $id_empleado
             ]
         ];
 
-        $registrar_orden_compra = $this->guardarDatos("ordenes_compra", $orden_compra_datos_reg);
+        $registrar_orden_gasto = $this->guardarDatos("ordenes_gasto", $orden_gasto_datos_reg);
 
-        if ($registrar_orden_compra->rowCount() == 1) {
+        if ($registrar_orden_gasto->rowCount() == 1) {
             $alerta = [
                 "tipo" => "limpiar",
-                "titulo" => "Orden de compra registrada",
-                "texto" => "La orden de compra $numero_orden se registró con éxito",
+                "titulo" => "Orden de gasto registrada",
+                "texto" => "La orden de gasto $numero_orden se registró con éxito",
                 "icono" => "success"
             ];
         } else {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No se pudo registrar la orden de compra, por favor inténtelo nuevamente",
+                "texto" => "No se pudo registrar la orden de gasto, por favor inténtelo nuevamente",
                 "icono" => "error"
             ];
         }
@@ -167,34 +187,32 @@ class ordenGastoController extends mainModel
 
         $consulta_datos = "SELECT
         detalle_orden_gasto.*,
-        montos_orden_compra.subtotal_sin_IVA,
-        montos_orden_compra.IVA,
-        montos_orden_compra.total_con_IVA,
-        ordenes_compra.numero_orden,
+        ordenes_gasto.numero_orden,
         proveedores.nombre_proveedor,
         proveedores.RFC_proveedor,
         proveedores.contacto_proveedor,
         proveedores.telefono_proveedor,
         proveedores.email_proveedor,
         proveedores.direccion_proveedor,
-        ordenes_compra.fecha,
+        ordenes_gasto.*,
         unidades_medida.id_unidad,
         unidades_medida.nombre_unidad,
         tipos_moneda.id_moneda,
-        tipos_moneda.nombre_moneda
+        tipos_moneda.nombre_moneda,
+        empleados.nombre_empleado
         
     FROM
-        detalle_orden_compra
-    LEFT JOIN montos_orden_compra ON detalle_orden_compra.id_orden_compra = montos_orden_compra.id_orden_compra
-    LEFT JOIN ordenes_compra ON detalle_orden_compra.id_orden_compra = ordenes_compra.id_orden_compra
-    LEFT JOIN proveedores ON ordenes_compra.id_proveedor = proveedores.id_proveedor
-    LEFT JOIN unidades_medida ON detalle_orden_compra.id_unidad = unidades_medida.id_unidad
-    LEFT JOIN tipos_moneda ON ordenes_compra.id_moneda = tipos_moneda.id_moneda
+        detalle_orden_gasto
+    LEFT JOIN ordenes_gasto ON detalle_orden_gasto.id_orden_gasto = ordenes_gasto.id_orden_gasto
+    LEFT JOIN proveedores ON ordenes_gasto.id_proveedor = proveedores.id_proveedor
+    LEFT JOIN unidades_medida ON detalle_orden_gasto.id_unidad = unidades_medida.id_unidad
+    LEFT JOIN tipos_moneda ON ordenes_gasto.id_moneda = tipos_moneda.id_moneda
+    LEFT JOIN empleados ON ordenes_gasto.id_empleado = empleados.id_empleado
     WHERE
-        detalle_orden_compra.nombre_producto LIKE '%$busqueda%'
-        OR ordenes_compra.numero_orden LIKE '%$busqueda%'
+        detalle_orden_gasto.nombre_producto LIKE '%$busqueda%'
+        OR ordenes_gasto.numero_orden LIKE '%$busqueda%'
     ORDER BY
-        detalle_orden_compra.id_orden_compra DESC, detalle_orden_compra.id_detalle_orden ASC
+        detalle_orden_gasto.id_orden_gasto DESC, detalle_orden_gasto.id_detalle_orden ASC
     LIMIT
         $inicio, $registros;";
 
@@ -202,11 +220,12 @@ class ordenGastoController extends mainModel
         $datos = $datos->fetchAll();
 
         $consulta_total = "SELECT COUNT(*)
-    FROM detalle_orden_compra
-    JOIN ordenes_compra ON detalle_orden_compra.id_orden_compra = ordenes_compra.id_orden_compra
-    JOIN proveedores ON ordenes_compra.id_proveedor = proveedores.id_proveedor
-    WHERE detalle_orden_compra.nombre_producto LIKE '%$busqueda%'
-    OR ordenes_compra.numero_orden LIKE '%$busqueda%';";
+    FROM detalle_orden_gasto
+    JOIN ordenes_gasto ON detalle_orden_gasto.id_orden_gasto = ordenes_gasto.id_orden_gasto
+    JOIN proveedores ON ordenes_gasto.id_proveedor = proveedores.id_proveedor
+    JOIN empleados ON ordenes_gasto.id_empleado = empleados.id_empleado
+    WHERE detalle_orden_gasto.nombre_producto LIKE '%$busqueda%'
+    OR ordenes_gasto.numero_orden LIKE '%$busqueda%';";
 
         $total = $this->ejecutarConsulta($consulta_total);
         $total = (int) $total->fetchColumn();
@@ -283,7 +302,7 @@ foreach ($datos as $rows) {
                 <tbody>';
     }
 // Continúa 
-$tabla .= '
+$tabla .= '  
             <tr>
                 <td style="text-align: center;">' . $rows['numero_partida'] . '</td>
                 <td style="text-align: center;">' . $rows['nombre_producto'] . '</td>
@@ -291,16 +310,19 @@ $tabla .= '
                 <td style="text-align: center;">' . $rows['nombre_unidad'] . '</td>
                 <td style="text-align: center;">' . $rows['precio_sin_IVA'] . '</td>
                 <td style="text-align: center;" data-importe="' . $rows['total'] . '">' . $rows['total'] . '</td>
-            </tr>';
+            </tr>
+            ';
 }
 // Cierra la última tabla
 if ($ordenActual !== '') {
     // Agrega la fila de totales
-    $tabla .= '<tfoot>
+    $tabla .= '
+    <tfoot>
     <tr>
         <td colspan="5" style="text-align: right;">Suma de Importes:</td>
         <td data-importe="suma" id="sumaImportes_' . $ordenActual . '"><div style="text-align: right;">' . '</div></td>
     </tr>
+
     <tr>
         <td colspan="5" style="text-align: right;">IVA (16%):</td>
         <td data-importe="iva" id="ivaImportes_' . $ordenActual . '"><div style="text-align: right;">' . '</div></td>
@@ -316,6 +338,14 @@ if ($ordenActual !== '') {
     </td>
 </tr>
 
+
+<tr>
+    <td colspan="6" style="text-align: right; white-space: nowrap;">
+        <strong>Empleado que solicita:</strong> 
+        <span style="margin-left: 20px;"></span>
+        <div style="display: inline;">' . $rows['nombre_empleado'] . '</div>
+    </td>
+</tr>
 
 
 </tfoot>
