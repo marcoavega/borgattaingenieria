@@ -19,6 +19,6 @@
         $insMov = new movController();
 
         // Muestra la lista de productos
-        echo $insMov->listarMovControlador($url[1],100,$url[0],"");
+        echo $insMov->listarMovControlador($url[1],1000,$url[0],"");
     ?>
 </div>

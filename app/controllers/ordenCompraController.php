@@ -357,7 +357,7 @@ $tabla .= '</div>';
 $tabla .= '<script>
 
 function numeroALetras(numero) {
-    const unidades = ["", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
+    const unidades = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
     const decenas = ["", "diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
     const centenas = ["", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
     const especiales = ["diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve"];
@@ -366,7 +366,7 @@ function numeroALetras(numero) {
     let parteDecimal = Math.round((numero - parteEntera) * 100);
     let resultado = convertirALetras(parteEntera);
 
-    resultado += " con " + convertirALetras(parteDecimal) + " centavos " + (parteDecimal < 10 ? "0" : "") + parteDecimal + "/100";
+    resultado += " con " + convertirALetras(parteDecimal) + (parteDecimal === 1 ? " centavo " : " centavos ") + (parteDecimal < 10 ? "0" : "") + parteDecimal + "/100";
 
     return resultado;
 

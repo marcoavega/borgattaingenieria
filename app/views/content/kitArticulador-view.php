@@ -75,7 +75,7 @@
 
         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
             <div class="media-object">
-                <a href="URL_DESTINO_KIT" class="text-decoration-none">
+                <a href="<?php echo APP_URL; ?>kitList/" class="text-decoration-none">
                     <img src="<?php echo APP_URL; ?>app/views/img/kit.png" alt="Kit de Articulador" class="img-fluid">
                     <div class="media-body">
                         <h5 class="media-title">KIT DE ARTICULADOR</h5>

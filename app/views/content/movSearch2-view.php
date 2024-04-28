@@ -60,7 +60,7 @@
     </div>
     <?php
         // Muestra los resultados de la búsqueda
-        echo $insMov->listarMovControlador2($url[1],15,$url[0],$_SESSION[$url[0]]);
+        echo $insMov->listarMovControlador2($url[1],99999999,$url[0],$_SESSION[$url[0]]);
         }
     ?>
     
