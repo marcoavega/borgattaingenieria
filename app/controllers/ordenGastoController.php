@@ -443,7 +443,7 @@ function numeroALetras(numero) {
 function imprimirArea(id) {
     var contenido = document.getElementById(id).innerHTML;
     var ventanaImpresion = window.open("", "_blank");
-    ventanaImpresion.document.write("<html><head><title>Imprimir</title>");
+    ventanaImpresion.document.write("<html><head><title>' . $rows['numero_orden'] . '</title>");
     
     // Aquí puedes agregar tus estilos CSS
     ventanaImpresion.document.write("<style>");

@@ -53,27 +53,25 @@
                         <?php } ?>
                         <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productList/">Lista de Artículos</a></li>
                         <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productSearch/">Buscar Artículos</a></li>
-                        <li><a class="dropdown-item" href="http://localhost/borgattaingenieria/busqueda.php">Busqueda Rapída</a></li>
+                        <!--<li><a class="dropdown-item" href="http://localhost/borgattaingenieria/busqueda.php">Busqueda Rapída</a></li>-->
                     </ul>
                 </li>
 
 
                 <!-- Menú desplegable para las acciones relacionadas con los movimientos -->
+                <?php if ($_SESSION['permiso'] == 1) { ?>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Movimientos
                     </a>
                     <ul class="dropdown-menu">
-                        <?php if ($_SESSION['permiso'] == 1) { ?>
-                           
-                        <?php } ?>
                         <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movList/">Consultar Todos</a></li>
                         <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movSearch/">Buscar por nombre</a></li>
                         <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movSearch2/">Buscar por movimiento</a></li>
                     </ul>
 
                 </li>
-
+                <?php } ?>
 
                 <!-- Menú desplegable para las acciones relacionadas con los proveedores -->
                 <?php if ($_SESSION['permiso'] == 1) { ?>

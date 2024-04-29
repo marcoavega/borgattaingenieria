@@ -1,5 +1,5 @@
 <style>
-    .banner-principal1, .banner-principal2 {
+    .banner-principal1, .banner-principal2, .banner-principal3 {
         margin: 1%;
         background-size: contain;
         background-position: top center;
@@ -17,6 +17,9 @@
     }
     .banner-principal2 {
         background-image: url('<?php echo APP_URL; ?>app/views/img/kit.png');
+    }
+    .banner-principal3 {
+        background-image: url('<?php echo APP_URL; ?>app/views/img/maq.webp');
     }
 
     .banner-texto h1 {
@@ -77,3 +80,14 @@
   </div>
 </div>
 
+<div class="row">
+<div class="col-md-6">
+    <div class="banner-principal3">
+      <div class="banner-texto">
+        <h1 class="display-4">Herramientas Maquinados</h1>
+        <p class="lead">CONSULTAR.</p>
+        <a href="<?php echo APP_URL; ?>herramientasMaquinado/" class="btn btn-primary">ENTRAR</a>
+      </div>
+    </div>
+  </div>
+  </div>

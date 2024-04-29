@@ -4,12 +4,12 @@ namespace app\controllers;
 
 use app\models\mainModel;
 
-class kitController extends mainModel
+class cpiController extends mainModel
 {
 
     
    /*----------  Controlador listar productos  ----------*/
-   public function listarKitControlador($pagina, $registros, $url, $busqueda)
+   public function listarCpiControlador($pagina, $registros, $url, $busqueda)
    {
        $pagina = intval($this->limpiarCadena($pagina));
        $registros = intval($this->limpiarCadena($registros));
@@ -22,21 +22,18 @@ class kitController extends mainModel
        $consulta_datos = "SELECT
            p.codigo_producto,
            p.nombre_producto,
-           MAX(IF(cpi.nombre = 'CPI', pca.cantidad, 0)) AS cantidad_cpi,
-           MAX(IF(cpi.nombre = 'Articulador', pca.cantidad, 0)) AS cantidad_articulador,
-           MAX(IF(cpi.nombre = 'Arco Facial', pca.cantidad, 0)) AS cantidad_arco_facial,
-           MAX(IF(cpi.nombre = 'Empaque', pca.cantidad, 0)) AS cantidad_empaque,
+           IF(cpi.nombre = 'CPI', pca.cantidad, 0) AS cantidad_cpi,
            sa.stock AS stock_almacen_general,
-           (MAX(IF(cpi.nombre = 'CPI', pca.cantidad, 0)) +
-            MAX(IF(cpi.nombre = 'Articulador', pca.cantidad, 0)) +
-            MAX(IF(cpi.nombre = 'Arco Facial', pca.cantidad, 0)) +
-            MAX(IF(cpi.nombre = 'Empaque', pca.cantidad, 0))) AS total_cantidad
+           IF(cpi.nombre = 'CPI', pca.cantidad, 0) * 1 AS total_cantidad
        FROM
            productos p
        JOIN categorias c ON p.id_categoria = c.id_categoria
        JOIN productos_cpi_art_af pca ON p.id_producto = pca.id_producto
-       JOIN cpi_art_af cpi ON pca.id_cpi_art_af = cpi.id_cpi_art_af
+       JOIN cpi_art_af cpi ON pca.id_cpi_art_af = cpi.id_cpi_art_af AND cpi.id_cpi_art_af = 1
        JOIN stock_almacen sa ON p.id_producto = sa.id_producto AND sa.id_almacen = 1
+       WHERE
+           (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
+           AND cpi.nombre = 'CPI'
        GROUP BY p.id_producto
        ORDER BY p.codigo_producto ASC
        LIMIT $inicio, $registros;";
@@ -49,13 +46,14 @@ class kitController extends mainModel
        JOIN categorias c ON p.id_categoria = c.id_categoria
        JOIN productos_cpi_art_af pca ON p.id_producto = pca.id_producto
        JOIN cpi_art_af cpi ON pca.id_cpi_art_af = cpi.id_cpi_art_af
-       WHERE p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%';";
+       JOIN stock_almacen sa ON p.id_producto = sa.id_producto AND sa.id_almacen = 1
+       WHERE (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
+       AND cpi.nombre = 'CPI';";
        $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
    
        $numeroPaginas = ceil($total / $registros);
    
        $tabla = '<div class="container-fluid p-4">
-       <h5>Ingrese la catidad de kit a fabricar</h5>
        <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
        <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
        <table id="tabla-productos" class="table table-bordered table-striped">
@@ -64,9 +62,6 @@ class kitController extends mainModel
                <th>Código Producto</th>
                <th>Nombre Producto</th>
                <th>CPI</th>
-               <th>Articulador</th>
-               <th>Arco Facial</th>
-               <th>Empaque</th>
                <th>Total</th>
                <th>Stock Almacén General</th>
                <th>Stock Disponible</th>
@@ -80,16 +75,13 @@ class kitController extends mainModel
                    <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                    <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
                    <td class="cantidad-cpi">' . htmlspecialchars($rows['cantidad_cpi']) . '</td>
-                   <td class="cantidad-articulador">' . htmlspecialchars($rows['cantidad_articulador']) . '</td>
-                   <td class="cantidad-arco">' . htmlspecialchars($rows['cantidad_arco_facial']) . '</td>
-                   <td class="cantidad-empaque">' . htmlspecialchars($rows['cantidad_empaque']) . '</td>
                    <td class="total">' . htmlspecialchars($rows['total_cantidad']) . '</td>
                    <td>' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
                    <td class="stock-disponible"></td>
                </tr>';
            }
        } else {
-           $tabla .= '<tr><td colspan="9" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+           $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
        }
    
        $tabla .= '</tbody></table>';
@@ -102,13 +94,10 @@ class kitController extends mainModel
            var filas = document.querySelectorAll("tbody tr");
            filas.forEach(function(fila) {
                var cpi = parseFloat(fila.querySelector(".cantidad-cpi").textContent) || 0;
-               var articulador = parseFloat(fila.querySelector(".cantidad-articulador").textContent) || 0;
-               var arco = parseFloat(fila.querySelector(".cantidad-arco").textContent) || 0;
-               var empaque = parseFloat(fila.querySelector(".cantidad-empaque").textContent) || 0;
-               var stock = parseFloat(fila.querySelector("td:nth-child(8)").textContent);
                var total = fila.querySelector(".total");
+               var stock = parseFloat(fila.querySelector("td:nth-child(5)").textContent);
                var stockDisponible = fila.querySelector(".stock-disponible");
-               var totalCantidad = (cpi + articulador + arco + empaque) * multiplicador;
+               var totalCantidad = cpi * multiplicador;
                total.textContent = totalCantidad.toFixed(2);
                stockDisponible.textContent = (stock - totalCantidad).toFixed(2);
            });
@@ -129,7 +118,6 @@ class kitController extends mainModel
         ventanaImpresion.document.write("</style>");
         ventanaImpresion.document.write("</head><body>");
         ventanaImpresion.document.write("<table>");
-        
         ventanaImpresion.document.write("<tbody>");
         ventanaImpresion.document.write(contenidoTabla);
         ventanaImpresion.document.write("</tbody>");
@@ -138,7 +126,6 @@ class kitController extends mainModel
         ventanaImpresion.document.close();
         ventanaImpresion.print();
     }
-   
        </script>';
    
        // Paginación
@@ -162,10 +149,6 @@ class kitController extends mainModel
    
    
    
-   
-   
-
-
 
 
 }

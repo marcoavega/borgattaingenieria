@@ -30,11 +30,12 @@
 
 <div class="container-fluid py-4 kit-articulador-container">
     <div class="mb-4">
-        <h1 class="display-4 text-center text-white">KIT ARTICULADOR</h1>
+        <h1 class="display-4 text-center text-white">INVENTARIO</h1>
     </div>
     <?php include "./app/views/inc/btn_back2.php"; ?>
 
     <!-- Fila principal con Bootstrap -->
+    <?php if ($_SESSION['permiso'] == 1) { ?>
     <div class="row g-3 justify-content-center">
         <div class="col-12 col-sm-6 col-md-4 col-lg-4">
             <div class="media-object">
@@ -47,6 +48,7 @@
                 </a>
             </div>
         </div>
+        <?php } ?>
 
         <div class="col-12 col-sm-6 col-md-4 col-lg-4">
             <div class="media-object">

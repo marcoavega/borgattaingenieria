@@ -6,12 +6,6 @@ const DB_NAME = "borgattaingenieria";
 const DB_USER = "root";
 const DB_PASS = '';
 
-/* Configuración de la base de datos
-const DB_SERVER = "sql200.infinityfree.com";
-const DB_NAME = "if0_36309636_borgattaingenieria";
-const DB_USER = "if0_36309636";
-const DB_PASS = 'HXgOemSWTI';
-
 /*
     Configuración de la conexión a la base de datos.
     - DB_SERVER: Nombre del servidor de la base de datos.

@@ -23,7 +23,7 @@
 		    }else{
 
 			    # Verificando integridad de los datos #
-			    if($this->verificarDatos("[a-zA-Z0-9]{4,20}",$usuario)){
+			    if($this->verificarDatos("[a-zA-Z0-9]{3,20}",$usuario)){
 			        echo "<script>
 				        Swal.fire({
 						  icon: '',
@@ -34,7 +34,7 @@
 			    }else{
 
 			    	# Verificando integridad de los datos #
-				    if($this->verificarDatos("[a-zA-Z0-9$@.-]{7,100}",$clave)){
+				    if($this->verificarDatos("[a-zA-Z0-9$@.-]{3,100}",$clave)){
 				        echo "<script>
 					        Swal.fire({
 							  icon: '',

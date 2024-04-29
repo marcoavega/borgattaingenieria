@@ -28,32 +28,8 @@
 		    }
 
 		    # Verificando integridad de los datos #
-		   
-
-		    if($this->verificarDatos("[a-zA-Z0-9]{4,20}",$usuario)){
-		    	$alerta=[
-					"tipo"=>"simple",
-					"titulo"=>"Ocurrió un error inesperado",
-					"texto"=>"El USUARIO no coincide con el formato solicitado",
-					"icono"=>"error"
-				];
-				return json_encode($alerta);
-		        exit();
-		    }
-
-		    if($this->verificarDatos("[a-zA-Z0-9$@.-]{7,100}",$clave1) || $this->verificarDatos("[a-zA-Z0-9$@.-]{7,100}",$clave2)){
-		    	$alerta=[
-					"tipo"=>"simple",
-					"titulo"=>"Ocurrió un error inesperado",
-					"texto"=>"Las CLAVES no coinciden con el formato solicitado",
-					"icono"=>"error"
-				];
-				return json_encode($alerta);
-		        exit();
-		    }
 
 		   
-
             # Verificando claves #
             if($clave1!=$clave2){
 				$alerta=[

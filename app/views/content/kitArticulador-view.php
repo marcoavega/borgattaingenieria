@@ -39,7 +39,7 @@
     <div class="row g-3 justify-content-center">
         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
             <div class="media-object">
-                <a href="URL_DESTINO_CPI" class="text-decoration-none">
+                <a href="<?php echo APP_URL; ?>cpiList/" class="text-decoration-none">
                     <img src="<?php echo APP_URL; ?>app/views/img/cpi.png" alt="CPI" class="img-fluid">
                     <div class="media-body">
                         <h5 class="media-title">CPI</h5>
@@ -51,7 +51,7 @@
 
         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
             <div class="media-object">
-                <a href="URL_DESTINO_ARTICULADOR" class="text-decoration-none">
+                <a href="<?php echo APP_URL; ?>artList/" class="text-decoration-none">
                     <img src="<?php echo APP_URL; ?>app/views/img/articulador.png" alt="Articulador" class="img-fluid">
                     <div class="media-body">
                         <h5 class="media-title">ARTICULADOR</h5>
@@ -63,7 +63,7 @@
 
         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
             <div class="media-object">
-                <a href="URL_DESTINO_ARCO" class="text-decoration-none">
+                <a href="<?php echo APP_URL; ?>arcList/" class="text-decoration-none">
                     <img src="<?php echo APP_URL; ?>app/views/img/arco.png" alt="Arco Facial" class="img-fluid">
                     <div class="media-body">
                         <h5 class="media-title">ARCO FACIAL</h5>

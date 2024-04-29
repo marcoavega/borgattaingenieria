@@ -28,7 +28,11 @@
                             "orderGNew",
                             "orderGPNew",
                             "orderGSearch",
-                            "kitList"
+                            "kitList",
+                            "cpiList",
+                            "artList",
+                            "arcList",
+                            "herramientasMaquinado"
                         ];
 
             // Comprueba si la vista solicitada está en la lista blanca
