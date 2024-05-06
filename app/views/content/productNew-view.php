@@ -24,6 +24,7 @@
             $opcionesProveedores = $insProduct->obtenerOpcionesProveedores();
             $opcionesUnidadesMedida = $insProduct->obtenerOpcionesUnidadesMedida();
             $opcionesTiposMoneda = $insProduct->obtenerOpcionesTiposMoneda();
+            $opcionesSubCategorias = $insProduct->obtenerOpcionesSubCategorias();
             ?>
             <?php
             // Incluye el botón de regreso
@@ -50,8 +51,14 @@
 
                 <!-- Campo para el precio del producto -->
                 <div class="mb-3">
-                    <label for="precio" class="form-label">Precio en Pesos $:</label>
+                    <label for="precio" class="form-label">Precio $:</label>
                     <input type="text" class="form-control" id="precio" name="precio" required>
+                </div>
+
+                <!-- Campo para el precio del producto -->
+                <div class="mb-3">
+                    <label for="ubicacion" class="form-label">Asignar ubicación:</label>
+                    <input type="text" class="form-control" id="ubicacion" name="ubicacion" required>
                 </div>
 
                 <!-- Campo para la cantidad de producto -->
@@ -66,6 +73,15 @@
                     <select class='form-control' name='categoria' id='categoria' required>
                         <option value="">Selecciona una categoría</option>
                         <?php echo $opcionesCategorias; ?>
+                    </select>
+                </div>
+
+                <!-- Campo de selección para la subcategoría del producto -->
+                <div class="mb-3">
+                    <label for="subcategoria" class="form-label">Sub-Categoría</label>
+                    <select class='form-control' name='subcategoria' id='subcategoria' required>
+                        <option value="">Selecciona una sub-categoría</option>
+                        <?php echo $opcionesSubCategorias; ?>
                     </select>
                 </div>
 

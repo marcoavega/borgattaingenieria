@@ -10,12 +10,12 @@
                 </div>
                 <!-- Campo de entrada para el nombre de usuario -->
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="floatingInput" placeholder="Usuario" name="login_usuario" pattern="[a-zA-Z0-9]{4,30}" maxlength="30" required>
+                    <input type="text" class="form-control" id="floatingInput" placeholder="Usuario" name="login_usuario"  maxlength="50" required>
                     <label for="floatingInput">Usuario</label>
                 </div>
                 <!-- Campo de entrada para la contraseña -->
                 <div class="form-floating mb-3">
-                    <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="login_clave" pattern="[a-zA-Z0-9$@.-]{5,100}" maxlength="100" required>
+                    <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="login_clave" maxlength="50" required>
                     <label for="floatingPassword">Clave</label>
                 </div>
                 <!-- Botón para enviar el formulario -->

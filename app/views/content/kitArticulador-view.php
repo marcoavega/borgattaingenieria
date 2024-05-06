@@ -35,7 +35,7 @@
     
     <?php include "./app/views/inc/btn_back2.php"; ?>
 
-    <!-- Fila principal con Bootstrap -->
+    <!-- Fila kit -->
     <div class="row g-3 justify-content-center">
         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
             <div class="media-object">
@@ -85,4 +85,111 @@
             </div>
         </div>
     </div>
+
+
+ <!-- Fila CPI -->
+ <div class="row g-3 justify-content-center">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="media-object">
+                <a href="<?php echo APP_URL; ?>piezasMaquinadosCPI/" class="text-decoration-none">
+                    <img src="<?php echo APP_URL; ?>app/views/img/" alt="CPI" class="img-fluid">
+                    <div class="media-body">
+                        <h5 class="media-title">PIEZAS MAQUINADOS CPI</h5>
+                        <p class="media-text">Piezas maquinadas por CNC</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="media-object">
+                <a href="<?php echo APP_URL; ?>tornilleriaMaquinadosCPI/" class="text-decoration-none">
+                    <img src="<?php echo APP_URL; ?>app/views/img/" alt="Articulador" class="img-fluid">
+                    <div class="media-body">
+                        <h5 class="media-title">TORNILLERIA MAQUINADOS CPI</h5>
+                        <p class="media-text">Tornilleria por área de maquinado</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="media-object">
+                <a href="<?php echo APP_URL; ?>tornilleriaExternaCPI/" class="text-decoration-none">
+                    <img src="<?php echo APP_URL; ?>app/views/img/" alt="Arco Facial" class="img-fluid">
+                    <div class="media-body">
+                        <h5 class="media-title">TORNILLERIA COMPRA EXTERNA PARA CPI</h5>
+                        <p class="media-text">Tornilleria de compras externas</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="media-object">
+                <a href="<?php echo APP_URL; ?>piezasExternasCPI/" class="text-decoration-none">
+                    <img src="<?php echo APP_URL; ?>app/views/img/" alt="Kit de Articulador" class="img-fluid">
+                    <div class="media-body">
+                        <h5 class="media-title">PIEZAS COMPRA EXTERNA PARA CPI</h5>
+                        <p class="media-text">Piezas compras externas</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+     <!-- Fila ARTICULADOR -->
+ <div class="row g-3 justify-content-center">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="media-object">
+                <a href="<?php echo APP_URL; ?>piezasMaquinadosArticulador/" class="text-decoration-none">
+                    <img src="<?php echo APP_URL; ?>app/views/img/" alt="CPI" class="img-fluid">
+                    <div class="media-body">
+                        <h5 class="media-title">PIEZAS MAQUINADOS ARTICULADOR</h5>
+                        <p class="media-text">Piezas maquinadas por CNC</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="media-object">
+                <a href="<?php echo APP_URL; ?>tornilleriaMaquinadosArticulador/" class="text-decoration-none">
+                    <img src="<?php echo APP_URL; ?>app/views/img/" alt="Articulador" class="img-fluid">
+                    <div class="media-body">
+                        <h5 class="media-title">TORNILLERIA MAQUINADOS ARTICULADOR</h5>
+                        <p class="media-text">Tornilleria por área de maquinado</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="media-object">
+                <a href="<?php echo APP_URL; ?>tornilleriaExternaArticulador/" class="text-decoration-none">
+                    <img src="<?php echo APP_URL; ?>app/views/img/" alt="Arco Facial" class="img-fluid">
+                    <div class="media-body">
+                        <h5 class="media-title">TORNILLERIA COMPRA EXTERNA PARA ARTICULADOR</h5>
+                        <p class="media-text">Tornilleria de compras externas</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="media-object">
+                <a href="<?php echo APP_URL; ?>piezasExternasArticulador/" class="text-decoration-none">
+                    <img src="<?php echo APP_URL; ?>app/views/img/" alt="Kit de Articulador" class="img-fluid">
+                    <div class="media-body">
+                        <h5 class="media-title">PIEZAS COMPRA EXTERNA PARA ARTICULADOR</h5>
+                        <p class="media-text">Piezas compras externas</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
 </div>

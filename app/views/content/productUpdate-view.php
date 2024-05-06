@@ -24,6 +24,7 @@
     $opcionesProveedores = $insProduct->obtenerOpcionesProveedores();
     $opcionesUnidadesMedida = $insProduct->obtenerOpcionesUnidadesMedida();
     $opcionesTiposMoneda = $insProduct->obtenerOpcionesTiposMoneda();
+    $opcionesSubCategorias = $insProduct->obtenerOpcionesSubCategorias();
 
     // Obtiene los datos del producto a editar
     $datos = $insLogin->seleccionarDatos("Unico", "productos", "id_producto", $id);
@@ -63,11 +64,26 @@
                     </select>
                 </div>
 
+                 <!-- Campo de selección para la subcategoría del producto -->
+                 <div class="mb-3">
+                    <label for="subcategoria" class="form-label">Sub-Categoría</label>
+                    <select class='form-control' name='subcategoria' id='subcategoria' required>
+                        <option value="">Selecciona una sub-categoría</option>
+                        <?php echo $opcionesSubCategorias; ?>
+                    </select>
+                </div>
+
             <!-- Campo para el precio del producto -->
             <div class="mb-3">
                 <label for="precio" class="form-label">Precio $:</label>
                 <input type="text" class="form-control" id="precio" name="precio" value="<?php echo $datos['precio']; ?>" required>
             </div>
+
+            <!-- Campo para el precio del producto -->
+            <div class="mb-3">
+                    <label for="ubicacion" class="form-label">Asignar ubicación:</label>
+                    <input type="text" class="form-control" id="ubicacion" name="ubicacion" value="<?php echo $datos['ubicacion']; ?>" required>
+                </div>
 
             <!-- Campo para la cantidad de producto -->
             <div class="mb-3">

@@ -20,6 +20,21 @@ class productController extends mainModel
 
         return $opciones_categorias;
     }
+
+    public function obtenerOpcionesSubCategorias()
+    {
+        $consulta_subcategorias = "SELECT * FROM sub_categorias ORDER BY nombre_subcategoria";
+        $datos_subcategorias = $this->ejecutarConsulta($consulta_subcategorias);
+        $opciones_subcategorias = "";
+
+        while ($subcategoria = $datos_subcategorias->fetch()) {
+            $opciones_subcategorias .= '<option value="' . $subcategoria['id_subcategoria'] . '">'
+                . $subcategoria['nombre_subcategoria'] . '</option>';
+        }
+
+        return $opciones_subcategorias;
+    }
+    
     public function obtenerOpcionesProveedores()
     {
         $consulta_proveedores = "SELECT * FROM proveedores ORDER BY nombre_proveedor";
@@ -98,18 +113,20 @@ class productController extends mainModel
 
         $codigo_producto = $this->limpiarCadena($_POST['codigo_producto']);
         $nombre_producto = $_POST['nombre_producto'];
+        $ubicacion = $_POST['ubicacion'];
         $precio = $this->limpiarCadena($_POST['precio']);
         $stock = $this->limpiarCadena($_POST['stock']);
         $categoria = $this->limpiarCadena($_POST['categoria']);
         $proveedor = $this->limpiarCadena($_POST['proveedor']);
         $unidad_medida = $this->limpiarCadena($_POST['unidad_medida']);
         $tipo_moneda = $this->limpiarCadena($_POST['tipo_moneda']);
+        $subcategoria = $this->limpiarCadena($_POST['subcategoria']);
   
 
         # Verificando campos obligatorios #
         if (
             $codigo_producto == "" || $nombre_producto == "" || $precio == "" || $stock == "" || $categoria == "" || $proveedor == "" ||
-            $unidad_medida == "" || $tipo_moneda == ""
+            $unidad_medida == "" || $tipo_moneda == "" || $ubicacion == "" || $subcategoria == ""
         ) {
             $alerta = [
                 "tipo" => "simple",
@@ -209,6 +226,11 @@ class productController extends mainModel
                 "campo_valor" => $nombre_producto
             ],
             [
+                "campo_nombre" => "ubicacion",
+                "campo_marcador" => ":Ubicacion",
+                "campo_valor" => $ubicacion
+            ],
+            [
                 "campo_nombre" => "precio",
                 "campo_marcador" => ":Precio",
                 "campo_valor" => $precio
@@ -243,6 +265,11 @@ class productController extends mainModel
                 "campo_marcador" => ":UrlImagen",
                 "campo_valor" => $foto
             ],
+            [
+                "campo_nombre" => "id_subcategoria",
+                "campo_marcador" => ":IdSubCategoria",
+                "campo_valor" => $subcategoria
+            ]
         ];
         
 
@@ -340,6 +367,7 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
             proveedores.nombre_proveedor,
             unidades_medida.nombre_unidad,
             tipos_moneda.nombre_moneda,
+            sub_categorias.nombre_subcategoria,
             SUM(CASE WHEN almacenes.nombre_almacen = 'Almacén General' THEN stock_almacen.stock ELSE 0 END) AS stock_general,
             SUM(CASE WHEN almacenes.nombre_almacen = 'Almacén de Maquinado' THEN stock_almacen.stock ELSE 0 END) AS stock_maquinados,
             SUM(CASE WHEN almacenes.nombre_almacen = 'Almacén de Ensamble' THEN stock_almacen.stock ELSE 0 END) AS stock_ensamble
@@ -348,6 +376,7 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
         JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
         JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
         JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
+        JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
         LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
         LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
         WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%'
@@ -362,6 +391,7 @@ JOIN categorias ON productos.id_categoria = categorias.id_categoria
 JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
 JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
 JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
+JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
 LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
 LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
 WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%';        
@@ -396,6 +426,7 @@ WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%';
             <h5 class="card-title">' . $rows['nombre_producto'] . '</h5> <!-- Nombre del producto -->
             <p class="card-text">Id: ' . $rows['id_producto'] . '</p> <!-- ID del producto -->
             <p class="card-text">Código: ' . $rows['codigo_producto'] . '</p> <!-- Código del producto -->
+            <p class="card-text">Ubicación: ' . $rows['ubicacion'] . '</p> <!-- ubicacion del producto -->
             <p class="card-text">Precio: ' . $rows['precio'] . '</p> <!-- Precio del producto -->
             <p class="card-text">Moneda: ' . $rows['nombre_moneda'] . '</p> <!-- Moneda en la que se valora el producto -->
              <p class="card-text">Unidad de Medida: ' . $rows['nombre_unidad'] . '</p> <!-- Unidad de medida del producto -->
@@ -403,6 +434,7 @@ WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%';
                 <br> Almacén Maquinados: ' . $rows['stock_maquinados'] . ' <!-- Stock en almacén de maquinados -->
                 <br> Almacén Ensamble: ' . $rows['stock_ensamble'] . '</p> <!-- Stock en almacén de ensamble -->
             <p class="card-text">Categoría: ' . $rows['nombre_categoria'] . '</p> <!-- Categoría del producto -->
+            <p class="card-text">Sub-Categoría: ' . $rows['nombre_subcategoria'] . '</p> <!-- Categoría del producto -->
             <p class="card-text">Proveedor: ' . $rows['nombre_proveedor'] . '</p> <!-- Proveedor del producto -->
         </div>
 
@@ -546,14 +578,16 @@ if ($total > 0 && $pagina <= $numeroPaginas) {
         # Almacenando datos#
         $codigo_producto = $this->limpiarCadena($_POST['codigo_producto']);
         $nombre_producto = $this->limpiarCadena($_POST['nombre_producto']);
+        $ubicacion = $_POST['ubicacion'];
         $id_categoria = $this->limpiarCadena($_POST['id_categoria']);
         $precio = $this->limpiarCadena($_POST['precio']);
         $stock = $this->limpiarCadena($_POST['stock']);
+        $subcategoria = $this->limpiarCadena($_POST['subcategoria']);
        
 
         # Verificando campos obligatorios #
         if (
-            $codigo_producto == "" || $nombre_producto == "" || $precio == "" || $stock == "" || $id_categoria == ""
+            $codigo_producto == "" || $nombre_producto == "" || $precio == "" || $stock == "" || $id_categoria == "" || $ubicacion == "" || $subcategoria == ""
         ) {
             $alerta = [
                 "tipo" => "simple",
@@ -578,6 +612,11 @@ if ($total > 0 && $pagina <= $numeroPaginas) {
                 "campo_valor" => $nombre_producto
             ],
             [
+                "campo_nombre" => "ubicacion",
+                "campo_marcador" => ":Ubicacion",
+                "campo_valor" => $ubicacion
+            ],
+            [
                 "campo_nombre" => "id_categoria",
                 "campo_marcador" => ":IdCategoria",
                 "campo_valor" => $id_categoria
@@ -592,7 +631,11 @@ if ($total > 0 && $pagina <= $numeroPaginas) {
                 "campo_marcador" => ":Stock",
                 "campo_valor" => $stock
             ],
-           
+            [
+                "campo_nombre" => "id_subcategoria",
+                "campo_marcador" => ":IdSubCategoria",
+                "campo_valor" => $subcategoria
+            ]
         ];
 
 

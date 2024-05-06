@@ -32,7 +32,15 @@
                             "cpiList",
                             "artList",
                             "arcList",
-                            "herramientasMaquinado"
+                            "herramientasMaquinado",
+                            "tornilleriaMaquinadosCPI",
+                            "piezasMaquinadosCPI",
+                            "tornilleriaExternaCPI",
+                            "piezasExternasCPI",
+                            "piezasMaquinadosArticulador",
+                            "tornilleriaMaquinadosArticulador",
+                            "tornilleriaExternaArticulador",
+                            "piezasExternasArticulador",
                         ];
 
             // Comprueba si la vista solicitada está en la lista blanca
