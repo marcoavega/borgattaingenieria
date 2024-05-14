@@ -191,5 +191,56 @@
     </div>
 
 
+<!-- Fila ARCO -->
+ <div class="row g-3 justify-content-center">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="media-object">
+                <a href="<?php echo APP_URL; ?>piezasMaquinadosArco/" class="text-decoration-none">
+                    <img src="<?php echo APP_URL; ?>app/views/img/" alt="CPI" class="img-fluid">
+                    <div class="media-body">
+                        <h5 class="media-title">PIEZAS MAQUINADOS ARCO</h5>
+                        <p class="media-text">Piezas maquinadas por CNC</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="media-object">
+                <a href="<?php echo APP_URL; ?>tornilleriaMaquinadosArco/" class="text-decoration-none">
+                    <img src="<?php echo APP_URL; ?>app/views/img/" alt="Articulador" class="img-fluid">
+                    <div class="media-body">
+                        <h5 class="media-title">TORNILLERIA MAQUINADOS ARCO</h5>
+                        <p class="media-text">Tornilleria por área de maquinado</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="media-object">
+                <a href="<?php echo APP_URL; ?>tornilleriaExternaArco/" class="text-decoration-none">
+                    <img src="<?php echo APP_URL; ?>app/views/img/" alt="Arco Facial" class="img-fluid">
+                    <div class="media-body">
+                        <h5 class="media-title">TORNILLERIA COMPRA EXTERNA PARA ARCO</h5>
+                        <p class="media-text">Tornilleria de compras externas</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="media-object">
+                <a href="<?php echo APP_URL; ?>piezasExternasArco/" class="text-decoration-none">
+                    <img src="<?php echo APP_URL; ?>app/views/img/" alt="Kit de Articulador" class="img-fluid">
+                    <div class="media-body">
+                        <h5 class="media-title">PIEZAS COMPRA EXTERNA PARA ARCO</h5>
+                        <p class="media-text">Piezas compras externas</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
 
 </div>

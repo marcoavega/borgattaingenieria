@@ -5,24 +5,8 @@ namespace app\controllers;
 
 use app\models\mainModel;
 
-class ordenGastoController extends mainModel
+class notaEntradaController extends mainModel
 {
-
-
-    public function obtenerOpcionesOrdenes()
-    {
-        $consulta_ordenes = "SELECT * FROM ordenes_gasto ORDER BY id_orden_gasto";
-        $datos_ordenes = $this->ejecutarConsulta($consulta_ordenes);
-        $opciones_ordenes = "";
-
-        while ($orden = $datos_ordenes->fetch()) {
-            $opciones_ordenes .= '<option value="' . $orden['numero_orden'] . '">'
-                . $orden['numero_orden'] . '</option>';
-        }
-
-        return $opciones_ordenes;
-    }
-
     public function obtenerOpcionesProveedores()
     {
         $consulta_proveedores = "SELECT * FROM proveedores ORDER BY nombre_proveedor";
@@ -38,32 +22,22 @@ class ordenGastoController extends mainModel
     }
 
     public function obtenerOpcionesOrdenCompra()
-    {
-        $consulta_orden_compra = "SELECT * FROM ordenes_gasto ORDER BY numero_orden";
-        $datos_orden = $this->ejecutarConsulta($consulta_orden_compra);
-        $opciones_ordenes = "";
+{
+    $consulta_ordenes = "SELECT id_orden_gasto AS id, numero_orden, 'Gasto' AS tipo
+                         FROM ordenes_gasto
+                         UNION
+                         SELECT id_orden_compra AS id, numero_orden, 'Compra' AS tipo
+                         FROM ordenes_compra
+                         ORDER BY numero_orden";
+    $datos_ordenes = $this->ejecutarConsulta($consulta_ordenes);
+    $opciones_ordenes = "";
 
-        while ($orden_compra = $datos_orden->fetch()) {
-            $opciones_ordenes .= '<option value="' . $orden_compra['id_orden_gasto'] . '">'
-                . $orden_compra['numero_orden'] . '</option>';
-        }
-
-        return $opciones_ordenes;
+    while ($orden = $datos_ordenes->fetch()) {
+        $opciones_ordenes .= '<option value="' . $orden['id'] . '">' . $orden['numero_orden'] . ' (' . $orden['tipo'] . ')</option>';
     }
 
-    public function obtenerOpcionesMonedas()
-    {
-        $consulta_tipos_moneda = "SELECT * FROM tipos_moneda ORDER BY id_moneda";
-        $datos_moneda = $this->ejecutarConsulta($consulta_tipos_moneda);
-        $opciones_monedas = "";
-
-        while ($moneda = $datos_moneda->fetch()) {
-            $opciones_monedas .= '<option value="' . $moneda['id_moneda'] . '">'
-                . $moneda['nombre_moneda'] . '</option>';
-        }
-
-        return $opciones_monedas;
-    }
+    return $opciones_ordenes;
+}
 
     public function obtenerEmpleados()
     {
@@ -89,11 +63,10 @@ class ordenGastoController extends mainModel
 
         // Generando número de orden automático
         $ultimoNumeroOrden = $this->obtenerUltimoNumeroOrden();
-        $numero_orden = 'ROG-' . str_pad($ultimoNumeroOrden + 1, 3, '0', STR_PAD_LEFT);
+        $numero_orden = 'Nota Entrada N.-' . str_pad($ultimoNumeroOrden + 1, 3, '0', STR_PAD_LEFT);
 
         # Almacenando datos
         $id_proveedor = $_POST['id_proveedor'];
-        $id_moneda = $_POST['id_moneda'];
         $id_empleado = $this->limpiarCadena($_POST['id_empleado']);
 
         # Verificando campos obligatorios
@@ -117,11 +90,6 @@ class ordenGastoController extends mainModel
                 "campo_nombre" => "id_proveedor",
                 "campo_marcador" => ":IdProveedor",
                 "campo_valor" => $id_proveedor
-            ],
-            [
-                "campo_nombre" => "id_moneda",
-                "campo_marcador" => ":IdMoneda",
-                "campo_valor" => $id_moneda
             ],
             [
                 "campo_nombre" => "id_empleado",

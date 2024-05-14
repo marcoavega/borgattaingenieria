@@ -7,7 +7,6 @@ use app\models\mainModel;
 class arcController extends mainModel
 {
 
-    
    /*----------  Controlador listar productos  ----------*/
    public function listarArcControlador($pagina, $registros, $url, $busqueda)
 {
@@ -22,7 +21,7 @@ class arcController extends mainModel
     $consulta_datos = "SELECT
         p.codigo_producto,
         p.nombre_producto,
-        MAX(IF(cpi.nombre = 'Arco Facial', pca.cantidad, 0)) AS cantidad_arco_facial,
+        MAX(IF(cpi.nombre = 'ARCO', pca.cantidad, 0)) AS cantidad_arco_facial,
         sa.stock AS stock_almacen_general
     FROM
         productos p
@@ -58,7 +57,7 @@ class arcController extends mainModel
             <th>Arco Facial</th>
             <th>Total</th>
             <th>Stock Almacén General</th>
-            <th>Stock Disponible</th>
+            <th>Stock Restante</th>
         </tr>
     </thead>
     <tbody>';
@@ -101,7 +100,7 @@ class arcController extends mainModel
 function imprimirTabla() {
         var contenidoTabla = document.getElementById("tabla-productos").innerHTML;
         var ventanaImpresion = window.open("", "_blank");
-        ventanaImpresion.document.write("<html><head><title>Lista inventario</title>");
+        ventanaImpresion.document.write("<html><head><title>Lista Arco</title>");
         ventanaImpresion.document.write("<style>");
         ventanaImpresion.document.write("@media print {");
         ventanaImpresion.document.write("    table { page-break-inside: avoid; }");

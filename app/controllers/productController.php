@@ -346,16 +346,14 @@ return json_encode($alerta);
 
     
    /*----------  Controlador listar productos  ----------*/
-public function listarProductControlador($pagina, $registros, $url, $busqueda)
+   public function listarProductControlador($pagina, $registros, $url, $busqueda)
 {
-
     $pagina = $this->limpiarCadena($pagina);
     $registros = $this->limpiarCadena($registros);
-
     $url = $this->limpiarCadena($url);
     $url = APP_URL . $url . "/";
-
     $busqueda = $this->limpiarCadena($busqueda);
+
     $tabla = "";
 
     $pagina = (isset($pagina) && $pagina > 0) ? (int) $pagina : 1;
@@ -381,22 +379,18 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
         LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
         WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%'
         GROUP BY productos.id_producto
-        ORDER BY productos.id_producto DESC
-        LIMIT $inicio, $registros;
-    ";
+        ORDER BY productos.id_producto DESC;";
 
-$consulta_total = "SELECT COUNT(DISTINCT productos.id_producto)
-FROM productos
-JOIN categorias ON productos.id_categoria = categorias.id_categoria
-JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
-JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
-JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
-JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
-LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
-LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
-WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%';        
-";
-
+    $consulta_total = "SELECT COUNT(DISTINCT productos.id_producto)
+    FROM productos
+    JOIN categorias ON productos.id_categoria = categorias.id_categoria
+    JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
+    JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
+    JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
+    JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
+    LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
+    LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
+    WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%';";
 
     $datos = $this->ejecutarConsulta($consulta_datos);
     $datos = $datos->fetchAll();
@@ -404,153 +398,187 @@ WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%';
     $total = $this->ejecutarConsulta($consulta_total);
     $total = (int) $total->fetchColumn();
 
-    $numeroPaginas = ceil($total / $registros);
+    // Botones para cambiar la vista y el buscador en tiempo real
+    $tabla .= '
+    <div class="container-fluid p-4">
+        <div class="d-flex justify-content-between mb-3">
+            <div class="input-group" style="max-width: 300px;">
+                <input type="text" class="form-control" id="searchInput" placeholder="Buscar...">
+            </div>
+            <div>
+                <button class="btn btn-primary me-2" onclick="cambiarVista(\'tarjeta\')">Vista de Tarjeta</button>
+                <button class="btn btn-secondary me-2" onclick="cambiarVista(\'lista\')">Vista de Lista</button>
+                <button class="btn btn-success" onclick="imprimirTabla()">Imprimir</button>
+            </div>
+        </div>
+    ';
 
-    $tabla .= '<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 g-4 p-5">';
+    // Vista de tarjeta
+    $tabla .= '<div id="vistaTarjeta" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 g-4 p-5">';
 
-    if ($total >= 1 && $pagina <= $numeroPaginas) {
-        $contador = $inicio + 1;
-        $pag_inicio = $inicio + 1;
+    if ($total >= 1) {
         foreach ($datos as $rows) {
-            
-           // Concatenación de la cadena que contiene el HTML
-           $tabla .= '
-<div class="col"> <!-- Clases de Bootstrap para controlar el ancho de la columna en diferentes tamaños de pantalla -->
-    <div class="card h-100"> <!-- Tarjeta de Bootstrap con altura completa -->
-
-        <div class="card-img-top-container"> <!-- Contenedor personalizado para la imagen -->
-            <img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="card-img-top img-fluid" alt="..."> <!-- Imagen del producto -->
-        </div>
-
-        <div class="card-body"> <!-- Cuerpo de la tarjeta donde se muestra la información del producto -->
-            <h5 class="card-title">' . $rows['nombre_producto'] . '</h5> <!-- Nombre del producto -->
-            <p class="card-text">Id: ' . $rows['id_producto'] . '</p> <!-- ID del producto -->
-            <p class="card-text">Código: ' . $rows['codigo_producto'] . '</p> <!-- Código del producto -->
-            <p class="card-text">Ubicación: ' . $rows['ubicacion'] . '</p> <!-- ubicacion del producto -->
-            <p class="card-text">Precio: ' . $rows['precio'] . '</p> <!-- Precio del producto -->
-            <p class="card-text">Moneda: ' . $rows['nombre_moneda'] . '</p> <!-- Moneda en la que se valora el producto -->
-             <p class="card-text">Unidad de Medida: ' . $rows['nombre_unidad'] . '</p> <!-- Unidad de medida del producto -->
-            <p class="card-text">Stock Almacén General: ' . $rows['stock_general'] . ' <!-- Stock en almacén general -->
-                <br> Almacén Maquinados: ' . $rows['stock_maquinados'] . ' <!-- Stock en almacén de maquinados -->
-                <br> Almacén Ensamble: ' . $rows['stock_ensamble'] . '</p> <!-- Stock en almacén de ensamble -->
-            <p class="card-text">Categoría: ' . $rows['nombre_categoria'] . '</p> <!-- Categoría del producto -->
-            <p class="card-text">Sub-Categoría: ' . $rows['nombre_subcategoria'] . '</p> <!-- Categoría del producto -->
-            <p class="card-text">Proveedor: ' . $rows['nombre_proveedor'] . '</p> <!-- Proveedor del producto -->
-        </div>
-
-        ' . ($_SESSION['permiso'] == 1 ? ' <!-- Condición para mostrar los botones solo si el usuario tiene permiso -->
-        <div class="card-footer d-flex flex-column align-items-center"> <!-- Pie de tarjeta con botones centrados y en columna -->
-        <a href="' . APP_URL . 'productPhoto/' . $rows['id_producto'] . '/" class="btn btn-warning w-100 mb-2 rounded">Foto</a>
-        <a href="' . APP_URL . 'productUpdate/' . $rows['id_producto'] . '/" class="btn btn-success w-100 mb-2 rounded">Actualizar</a>
-        <a href="' . APP_URL . 'productEntrance/' . $rows['id_producto'] . '/" class="btn btn-light w-100 mb-2 rounded">Entrada</a>
-        <a href="' . APP_URL . 'movUpdate/' . $rows['id_producto'] . '/" class="btn btn-info w-100 mb-2 rounded">Movimiento Entre Almacenes</a>
-        <a href="' . APP_URL . 'descInventory/' . $rows['id_producto'] . '/" class="btn btn-danger w-100 rounded">Descontar inventario</a>
-    </div>' : '') . ' <!-- Fin de la condicional de permisos -->
-    </div>
-</div>';
-
-           
-
-        
-        
-
-
-            $contador++;
+            $tabla .= '
+            <div class="col tarjeta-item">
+                <div class="card h-100">
+                    <div class="card-img-top-container">
+                        <img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="card-img-top img-fluid" alt="...">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">' . $rows['nombre_producto'] . '</h5>
+                        <p class="card-text">Id: ' . $rows['id_producto'] . '</p>
+                        <p class="card-text">Código: ' . $rows['codigo_producto'] . '</p>
+                        <p class="card-text">Ubicación: ' . $rows['ubicacion'] . '</p>
+                        <p class="card-text">Precio: ' . $rows['precio'] . '</p>
+                        <p class="card-text">Moneda: ' . $rows['nombre_moneda'] . '</p>
+                        <p class="card-text">Unidad de Medida: ' . $rows['nombre_unidad'] . '</p>
+                        <p class="card-text">Stock Almacén General: ' . $rows['stock_general'] . '<br> Almacén Maquinados: ' . $rows['stock_maquinados'] . '<br> Almacén Ensamble: ' . $rows['stock_ensamble'] . '</p>
+                        <p class="card-text">Categoría: ' . $rows['nombre_categoria'] . '</p>
+                        <p class="card-text">Sub-Categoría: ' . $rows['nombre_subcategoria'] . '</p>
+                        <p class="card-text">Proveedor: ' . $rows['nombre_proveedor'] . '</p>
+                    </div>
+                    ' . ($_SESSION['permiso'] == 1 ? '
+                    <div class="card-footer d-flex flex-column align-items-center">
+                        <a href="' . APP_URL . 'productPhoto/' . $rows['id_producto'] . '/" class="btn btn-warning w-100 mb-2 rounded">Foto</a>
+                        <a href="' . APP_URL . 'productUpdate/' . $rows['id_producto'] . '/" class="btn btn-success w-100 mb-2 rounded">Actualizar</a>
+                        <a href="' . APP_URL . 'productEntrance/' . $rows['id_producto'] . '/" class="btn btn-light w-100 mb-2 rounded">Entrada</a>
+                        <a href="' . APP_URL . 'movUpdate/' . $rows['id_producto'] . '/" class="btn btn-info w-100 mb-2 rounded">Movimiento Entre Almacenes</a>
+                        <a href="' . APP_URL . 'descInventory/' . $rows['id_producto'] . '/" class="btn btn-danger w-100 rounded">Descontar inventario</a>
+                    </div>' : '') . '
+                </div>
+            </div>';
         }
-        $pag_final = $contador - 1;
     } else {
-        if ($total >= 1) {
-            $tabla .= '
-                <div class="col">
-                    <a href="' . $url . '1/" class="button is-link is-rounded is-small mt-4 mb-4">
-                        Haga clic acá para recargar el listado
-                    </a>
-                </div>
-            ';
-        } else {
-            $tabla .= '
-                <div class="col">
-                    No hay registros en el sistema
-                </div>
-            ';
-        }
+        $tabla .= '
+            <div class="col">
+                No hay registros en el sistema
+            </div>';
     }
 
     $tabla .= '</div>';
 
-  ### Paginacion ###
-if ($total > 0 && $pagina <= $numeroPaginas) {
-    $tabla .= "<p class=\"pagination\">Mostrando productos <strong>  " . $pag_inicio . "   </strong> al <strong>  " . $pag_final . "   </strong> de un total de <strong>  " . $total . "   </strong></p>";
-    $tabla .= $this->paginadorTablas($pagina, $numeroPaginas, $url, $pagina);
-}
+    // Vista de lista
+    $tabla .= '<div id="vistaLista" class="table-responsive" style="display: none;">
+        <table class="table table-bordered table-striped table-hover" id="tablaProductos">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Imagen</th>
+                    <th>Id</th>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Ubicación</th>
+                    <th>Precio</th>
+                    <th>Moneda</th>
+                    <th>Unidad de Medida</th>
+                    <th>Stock Almacén General</th>
+                    <th>Stock Maquinados</th>
+                    <th>Stock Ensamble</th>
+                    <th>Categoría</th>
+                </tr>
+            </thead>
+            <tbody id="productTableBody">';
 
-    
-    
+    if ($total >= 1) {
+        foreach ($datos as $rows) {
+            $tabla .= '
+            <tr class="lista-item">
+                <td><img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="img-thumbnail" alt="..." style="width: 50px; height: 50px;"></td>
+                <td>' . htmlspecialchars($rows['id_producto']) . '</td>
+                <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
+                <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
+                <td>' . htmlspecialchars($rows['ubicacion']) . '</td>
+                <td>' . htmlspecialchars($rows['precio']) . '</td>
+                <td>' . htmlspecialchars($rows['nombre_moneda']) . '</td>
+                <td>' . htmlspecialchars($rows['nombre_unidad']) . '</td>
+                <td>' . htmlspecialchars($rows['stock_general']) . '</td>
+                <td>' . htmlspecialchars($rows['stock_maquinados']) . '</td>
+                <td>' . htmlspecialchars($rows['stock_ensamble']) . '</td>
+                <td>' . htmlspecialchars($rows['nombre_categoria']) . '</td>
+            </tr>';
+        }
+    } else {
+        $tabla .= '
+            <tr>
+                <td colspan="12" class="text-center">No hay registros que coincidan con la búsqueda.</td>
+            </tr>';
+    }
+
+    $tabla .= '
+            </tbody>
+        </table>
+    </div>';
+
+    $tabla .= '</div>';
+
+    // JavaScript para cambiar la vista y buscar en tiempo real
+    $tabla .= '<script>
+    function cambiarVista(vista) {
+        if (vista === "tarjeta") {
+            document.getElementById("vistaTarjeta").style.display = "flex";
+            document.getElementById("vistaLista").style.display = "none";
+        } else {
+            document.getElementById("vistaTarjeta").style.display = "none";
+            document.getElementById("vistaLista").style.display = "block";
+        }
+    }
+
+    // Mostrar por defecto la vista de tarjeta
+    cambiarVista("tarjeta");
+
+    // Buscador en tiempo real
+    document.getElementById("searchInput").addEventListener("input", function() {
+        var filter = this.value.toUpperCase();
+        var words = filter.split(" ");
+        var tarjetaItems = document.querySelectorAll(".tarjeta-item");
+        var listaItems = document.querySelectorAll(".lista-item");
+
+        tarjetaItems.forEach(function(item) {
+            var textContent = item.textContent || item.innerText;
+            var match = words.every(function(word) {
+                return textContent.toUpperCase().indexOf(word) > -1;
+            });
+            if (match) {
+                item.style.display = "";
+            } else {
+                item.style.display = "none";
+            }
+        });
+
+        listaItems.forEach(function(item) {
+            var textContent = item.textContent || item.innerText;
+            var match = words.every(function(word) {
+                return textContent.toUpperCase().indexOf(word) > -1;
+            });
+            if (match) {
+                item.style.display = "";
+            } else {
+                item.style.display = "none";
+            }
+        });
+    });
+
+    // Función para imprimir la tabla
+    function imprimirTabla() {
+        var tabla = document.getElementById("tablaProductos").outerHTML;
+        var ventana = window.open("", "_blank");
+        ventana.document.write("<html><head><title>Imprimir Tabla</title>");
+        ventana.document.write("<style>");
+        ventana.document.write("body { font-family: Arial, sans-serif; }");
+        ventana.document.write("table { width: 100%; border-collapse: collapse; }");
+        ventana.document.write("th, td { border: 1px solid #000; padding: 8px; text-align: left; }");
+        ventana.document.write("th { background-color: #f2f2f2; }");
+        ventana.document.write("</style>");
+        ventana.document.write("</head><body>");
+        ventana.document.write(tabla);
+        ventana.document.write("</body></html>");
+        ventana.document.close();
+        ventana.print();
+    }
+    </script>';
+
     return $tabla;
 }
 
-
-
-    /*----------  Controlador eliminar producto  ----------*/
-    public function eliminarProductControlador()
-    {
-
-        $id = $this->limpiarCadena($_POST['id_producto']);
-
-        if ($id == 1) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No podemos eliminar el producto del sistema",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
-
-        # Verificando producto #
-        $datos = $this->ejecutarConsulta("SELECT * FROM productos WHERE id_producto='$id'");
-        if ($datos->rowCount() <= 0) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No hemos encontrado el producto en el sistema",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        } else {
-            $datos = $datos->fetch();
-        }
-
-        $eliminarUsuario = $this->eliminarRegistro("productos", "id_producto", $id);
-
-        if ($eliminarUsuario->rowCount() == 1) {
-
-            if (is_file("../views/img/img/" . $datos['url_imagen'])) {
-                chmod("../views/img/img/" . $datos['url_imagen'], 0777);
-                unlink("../views/img/img/" . $datos['url_imagen']);
-            }
-
-            $alerta = [
-                "tipo" => "recargar",
-                "titulo" => "Producto eliminado",
-                "texto" => "El usuario " . $datos['nombre_producto'] . " ha sido eliminado del sistema correctamente",
-                "icono" => "success"
-            ];
-
-        } else {
-
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No hemos podido eliminar el usuario " . $datos['nombre_producto'] . " del sistema, por favor intente nuevamente",
-                "icono" => "error"
-            ];
-        }
-
-        return json_encode($alerta);
-    }
 
 
 

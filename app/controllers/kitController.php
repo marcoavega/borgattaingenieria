@@ -22,22 +22,22 @@ class kitController extends mainModel
        $consulta_datos = "SELECT
            p.codigo_producto,
            p.nombre_producto,
-           MAX(IF(cpi.nombre = 'CPI', pca.cantidad, 0)) AS cantidad_cpi,
-           MAX(IF(cpi.nombre = 'Articulador', pca.cantidad, 0)) AS cantidad_articulador,
-           MAX(IF(cpi.nombre = 'Arco Facial', pca.cantidad, 0)) AS cantidad_arco_facial,
-           MAX(IF(cpi.nombre = 'Empaque', pca.cantidad, 0)) AS cantidad_empaque,
+           SUM(CASE WHEN cpi.nombre = 'CPI' THEN pca.cantidad ELSE 0 END) AS cantidad_cpi,
+           SUM(CASE WHEN cpi.nombre = 'Articulador' THEN pca.cantidad ELSE 0 END) AS cantidad_articulador,
+           SUM(CASE WHEN cpi.nombre = 'ARCO' THEN pca.cantidad ELSE 0 END) AS cantidad_arco_facial,
+           SUM(CASE WHEN cpi.nombre = 'Empaque' THEN pca.cantidad ELSE 0 END) AS cantidad_empaque,
            sa.stock AS stock_almacen_general,
-           (MAX(IF(cpi.nombre = 'CPI', pca.cantidad, 0)) +
-            MAX(IF(cpi.nombre = 'Articulador', pca.cantidad, 0)) +
-            MAX(IF(cpi.nombre = 'Arco Facial', pca.cantidad, 0)) +
-            MAX(IF(cpi.nombre = 'Empaque', pca.cantidad, 0))) AS total_cantidad
+           (SUM(CASE WHEN cpi.nombre = 'CPI' THEN pca.cantidad ELSE 0 END) +
+            SUM(CASE WHEN cpi.nombre = 'Articulador' THEN pca.cantidad ELSE 0 END) +
+            SUM(CASE WHEN cpi.nombre = 'ARCO' THEN pca.cantidad ELSE 0 END) +
+            SUM(CASE WHEN cpi.nombre = 'Empaque' THEN pca.cantidad ELSE 0 END)) AS total_cantidad
        FROM
            productos p
        JOIN categorias c ON p.id_categoria = c.id_categoria
        JOIN productos_cpi_art_af pca ON p.id_producto = pca.id_producto
        JOIN cpi_art_af cpi ON pca.id_cpi_art_af = cpi.id_cpi_art_af
        JOIN stock_almacen sa ON p.id_producto = sa.id_producto AND sa.id_almacen = 1
-       GROUP BY p.id_producto
+       GROUP BY p.codigo_producto, p.nombre_producto, sa.stock
        ORDER BY p.codigo_producto ASC
        LIMIT $inicio, $registros;";
    
@@ -55,11 +55,11 @@ class kitController extends mainModel
        $numeroPaginas = ceil($total / $registros);
    
        $tabla = '<div class="container-fluid p-4">
-       <h5>Ingrese la catidad de kit a fabricar</h5>
+       <h5>Ingrese la cantidad de kit a fabricar</h5>
        <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
        <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
-       <table id="tabla-productos" class="table table-bordered table-striped">
-       <thead>
+       <table id="tabla-productos" class="table table-bordered table-striped table-hover">
+       <thead class="thead-dark">
            <tr>
                <th>Código Producto</th>
                <th>Nombre Producto</th>
@@ -69,7 +69,7 @@ class kitController extends mainModel
                <th>Empaque</th>
                <th>Total</th>
                <th>Stock Almacén General</th>
-               <th>Stock Disponible</th>
+               <th>Stock Restante</th>
            </tr>
        </thead>
        <tbody>';
@@ -115,30 +115,27 @@ class kitController extends mainModel
        }
    
        function imprimirTabla() {
-        var contenidoTabla = document.getElementById("tabla-productos").innerHTML;
-        var ventanaImpresion = window.open("", "_blank");
-        ventanaImpresion.document.write("<html><head><title>Lista inventario</title>");
-        ventanaImpresion.document.write("<style>");
-        ventanaImpresion.document.write("@media print {");
-        ventanaImpresion.document.write("    table { page-break-inside: avoid; }");
-        ventanaImpresion.document.write("}");
-        ventanaImpresion.document.write("body { font-family: Arial, sans-serif; line-height: 1; }");
-        ventanaImpresion.document.write("table { border-collapse: collapse; width: 100%; }");
-        ventanaImpresion.document.write("th, td { border: 1px solid #000; padding: 8px; text-align: center; }");
-        ventanaImpresion.document.write("th { background-color: #f2f2f2; }");
-        ventanaImpresion.document.write("</style>");
-        ventanaImpresion.document.write("</head><body>");
-        ventanaImpresion.document.write("<table>");
-        
-        ventanaImpresion.document.write("<tbody>");
-        ventanaImpresion.document.write(contenidoTabla);
-        ventanaImpresion.document.write("</tbody>");
-        ventanaImpresion.document.write("</table>");
-        ventanaImpresion.document.write("</body></html>");
-        ventanaImpresion.document.close();
-        ventanaImpresion.print();
-    }
-   
+           var contenidoTabla = document.getElementById("tabla-productos").innerHTML;
+           var ventanaImpresion = window.open("", "_blank");
+           ventanaImpresion.document.write("<html><head><title>Lista KIT</title>");
+           ventanaImpresion.document.write("<style>");
+           ventanaImpresion.document.write("body { font-family: Arial, sans-serif; line-height: 1; }");
+           ventanaImpresion.document.write("table { border-collapse: collapse; width: 100%; }");
+           ventanaImpresion.document.write("th, td { border: 1px solid #000; padding: 8px; text-align: center; }");
+           ventanaImpresion.document.write("th { background-color: #f2f2f2; }");
+           ventanaImpresion.document.write("@media print { table { page-break-inside: avoid; } }");
+           ventanaImpresion.document.write("</style>");
+           ventanaImpresion.document.write("</head><body>");
+           ventanaImpresion.document.write("<table>");
+           ventanaImpresion.document.write("<thead class=\'thead-dark\'><tr><th>Código Producto</th><th>Nombre Producto</th><th>CPI</th><th>Articulador</th><th>Arco Facial</th><th>Empaque</th><th>Total</th><th>Stock Almacén General</th><th>Stock Restante</th></tr></thead>");
+           ventanaImpresion.document.write("<tbody>");
+           ventanaImpresion.document.write(contenidoTabla);
+           ventanaImpresion.document.write("</tbody>");
+           ventanaImpresion.document.write("</table>");
+           ventanaImpresion.document.write("</body></html>");
+           ventanaImpresion.document.close();
+           ventanaImpresion.print();
+       }
        </script>';
    
        // Paginación
@@ -148,7 +145,7 @@ class kitController extends mainModel
                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
            }
            for ($i = 1; $i <= $numeroPaginas; $i++) {
-               $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
+               $tabla .= "<li class='page-item " . ($i == $pagina ? 'active' : '') . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
            }
            if ($pagina < $numeroPaginas) {
                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
@@ -158,6 +155,7 @@ class kitController extends mainModel
    
        return $tabla;
    }
+   
    
    
    

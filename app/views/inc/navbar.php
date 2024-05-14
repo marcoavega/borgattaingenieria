@@ -113,6 +113,20 @@
                     </li>
                 <?php } ?>
 
+                <!-- Menú desplegable para las acciones relacionadas con los proveedores -->
+                <?php if ($_SESSION['permiso'] == 1) { ?>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Nota de Entrada
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaGNew/">Nueva Nota</a></li>
+                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaGPNew/">Alta de Productos en Nota</a></li>
+                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaGSearch/">Consultar</a></li>
+                        </ul>
+                    </li>
+                <?php } ?>
+
 
             </ul>
 

@@ -58,7 +58,7 @@ class artController extends mainModel
             <th>Articulador</th>
             <th>Total</th>
             <th>Stock Almacén General</th>
-            <th>Stock Disponible</th>
+            <th>Stock Restante</th>
         </tr>
     </thead>
     <tbody>';
@@ -101,7 +101,7 @@ class artController extends mainModel
     function imprimirTabla() {
         var contenidoTabla = document.getElementById("tabla-productos").innerHTML;
         var ventanaImpresion = window.open("", "_blank");
-        ventanaImpresion.document.write("<html><head><title>Lista inventario</title>");
+        ventanaImpresion.document.write("<html><head><title>Lista Articulador</title>");
         ventanaImpresion.document.write("<style>");
         ventanaImpresion.document.write("@media print {");
         ventanaImpresion.document.write("    table { page-break-inside: avoid; }");

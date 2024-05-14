@@ -41,6 +41,13 @@
                             "tornilleriaMaquinadosArticulador",
                             "tornilleriaExternaArticulador",
                             "piezasExternasArticulador",
+                            "piezasMaquinadosArco",
+                            "tornilleriaMaquinadosArco",
+                            "tornilleriaExternaArco",
+                            "piezasExternasArco",
+                            "notaGNew",
+                            "notaGPNew",
+                            "notaGSearch"
                         ];
 
             // Comprueba si la vista solicitada está en la lista blanca
