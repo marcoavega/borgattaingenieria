@@ -53,8 +53,22 @@ class notaEntradaController extends mainModel
         return $opciones_empleados;
     }
 
+    public function obtenerOpcionesNotas()
+    {
+        $consulta_notas = "SELECT * FROM notas_entrada ORDER BY numero_nota_entrada";
+        $datos_notas = $this->ejecutarConsulta($consulta_notas);
+        $opciones_notas = "";
+
+        while ($nota = $datos_notas->fetch()) {
+            $opciones_notas .= '<option value="' . $nota['id_nota_entrada'] . '">'
+                . $nota['numero_nota_entrada'] . '</option>';
+        }
+
+        return $opciones_notas;
+    }
+
     /*----------  Controlador registrar usuario  ----------*/
-    public function registrarOrdenGastoControlador()
+    public function registrarNotaEntradaControlador()
     {
         # Generando número de orden automático
         /*$ultimoNumeroOrden = $this->obtenerUltimoNumeroOrden();
@@ -63,7 +77,7 @@ class notaEntradaController extends mainModel
 
         // Generando número de orden automático
         $ultimoNumeroOrden = $this->obtenerUltimoNumeroOrden();
-        $numero_orden = 'Nota Entrada N.-' . str_pad($ultimoNumeroOrden + 1, 3, '0', STR_PAD_LEFT);
+        $numero_nota_entrada = 'NE-' . str_pad($ultimoNumeroOrden + 1, 3, '0', STR_PAD_LEFT);
 
         # Almacenando datos
         $id_proveedor = $_POST['id_proveedor'];
@@ -80,11 +94,11 @@ class notaEntradaController extends mainModel
             return json_encode($alerta);
         }
 
-        $orden_gasto_datos_reg = [
+        $nota_entrada_datos_reg = [
             [
-                "campo_nombre" => "numero_orden",
-                "campo_marcador" => ":NumeroOrden",
-                "campo_valor" => $numero_orden
+                "campo_nombre" => "numero_nota_entrada",
+                "campo_marcador" => ":NumeroNota",
+                "campo_valor" => $numero_nota_entrada
             ],
             [
                 "campo_nombre" => "id_proveedor",
@@ -98,20 +112,20 @@ class notaEntradaController extends mainModel
             ]
         ];
 
-        $registrar_orden_gasto = $this->guardarDatos("ordenes_gasto", $orden_gasto_datos_reg);
+        $registrar_nota_entrada = $this->guardarDatos("notas_entrada", $nota_entrada_datos_reg);
 
-        if ($registrar_orden_gasto->rowCount() == 1) {
+        if ($registrar_nota_entrada->rowCount() == 1) {
             $alerta = [
                 "tipo" => "limpiar",
-                "titulo" => "Orden de gasto registrada",
-                "texto" => "La orden de gasto $numero_orden se registró con éxito",
+                "titulo" => "Nota de Entrada registrada",
+                "texto" => "La nota de entrada $numero_nota_entrada se registró con éxito",
                 "icono" => "success"
             ];
         } else {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No se pudo registrar la orden de gasto, por favor inténtelo nuevamente",
+                "texto" => "No se pudo registrar la nota de entrada, contacte con su administrador",
                 "icono" => "error"
             ];
         }
@@ -121,24 +135,14 @@ class notaEntradaController extends mainModel
 
     private function obtenerUltimoNumeroOrden()
     {
-        $consulta_ultimo_numero = "SELECT MAX(SUBSTRING(numero_orden, 5)) AS ultimo_numero FROM ordenes_gasto";
+        $consulta_ultimo_numero = "SELECT MAX(SUBSTRING(numero_nota_entrada, 5)) AS ultimo_numero FROM notas_entrada";
         $resultado = $this->ejecutarConsulta($consulta_ultimo_numero)->fetch();
         return $resultado ? intval($resultado['ultimo_numero']) : 0;
     }
 
 
-    function numeroALetras($numero) {
-        // Esta es una función muy básica, considera buscar una más completa
-        $unidades = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve'];
-        if ($numero >= 0 && $numero <= 9) {
-            return $unidades[$numero];
-        } else {
-            return $numero; // Retorna el número sin convertir si no está en el rango de 0-9
-        }
-    }
-
     /*----------  Controlador listar productos  ----------*/
-    public function listarOrderControlador($pagina, $registros, $url, $busqueda)
+    public function listarNotaControlador($pagina, $registros, $url, $busqueda)
     {
        
         $pagina = $this->limpiarCadena($pagina);
@@ -153,78 +157,68 @@ class notaEntradaController extends mainModel
         $pagina = (isset($pagina) && $pagina > 0) ? (int) $pagina : 1;
         $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
 
-        $consulta_datos = "SELECT
-        detalle_orden_gasto.*,
-        ordenes_gasto.numero_orden,
-        proveedores.nombre_proveedor,
-        proveedores.RFC_proveedor,
-        proveedores.contacto_proveedor,
-        proveedores.telefono_proveedor,
-        proveedores.email_proveedor,
-        proveedores.direccion_proveedor,
-        ordenes_gasto.*,
-        unidades_medida.id_unidad,
-        unidades_medida.nombre_unidad,
-        tipos_moneda.id_moneda,
-        tipos_moneda.nombre_moneda,
-        empleados.nombre_empleado
-        
-    FROM
-        detalle_orden_gasto
-    LEFT JOIN ordenes_gasto ON detalle_orden_gasto.id_orden_gasto = ordenes_gasto.id_orden_gasto
-    LEFT JOIN proveedores ON ordenes_gasto.id_proveedor = proveedores.id_proveedor
-    LEFT JOIN unidades_medida ON detalle_orden_gasto.id_unidad = unidades_medida.id_unidad
-    LEFT JOIN tipos_moneda ON ordenes_gasto.id_moneda = tipos_moneda.id_moneda
-    LEFT JOIN empleados ON ordenes_gasto.id_empleado = empleados.id_empleado
-    WHERE
-        detalle_orden_gasto.nombre_producto LIKE '%$busqueda%'
-        OR ordenes_gasto.numero_orden LIKE '%$busqueda%'
-    ORDER BY
-        detalle_orden_gasto.id_orden_gasto DESC, detalle_orden_gasto.id_detalle_orden ASC
-    LIMIT
-        $inicio, $registros;";
+        $consulta_datos = "SELECT * FROM detalle_nota_entrada LIMIT 10;";
 
         $datos = $this->ejecutarConsulta($consulta_datos);
-        $datos = $datos->fetchAll();
+        $datos = $datos->fetchAll(\PDO::FETCH_ASSOC);
 
-        $consulta_total = "SELECT COUNT(*)
-    FROM detalle_orden_gasto
-    JOIN ordenes_gasto ON detalle_orden_gasto.id_orden_gasto = ordenes_gasto.id_orden_gasto
-    JOIN proveedores ON ordenes_gasto.id_proveedor = proveedores.id_proveedor
-    JOIN empleados ON ordenes_gasto.id_empleado = empleados.id_empleado
-    WHERE detalle_orden_gasto.nombre_producto LIKE '%$busqueda%'
-    OR ordenes_gasto.numero_orden LIKE '%$busqueda%';";
+        if (empty($datos)) {
+            return "No se encontraron resultados.";
+        }
 
-        $total = $this->ejecutarConsulta($consulta_total);
-        $total = (int) $total->fetchColumn();
+        $tabla = '
+        <button class="btn btn-primary" onclick="imprimirArea(\'areaImprimir\')">Imprimir</button>
+        <div id="areaImprimir">
+        <div class="container-fluid">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Número de Orden</th>
+                    <th>Número de Partida</th>
+                    <th>Nombre del Producto</th>
+                    <th>Cantidad</th>
+                    <th>ID Unidad de Medida</th>
+                </tr>
+            </thead>
+            <tbody>';
 
-        $numeroPaginas = ceil($total / $registros);
+        foreach ($datos as $rows) {
+            $tabla .= '
+            <tr>
+                <td>' . $rows['id_detalle_nota'] . '</td>
+                <td>' . $rows['numero_orden'] . '</td>
+                <td>' . $rows['numero_partida'] . '</td>
+                <td>' . $rows['nombre_producto'] . '</td>
+                <td>' . $rows['cantidad'] . '</td>
+                <td>' . $rows['id_unidad_medida'] . '</td>
+            </tr>';
+        }
 
-        
+        $tabla .= '
+            </tbody>
+        </table>
+        </div>
+        </div>';
 
-      
 
-     $tabla .= '
-     <button class="btn btn-primary" onclick="imprimirArea(\'areaImprimir\')">Imprimir</button>
-     <div id="areaImprimir">
-     <div class="container-fluid">';
-
+     
 $ordenActual = '';
 foreach ($datos as $rows) {
-    if ($ordenActual !== $rows['numero_orden']) {
+    if ($ordenActual !== $rows['numero_nota_entrada']) {
         if ($ordenActual !== '') {
             // Cierra la tabla anterior si no es la primera orden
             $tabla .= '</tbody>';
     
             $tabla .= '</table><hr>';
         }
-        $ordenActual = $rows['numero_orden'];
+        $ordenActual = $rows['numero_nota_entrada'];
         $tabla .= '
         <div class="invoice">
         <div style="display: flex; align-items: center;justify-content: space-between;">
             <img src="' . APP_URL . 'app/views/fotos/logo_orden.png" alt="logo" style="width:250px; height:auto; margin-right: 20px;">
             <div>
-                <h5>Orden de Gasto: ' . $rows['numero_orden'] . '</h5>
+                <h5>Orden de Gasto: ' . $rows['numero_nota_entrada'] . '</h5>
                 <p><strong>Fecha:</strong> ' . date('d/m/Y', strtotime($rows['fecha'])) . '</p>
             </div>
         </div>
@@ -234,26 +228,6 @@ foreach ($datos as $rows) {
             <p style="margin-top: 0; margin-bottom: 0;">Calle Puebla Sur. Manzana 4. Lote 5 Nave B Int. 2 Col. Jardín Industrial</p>
             <p style="margin-top: 0; margin-bottom: 0;">Ixtapaluca. Edo. de México, C.P. 56535</p>
         </div>
-
-        <div class="invoice" style="display: flex;">
-    <div style="flex: 1; margin-top: 1px; margin-bottom: 10px;">
-        <p style="margin-top: 0; margin-bottom: 0;"><strong>Datos Proveedor:</strong></p>
-        <p style="margin-top: 0; margin-bottom: 0;"><strong>Proveedor:</strong> ' . $rows['nombre_proveedor'] . '</p>
-        <p style="margin-top: 0; margin-bottom: 0;"><strong>RFC:</strong> ' . $rows['RFC_proveedor'] . '</p>
-        <p style="margin-top: 0; margin-bottom: 0;"><strong>Contacto:</strong> ' . $rows['contacto_proveedor'] . '</p>
-        <p style="margin-top: 0; margin-bottom: 0;"><strong>Teléfono:</strong> ' . $rows['telefono_proveedor'] . '</p>
-        <p style="margin-top: 0; margin-bottom: 0;"><strong>E-mail:</strong> ' . $rows['email_proveedor'] . '</p>
-        <p style="margin-top: 0; margin-bottom: 0;"><strong>Dirección:</strong> ' . $rows['direccion_proveedor'] . '</p>
-    </div>
-    <div style="flex: 1; margin-right: 10px; margin-top: 1px; margin-bottom: 10px;">
-        <p style="margin-top: 0; margin-bottom: 0;"><strong>ENVIAR A:</strong></p>
-        <p style="margin-top: 0; margin-bottom: 0;">RADIOTECNOLOGÍA INDUSTRIAL S.A. DE C.V.</p>
-        <p style="margin-top: 0; margin-bottom: 0;">RFC: RIN070219R38</p>
-        <p style="margin-top: 0; margin-bottom: 0;">Calle Puebla Sur. Manzana 4. Lote 5 Nave B Int. 2 Col. Jardín Industrial</p>
-        <p style="margin-top: 0; margin-bottom: 0;">Ixtapaluca. Edo. de México, C.P. 56535</p>
-        <p style="margin-top: 0; margin-bottom: 0;">Teléfono: 5551336363 extenciones: 415, 414 ó 418</p>
-    </div>
-</div>
 
 
     <table class="table" style="width: 100%; padding-top: 10;">
@@ -276,8 +250,6 @@ $tabla .= '
                 <td style="text-align: center;">' . $rows['nombre_producto'] . '</td>
                 <td style="text-align: center;">' . $rows['cantidad'] . '</td>
                 <td style="text-align: center;">' . $rows['nombre_unidad'] . '</td>
-                <td style="text-align: center;">' . $rows['precio_sin_IVA'] . '</td>
-                <td style="text-align: center;" data-importe="' . $rows['total'] . '">' . $rows['total'] . '</td>
             </tr>
             ';
 }
@@ -286,25 +258,6 @@ if ($ordenActual !== '') {
     // Agrega la fila de totales
     $tabla .= '
     <tfoot>
-    <tr>
-        <td colspan="5" style="text-align: right;">Suma de Importes:</td>
-        <td data-importe="suma" id="sumaImportes_' . $ordenActual . '"><div style="text-align: right;">' . '</div></td>
-    </tr>
-
-    <tr>
-        <td colspan="5" style="text-align: right;">IVA (16%):</td>
-        <td data-importe="iva" id="ivaImportes_' . $ordenActual . '"><div style="text-align: right;">' . '</div></td>
-    </tr>
-    <tr>
-        <td colspan="5" style="text-align: right;">Total ' . $rows['nombre_moneda'] . ':</td>
-        <td data-importe="total" id="totalImportes_' . $ordenActual . '"><div style="text-align: right;">' . '</div></td>
-    </tr>
-    
-    <tr>
-    <td colspan="6" style="text-align: right; white-space: nowrap;">
-        <strong>Total en letras:</strong> <span style="margin-left: 20px;"></span><div id="totalLetras_' . $ordenActual . '" style="display: inline;"></div>
-    </td>
-</tr>
 
 
 <tr>
@@ -329,89 +282,11 @@ $tabla .= '</div>';
 
 $tabla .= '<script>
 
-function numeroALetras(numero) {
-    const unidades = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
-    const decenas = ["", "diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
-    const centenas = ["", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
-    const especiales = ["diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve"];
-
-    let parteEntera = Math.floor(numero);
-    let parteDecimal = Math.round((numero - parteEntera) * 100);
-    let resultado = convertirALetras(parteEntera);
-
-    resultado += " con " + convertirALetras(parteDecimal) + (parteDecimal === 1 ? " centavo " : " centavos ") + (parteDecimal < 10 ? "0" : "") + parteDecimal + "/100";
-
-    return resultado;
-
-    function convertirALetras(n) {
-        if (n === 0) {
-            return "cero";
-        } else if (n > 0 && n < 20) {
-            return especiales[n - 10] || unidades[n];
-        } else if (n >= 20 && n < 100) {
-            return decenas[Math.floor(n / 10)] + (n % 10 ? " y " + unidades[n % 10] : "");
-        } else if (n === 100) {
-            return "cien";
-        } else if (n > 100 && n < 1000) {
-            return (n < 200 ? "ciento" : centenas[Math.floor(n / 100)]) + (n % 100 ? " " + convertirALetras(n % 100) : "");
-        } else if (n >= 1000 && n < 1000000) {
-            return convertirALetras(Math.floor(n / 1000)) + " mil" + (n % 1000 ? " " + convertirALetras(n % 1000) : "");
-        } else if (n >= 1000000 && n < 1000000000) {
-            return convertirALetras(Math.floor(n / 1000000)) + " millones" + (n % 1000000 ? " " + convertirALetras(n % 1000000) : "");
-        }
-    }
-}
-
-
-    document.addEventListener("DOMContentLoaded", function () {
-        var ordenes = document.querySelectorAll(".invoice");
-        ordenes.forEach(function (orden) {
-            var filas = orden.querySelectorAll("tbody tr");
-            var sumaImportes = 0;
-
-            filas.forEach(function (fila) {
-                sumaImportes += parseFloat(fila.querySelector("[data-importe]").dataset.importe);
-            });
-
-            var iva = sumaImportes * 0.16;
-            var total = sumaImportes + iva;
-
-            orden.querySelector("#sumaImportes_' . $ordenActual . '").textContent = sumaImportes.toFixed(2);
-            orden.querySelector("#ivaImportes_' . $ordenActual . '").textContent = iva.toFixed(2);
-            orden.querySelector("#totalImportes_' . $ordenActual . '").textContent = total.toFixed(2);
-        });
-    });
-
-
-    
-
-    document.addEventListener("DOMContentLoaded", function () {
-        var ordenes = document.querySelectorAll(".invoice");
-        ordenes.forEach(function (orden) {
-            var filas = orden.querySelectorAll("tbody tr");
-            var sumaImportes = 0;
-    
-            filas.forEach(function (fila) {
-                sumaImportes += parseFloat(fila.querySelector("[data-importe]").dataset.importe);
-            });
-    
-            var iva = sumaImportes * 0.16;
-            var total = sumaImportes + iva;
-    
-            orden.querySelector("#sumaImportes_' . $ordenActual . '").textContent = sumaImportes.toFixed(2);
-            orden.querySelector("#ivaImportes_' . $ordenActual . '").textContent = iva.toFixed(2);
-            orden.querySelector("#totalImportes_' . $ordenActual . '").textContent = total.toFixed(2);
-            // Convertir la parte entera del total a letras y manejar la parte decimal
-        var totalEnLetras = numeroALetras(total);
-        orden.querySelector("#totalLetras_' . $ordenActual . '").textContent = totalEnLetras;
-    });
-});
-
 
 function imprimirArea(id) {
     var contenido = document.getElementById(id).innerHTML;
     var ventanaImpresion = window.open("", "_blank");
-    ventanaImpresion.document.write("<html><head><title>' . $rows['numero_orden'] . '</title>");
+   
     
     // Aquí puedes agregar tus estilos CSS
     ventanaImpresion.document.write("<style>");

@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-05-2024 a las 20:36:39
--- Versión del servidor: 10.4.28-MariaDB
--- Versión de PHP: 8.2.4
+-- Tiempo de generación: 14-05-2024 a las 08:34:45
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -119,14 +119,20 @@ INSERT INTO `cpi_art_af` (`id_cpi_art_af`, `nombre`, `descripcion`) VALUES
 
 CREATE TABLE `detalle_nota_entrada` (
   `id_detalle_nota` int(11) NOT NULL,
-  `id_nota_entrada` int(11) NOT NULL,
+  `numero_orden` varchar(50) NOT NULL,
   `numero_partida` varchar(255) NOT NULL,
   `nombre_producto` varchar(1500) NOT NULL,
   `cantidad` decimal(11,2) NOT NULL,
-  `id_unidad_medida` int(11) NOT NULL,
-  `precio_sin_IVA` decimal(11,2) NOT NULL,
-  `total` decimal(11,2) NOT NULL
+  `id_unidad_medida` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `detalle_nota_entrada`
+--
+
+INSERT INTO `detalle_nota_entrada` (`id_detalle_nota`, `numero_orden`, `numero_partida`, `nombre_producto`, `cantidad`, `id_unidad_medida`) VALUES
+(1, 'ROG-069', '1', 'loipiopi', 3.00, 1),
+(2, 'ROG-069', '1', 'gfhgdghfdj', 5.00, 1);
 
 -- --------------------------------------------------------
 
@@ -606,8 +612,16 @@ CREATE TABLE `notas_entrada` (
   `numero_nota_entrada` varchar(255) NOT NULL,
   `fecha` date NOT NULL DEFAULT current_timestamp(),
   `id_proveedor` int(11) NOT NULL,
-  `id_moneda` int(11) NOT NULL
+  `id_empleado` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `notas_entrada`
+--
+
+INSERT INTO `notas_entrada` (`id_nota_entrada`, `numero_nota_entrada`, `fecha`, `id_proveedor`, `id_empleado`) VALUES
+(1, 'Nota Entrada: 2024-070', '2024-05-13', 12, 5),
+(2, 'Nota Entrada: 2024-001', '2024-05-13', 1, 5);
 
 -- --------------------------------------------------------
 
@@ -2310,7 +2324,7 @@ INSERT INTO `stock_almacen` (`id_producto`, `id_almacen`, `stock`) VALUES
 (379, 2, 0),
 (379, 3, 24),
 (380, 1, 0),
-(380, 2, 3),
+(380, 2, 1),
 (380, 3, 0),
 (381, 1, 0),
 (381, 2, 1),
@@ -3004,7 +3018,6 @@ ALTER TABLE `cpi_art_af`
 --
 ALTER TABLE `detalle_nota_entrada`
   ADD PRIMARY KEY (`id_detalle_nota`),
-  ADD KEY `detalle-orden` (`id_nota_entrada`),
   ADD KEY `unidad-nota` (`id_unidad_medida`);
 
 --
@@ -3046,7 +3059,7 @@ ALTER TABLE `movimientos`
 ALTER TABLE `notas_entrada`
   ADD PRIMARY KEY (`id_nota_entrada`),
   ADD KEY `nota-provedores` (`id_proveedor`),
-  ADD KEY `moneda-nota` (`id_moneda`);
+  ADD KEY `empleado-nota` (`id_empleado`);
 
 --
 -- Indices de la tabla `ordenes_compra`
@@ -3153,6 +3166,12 @@ ALTER TABLE `cpi_art_af`
   MODIFY `id_cpi_art_af` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT de la tabla `detalle_nota_entrada`
+--
+ALTER TABLE `detalle_nota_entrada`
+  MODIFY `id_detalle_nota` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `detalle_orden_compra`
 --
 ALTER TABLE `detalle_orden_compra`
@@ -3180,7 +3199,7 @@ ALTER TABLE `movimientos`
 -- AUTO_INCREMENT de la tabla `notas_entrada`
 --
 ALTER TABLE `notas_entrada`
-  MODIFY `id_nota_entrada` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_nota_entrada` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `ordenes_compra`
@@ -3192,7 +3211,7 @@ ALTER TABLE `ordenes_compra`
 -- AUTO_INCREMENT de la tabla `ordenes_gasto`
 --
 ALTER TABLE `ordenes_gasto`
-  MODIFY `id_orden_gasto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_orden_gasto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `permisos`
@@ -3244,7 +3263,6 @@ ALTER TABLE `usuario`
 -- Filtros para la tabla `detalle_nota_entrada`
 --
 ALTER TABLE `detalle_nota_entrada`
-  ADD CONSTRAINT `detalle-orden` FOREIGN KEY (`id_nota_entrada`) REFERENCES `notas_entrada` (`id_nota_entrada`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `unidad-nota` FOREIGN KEY (`id_unidad_medida`) REFERENCES `unidades_medida` (`id_unidad`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
@@ -3280,7 +3298,7 @@ ALTER TABLE `movimientos`
 -- Filtros para la tabla `notas_entrada`
 --
 ALTER TABLE `notas_entrada`
-  ADD CONSTRAINT `moneda-nota` FOREIGN KEY (`id_moneda`) REFERENCES `tipos_moneda` (`id_moneda`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `empleado-nota` FOREIGN KEY (`id_empleado`) REFERENCES `empleados` (`id_empleado`),
   ADD CONSTRAINT `nota-provedores` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedores` (`id_proveedor`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --

@@ -42,23 +42,13 @@ class mainModel
 
 
 	/*----------  Funcion limpiar cadenas  ----------*/
-	public function limpiarCadena($cadena)
-	{
-
-		$palabras = ["<script>", "</script>", "<script src", "<script type=", "SELECT * FROM", "SELECT ", " SELECT ", "DELETE FROM", "INSERT INTO", "DROP TABLE", "DROP DATABASE", "TRUNCATE TABLE", "SHOW TABLES", "SHOW DATABASES"];
-
+	public function limpiarCadena($cadena) {
 		$cadena = trim($cadena);
 		$cadena = stripslashes($cadena);
-
-		foreach ($palabras as $palabra) {
-			$cadena = str_ireplace($palabra, " ", $cadena);
-		}
-
-		$cadena = trim($cadena);
-		$cadena = stripslashes($cadena);
-
+		$cadena = htmlspecialchars($cadena);
 		return $cadena;
 	}
+	
 
 	/*---------- Funcion verificar datos (expresion regular) ----------*/
 	protected function verificarDatos($filtro, $cadena)

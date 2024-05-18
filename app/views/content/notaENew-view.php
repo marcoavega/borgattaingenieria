@@ -15,11 +15,9 @@
 
             // Crea una instancia del controlador
             $insProduct = new notaEntradaController();
-            $insMoneda = new notaEntradaController();
 
             // Obtiene las opciones de proveedores.
             $opcionesProveedores = $insProduct->obtenerOpcionesProveedores();
-           
             $opcionesEmpleados = $insProduct->obtenerEmpleados();
             ?>
             <?php
@@ -27,10 +25,10 @@
             include "./app/views/inc/btn_back2.php";
             ?>
             <!-- Formulario de creación de orden -->
-            <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/ordenGastoAjax.php"
+            <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/notaEntradaAjax.php"
                 method="POST" autocomplete="off" enctype="multipart/form-data">
                 <!-- Campo oculto para el módulo de orden compra -->
-                <input type="hidden" name="modulo_orden_gasto" value="registrar">
+                <input type="hidden" name="modulo_nota_entrada" value="registrar">
 
                 <div class="row">
                     <!-- Campo para el número de orden (generado automáticamente) -->

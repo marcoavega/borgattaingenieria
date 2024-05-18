@@ -45,9 +45,9 @@
                             "tornilleriaMaquinadosArco",
                             "tornilleriaExternaArco",
                             "piezasExternasArco",
-                            "notaGNew",
-                            "notaGPNew",
-                            "notaGSearch"
+                            "notaENew",
+                            "notaEPNew",
+                            "notaESearch"
                         ];
 
             // Comprueba si la vista solicitada está en la lista blanca

@@ -120,9 +120,9 @@
                             Nota de Entrada
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaGNew/">Nueva Nota</a></li>
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaGPNew/">Alta de Productos en Nota</a></li>
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaGSearch/">Consultar</a></li>
+                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaENew/">Nueva Nota</a></li>
+                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaEPNew/">Alta de Productos en Nota</a></li>
+                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaESearch/">Consultar</a></li>
                         </ul>
                     </li>
                 <?php } ?>
