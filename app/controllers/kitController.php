@@ -22,6 +22,7 @@ class kitController extends mainModel
        $consulta_datos = "SELECT
            p.codigo_producto,
            p.nombre_producto,
+           p.url_imagen,
            SUM(CASE WHEN cpi.nombre = 'CPI' THEN pca.cantidad ELSE 0 END) AS cantidad_cpi,
            SUM(CASE WHEN cpi.nombre = 'Articulador' THEN pca.cantidad ELSE 0 END) AS cantidad_articulador,
            SUM(CASE WHEN cpi.nombre = 'ARCO' THEN pca.cantidad ELSE 0 END) AS cantidad_arco_facial,
@@ -61,6 +62,7 @@ class kitController extends mainModel
        <table id="tabla-productos" class="table table-bordered table-striped table-hover">
        <thead class="thead-dark">
            <tr>
+               <th>Imagen</th>
                <th>Código Producto</th>
                <th>Nombre Producto</th>
                <th>CPI</th>
@@ -77,6 +79,7 @@ class kitController extends mainModel
        if ($total > 0) {
            foreach ($datos as $rows) {
                $tabla .= '<tr>
+                   <td><img src="' . APP_URL . 'app/views/img/img/' . htmlspecialchars($rows['url_imagen']) . '" alt="' . htmlspecialchars($rows['nombre_producto']) . '" style="width: 50px; height: 50px;"></td>
                    <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                    <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
                    <td class="cantidad-cpi">' . htmlspecialchars($rows['cantidad_cpi']) . '</td>
@@ -89,7 +92,7 @@ class kitController extends mainModel
                </tr>';
            }
        } else {
-           $tabla .= '<tr><td colspan="9" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+           $tabla .= '<tr><td colspan="10" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
        }
    
        $tabla .= '</tbody></table>';
@@ -105,7 +108,7 @@ class kitController extends mainModel
                var articulador = parseFloat(fila.querySelector(".cantidad-articulador").textContent) || 0;
                var arco = parseFloat(fila.querySelector(".cantidad-arco").textContent) || 0;
                var empaque = parseFloat(fila.querySelector(".cantidad-empaque").textContent) || 0;
-               var stock = parseFloat(fila.querySelector("td:nth-child(8)").textContent);
+               var stock = parseFloat(fila.querySelector("td:nth-child(9)").textContent);
                var total = fila.querySelector(".total");
                var stockDisponible = fila.querySelector(".stock-disponible");
                var totalCantidad = (cpi + articulador + arco + empaque) * multiplicador;
@@ -127,7 +130,7 @@ class kitController extends mainModel
            ventanaImpresion.document.write("</style>");
            ventanaImpresion.document.write("</head><body>");
            ventanaImpresion.document.write("<table>");
-           ventanaImpresion.document.write("<thead class=\'thead-dark\'><tr><th>Código Producto</th><th>Nombre Producto</th><th>CPI</th><th>Articulador</th><th>Arco Facial</th><th>Empaque</th><th>Total</th><th>Stock Almacén General</th><th>Stock Restante</th></tr></thead>");
+           ventanaImpresion.document.write("<thead class=\'thead-dark\'><tr><th>Imagen</th><th>Código Producto</th><th>Nombre Producto</th><th>CPI</th><th>Articulador</th><th>Arco Facial</th><th>Empaque</th><th>Total</th><th>Stock Almacén General</th><th>Stock Restante</th></tr></thead>");
            ventanaImpresion.document.write("<tbody>");
            ventanaImpresion.document.write(contenidoTabla);
            ventanaImpresion.document.write("</tbody>");
@@ -155,6 +158,7 @@ class kitController extends mainModel
    
        return $tabla;
    }
+   
    
    
    

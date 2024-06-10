@@ -226,169 +226,155 @@ class movController extends mainModel
 
 
  /*----------  Controlador listar  ----------*/
- public function listarMovControlador($pagina, $registros, $url, $busqueda)
+ public function listarMovControlador($pagina, $registros, $url, $busqueda, $fechaInicio = '', $fechaFin = '')
  {
- 
      $pagina = $this->limpiarCadena($pagina);
      $registros = $this->limpiarCadena($registros);
- 
      $url = $this->limpiarCadena($url);
      $url = APP_URL . $url . "/";
  
      $busqueda = $this->limpiarCadena($busqueda);
-     $tabla = "";
+     $fechaInicio = isset($_POST['fechaInicio']) ? $this->limpiarCadena($_POST['fechaInicio']) : '';
+     $fechaFin = isset($_POST['fechaFin']) ? $this->limpiarCadena($_POST['fechaFin']) : '';
  
-     $pagina = (isset($pagina) && $pagina > 0) ? (int) $pagina : 1;
-     $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
- 
-     $consulta_datos = "SELECT
-     movimientos.id_movimiento,
-     productos.nombre_producto,
-     origen.nombre_almacen AS nombre_almacen_origen,
-     destino.nombre_almacen AS nombre_almacen_destino,
-     empleados.nombre_empleado,
-     movimientos.cantidad,
-     movimientos.nota_movimiento,
-     movimientos.fecha_movimiento
- FROM
-     movimientos
- JOIN
-     productos ON movimientos.id_producto = productos.id_producto
- JOIN
-     almacenes AS origen ON movimientos.id_almacen_origen = origen.id_almacen
- JOIN
-     almacenes AS destino ON movimientos.id_almacen_destino = destino.id_almacen
- JOIN
-     empleados ON movimientos.id_empleado = empleados.id_empleado
- WHERE
- empleados.id_empleado LIKE '%$busqueda%'
- GROUP BY
-     movimientos.id_movimiento
- ORDER BY
-     movimientos.id_movimiento DESC
- LIMIT
-     $inicio, $registros;
- 
- 
- 
-     ";
- 
- $consulta_total = "SELECT COUNT(DISTINCT movimientos.id_movimiento)
- FROM movimientos
- JOIN productos ON movimientos.id_producto = productos.id_producto
- JOIN almacenes AS origen ON movimientos.id_almacen_origen = origen.id_almacen
- JOIN almacenes AS destino ON movimientos.id_almacen_destino = destino.id_almacen
- JOIN empleados ON movimientos.id_empleado = empleados.id_empleado
- WHERE empleados.id_empleado LIKE '%$busqueda%';        
- ";
- 
- 
- $datos = $this->ejecutarConsulta($consulta_datos);
- $datos = $datos->fetchAll();
- 
- $total = $this->ejecutarConsulta($consulta_total);
- $total = (int) $total->fetchColumn();
- 
- $numeroPaginas = ceil($total / $registros);
- 
- $tabla .= '
- <button class="btn btn-primary" onclick="imprimirArea(\'areaImprimir\')">Imprimir</button>
- <div id="areaImprimir">
- <div class="row row-cols-1 row-cols-md-3 g-4 p-5">';
- 
- if ($total >= 1 && $pagina <= $numeroPaginas) {
-     $contador = $inicio + 1;
-     $pag_inicio = $inicio + 1;
- 
-     $tabla .= '
-<div class="table-responsive w-100">
-    <table class="table w-100">
-        <thead>
-            <tr>
-                <th>Artículo</th>
-                <th>Almacén origen</th>
-                <th>Almacén destino</th>
-                <th>Cantidad</th>
-                <th>Nombre Empleado</th>
-                <th>Fecha</th>
-            </tr>
-        </thead>
-        <tbody>';
-
-foreach ($datos as $rows) {
-    $fechaFormateada = date('d/m/Y', strtotime($rows['fecha_movimiento'])); // Convierte la fecha al formato deseado
-    $tabla .= '
-        <tr>
-            <td>' . $rows['nombre_producto'] . '</td>
-            <td>' . $rows['nombre_almacen_origen'] . '</td>
-            <td>' . $rows['nombre_almacen_destino'] . '</td>
-            <td>' . $rows['cantidad'] . '</td>
-            <td>' . $rows['nombre_empleado'] . '</td>
-            <td>' . $fechaFormateada . '</td>  <!-- Usar la fecha formateada aquí -->
-        </tr>';
-    $contador++;
-}
-
-$tabla .= '
-    </tbody>
-</table>
-</div>
-</div>
-
-<script>
-function imprimirArea(id) {
-   var contenido = document.getElementById(id).innerHTML;
-   var ventanaImpresion = window.open("", "_blank");
-   ventanaImpresion.document.write("<html><head><title>Imprimir</title>");
-   
-   // Aquí puedes agregar tus estilos CSS
-   ventanaImpresion.document.write("<style>");
-   ventanaImpresion.document.write("body,td { font-family: Arial, sans-serif; line-height: 2; text-align: center; }"); // Centramos el texto
-   ventanaImpresion.document.write("table { border-collapse: collapse; border: 1px solid black; border-radius: 10px; overflow: hidden; }"); // Agregamos bordes y esquinas redondeadas
-   ventanaImpresion.document.write("td, th { border: 1px solid black; }"); // Agregamos bordes a las celdas
-   ventanaImpresion.document.write("</style>");
-   
-   ventanaImpresion.document.write("</head><body>");
-   ventanaImpresion.document.write(contenido);
-   ventanaImpresion.document.write("</body></html>");
-   ventanaImpresion.document.close();
-   ventanaImpresion.print();
-}
-</script>';
-
- 
-     $pag_final = $contador - 1;
- } else {
-     if ($total >= 1) {
-         $tabla .= '
-             <div class="col">
-                 <a href="' . $url . '1/" class="button is-link is-rounded is-small mt-4 mb-4">
-                     Haga clic acá para recargar el listado
-                 </a>
+     $tabla = '
+     <form method="POST" action="' . $url . '">
+         <div class="row mb-3">
+             <div class="col-md-4">
+                 <input type="date" class="form-control" name="fechaInicio" placeholder="Fecha Inicio" value="' . htmlspecialchars($fechaInicio) . '">
              </div>
-         ';
-     } else {
-         $tabla .= '
-             <div class="col">
-                 No hay registros en el sistema
+             <div class="col-md-4">
+                 <input type="date" class="form-control" name="fechaFin" placeholder="Fecha Fin" value="' . htmlspecialchars($fechaFin) . '">
              </div>
-         ';
+             <div class="col-md-4">
+                 <button type="submit" class="btn btn-primary">Filtrar</button>
+             </div>
+         </div>
+     </form>';
+ 
+     if (!empty($fechaInicio) && !empty($fechaFin)) {
+         $pagina = (isset($pagina) && $pagina > 0) ? (int) $pagina : 1;
+         $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
+ 
+         $consulta_datos = "SELECT
+             movimientos.id_movimiento,
+             productos.nombre_producto,
+             origen.nombre_almacen AS nombre_almacen_origen,
+             destino.nombre_almacen AS nombre_almacen_destino,
+             empleados.nombre_empleado,
+             movimientos.cantidad,
+             movimientos.nota_movimiento,
+             movimientos.fecha_movimiento
+         FROM
+             movimientos
+         JOIN
+             productos ON movimientos.id_producto = productos.id_producto
+         JOIN
+             almacenes AS origen ON movimientos.id_almacen_origen = origen.id_almacen
+         JOIN
+             almacenes AS destino ON movimientos.id_almacen_destino = destino.id_almacen
+         JOIN
+             empleados ON movimientos.id_empleado = empleados.id_empleado
+         WHERE
+             movimientos.fecha_movimiento BETWEEN '$fechaInicio' AND '$fechaFin'
+         GROUP BY
+             movimientos.id_movimiento
+         ORDER BY
+             movimientos.id_movimiento DESC
+         LIMIT
+             $inicio, $registros;";
+ 
+         $consulta_total = "SELECT COUNT(DISTINCT movimientos.id_movimiento)
+         FROM movimientos
+         JOIN productos ON movimientos.id_producto = productos.id_producto
+         JOIN almacenes AS origen ON movimientos.id_almacen_origen = origen.id_almacen
+         JOIN almacenes AS destino ON movimientos.id_almacen_destino = destino.id_almacen
+         JOIN empleados ON movimientos.id_empleado = empleados.id_empleado
+         WHERE movimientos.fecha_movimiento BETWEEN '$fechaInicio' AND '$fechaFin';";
+ 
+         $datos = $this->ejecutarConsulta($consulta_datos);
+         $datos = $datos->fetchAll();
+ 
+         $total = $this->ejecutarConsulta($consulta_total);
+         $total = (int) $total->fetchColumn();
+ 
+         $tabla .= '
+         <button class="btn btn-primary mb-3" onclick="imprimirArea(\'areaImprimir\')">Imprimir</button>
+         <div id="areaImprimir">
+         <div class="text-center">
+             <h2>Reporte de Movimientos</h2>
+             <p>Desde ' . htmlspecialchars($fechaInicio) . ' hasta ' . htmlspecialchars($fechaFin) . '</p>
+         </div>
+         <div class="table-responsive">
+             <table class="table table-striped table-bordered">
+                 <thead class="table-dark">
+                     <tr>
+                         <th>Artículo</th>
+                         <th>Almacén origen</th>
+                         <th>Almacén destino</th>
+                         <th>Cantidad</th>
+                         <th>Nombre Empleado</th>
+                         <th>Fecha</th>
+                     </tr>
+                 </thead>
+                 <tbody>';
+ 
+         if ($total >= 1) {
+             foreach ($datos as $rows) {
+                 $fechaFormateada = date('d/m/Y', strtotime($rows['fecha_movimiento']));
+                 $tabla .= '
+                     <tr>
+                         <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
+                         <td>' . htmlspecialchars($rows['nombre_almacen_origen']) . '</td>
+                         <td>' . htmlspecialchars($rows['nombre_almacen_destino']) . '</td>
+                         <td>' . htmlspecialchars($rows['cantidad']) . '</td>
+                         <td>' . htmlspecialchars($rows['nombre_empleado']) . '</td>
+                         <td>' . htmlspecialchars($fechaFormateada) . '</td>
+                     </tr>';
+             }
+         } else {
+             $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+         }
+ 
+         $tabla .= '
+                 </tbody>
+             </table>
+         </div>
+         </div>';
+ 
+         $tabla .= '
+         <script>
+         function imprimirArea(id) {
+             var contenido = document.getElementById(id).innerHTML;
+             var ventanaImpresion = window.open("", "_blank");
+             ventanaImpresion.document.write("<html><head><title>Imprimir</title>");
+             ventanaImpresion.document.write("<style>");
+             ventanaImpresion.document.write("body,td { font-family: Arial, sans-serif; line-height: 1.6; text-align: center; }");
+             ventanaImpresion.document.write("table { border-collapse: collapse; width: 100%; }");
+             ventanaImpresion.document.write("th, td { border: 1px solid black; padding: 8px; }");
+             ventanaImpresion.document.write("th { background-color: #f2f2f2; }");
+             ventanaImpresion.document.write("</style>");
+             ventanaImpresion.document.write("</head><body>");
+             ventanaImpresion.document.write(contenido);
+             ventanaImpresion.document.write("</body></html>");
+             ventanaImpresion.document.close();
+             ventanaImpresion.print();
+         }
+         </script>';
      }
- }
  
- $tabla .= '</div>';
- 
- 
-   ### Paginacion ###
- if ($total > 0 && $pagina <= $numeroPaginas) {
-     $tabla .= "<p class=\"pagination\">Mostrando productos <strong>  " . $pag_inicio . "   </strong> al <strong>  " . $pag_final . "   </strong> de un total de <strong>  " . $total . "   </strong></p>";
-     $tabla .= $this->paginadorTablas($pagina, $numeroPaginas, $url, $pagina);
- }
- 
-     
-     
      return $tabla;
  }
+ 
+
+
+
+
+ 
+
+
+
+
 
 
 

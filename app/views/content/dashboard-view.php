@@ -1,31 +1,20 @@
 <style>
-        .banner-principal1, .banner-principal2, .banner-principal3 {
+        .banner {
             margin: 1%;
-            background-size: contain;
-            background-position: top center;
-            background-repeat: no-repeat;
-            height: 300px; /* Reducción de la altura del banner */
+            background-size: cover;
+            background-position: center;
+            height: 200px;
             display: flex;
             justify-content: center;
             align-items: center;
             color: white;
             text-align: center;
-            border-radius: 15px; /* Bordes redondeados */
+            border-radius: 15px;
             overflow: hidden;
         }
 
-        .banner-principal1 {
-            background-image: url('<?php echo APP_URL; ?>app/views/img/herra.webp');
-        }
-        .banner-principal2 {
-            background-image: url('<?php echo APP_URL; ?>app/views/img/kit.png');
-        }
-        .banner-principal3 {
-            background-image: url('<?php echo APP_URL; ?>app/views/img/maq.webp');
-        }
-
         .banner-texto h1 {
-            font-size: 3rem;
+            font-size: 2.5rem;
             margin-bottom: 0.5rem;
         }
 
@@ -39,31 +28,30 @@
             padding: 0.5rem 2rem;
         }
 
-        /* Media queries para mejorar la adaptabilidad en dispositivos más pequeños */
         @media (max-width: 768px) {
-            .banner-principal1, .banner-principal2, .banner-principal3 {
-                height: 200px; /* Reducción de la altura del banner */
+            .banner {
+                height: 150px;
             }
 
             .banner-texto h1 {
-                font-size: 2rem; /* Reducción del tamaño del título */
+                font-size: 1.5rem;
             }
 
             .banner-texto p {
-                font-size: 1rem; /* Reducción del tamaño del subtítulo */
+                font-size: 1rem;
             }
 
             .banner-texto .btn {
-                padding: 0.4rem 1.5rem; /* Ajuste del padding del botón */
+                padding: 0.4rem 1.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="banner-principal1">
+    <div class="container my-4">
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <div class="banner" style="background-image: url('<?php echo APP_URL; ?>app/views/img/herra.webp');">
                     <div class="banner-texto">
                         <h1 class="display-4">ALMACEN</h1>
                         <p class="lead">CONSULTAR.</p>
@@ -71,8 +59,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="banner-principal2">
+            <div class="col-12 col-md-6">
+                <div class="banner" style="background-image: url('<?php echo APP_URL; ?>app/views/img/kit.png');">
                     <div class="banner-texto">
                         <h1 class="display-4">KIT ARTICULADOR <br> BORGATTA</h1>
                         <p class="lead">CONSULTAR.</p>
@@ -80,10 +68,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="banner-principal3">
+            <div class="col-12 col-md-6">
+                <div class="banner" style="background-image: url('<?php echo APP_URL; ?>app/views/img/maq.webp');">
                     <div class="banner-texto">
                         <h1 class="display-4">Herramientas Maquinados</h1>
                         <p class="lead">CONSULTAR.</p>
@@ -91,5 +77,25 @@
                     </div>
                 </div>
             </div>
+            <div class="col-12 col-md-6">
+                <div class="banner" style="background-image: url('<?php echo APP_URL; ?>app/views/img/conteo.webp');">
+                    <div class="banner-texto">
+                        <h1 class="display-4">Conteo de Inventario</h1>
+                        <p class="lead">CONSULTAR.</p>
+                        <a href="<?php echo APP_URL; ?>inventoryList/" class="btn btn-primary">ENTRAR</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="banner" style="background-image: url('<?php echo APP_URL; ?>app/views/img/');">
+                    <div class="banner-texto">
+                        <h1 class="display-4">Producto terminado</h1>
+                        <a href="<?php echo APP_URL; ?>productoTerminado/" class="btn btn-primary">ENTRAR</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+   
+</body>

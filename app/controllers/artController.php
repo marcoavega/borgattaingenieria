@@ -22,6 +22,7 @@ class artController extends mainModel
     $consulta_datos = "SELECT
         p.codigo_producto,
         p.nombre_producto,
+        p.url_imagen,
         MAX(IF(cpi.nombre = 'Articulador', pca.cantidad, 0)) AS cantidad_articulador,
         sa.stock AS stock_almacen_general
     FROM
@@ -53,6 +54,7 @@ class artController extends mainModel
     <table id="tabla-productos" class="table table-bordered table-striped">
     <thead>
         <tr>
+            <th>Imagen</th>
             <th>Código Producto</th>
             <th>Nombre Producto</th>
             <th>Articulador</th>
@@ -66,6 +68,7 @@ class artController extends mainModel
     if ($total > 0) {
         foreach ($datos as $rows) {
             $tabla .= '<tr>
+                <td><img src="' . APP_URL . 'app/views/img/img/' . htmlspecialchars($rows['url_imagen']) . '" alt="' . htmlspecialchars($rows['nombre_producto']) . '" style="width: 50px; height: 50px;"></td>
                 <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                 <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
                 <td class="cantidad-articulador">' . htmlspecialchars($rows['cantidad_articulador']) . '</td>
@@ -75,7 +78,7 @@ class artController extends mainModel
             </tr>';
         }
     } else {
-        $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        $tabla .= '<tr><td colspan="7" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
     }
 
     $tabla .= '</tbody></table>';
@@ -88,13 +91,13 @@ class artController extends mainModel
         var filas = document.querySelectorAll("tbody tr");
         filas.forEach(function(fila) {
             var articulador = parseFloat(fila.querySelector(".cantidad-articulador").textContent) || 0;
-            var stock = parseFloat(fila.querySelector("td:nth-child(5)").textContent);
+            var stock = parseFloat(fila.querySelector("td:nth-child(6)").textContent);
             var total = fila.querySelector(".total");
             var stockDisponible = fila.querySelector(".stock-disponible");
 
             var totalCalculado = articulador * multiplicador;
             total.textContent = totalCalculado.toFixed(2);
-           stockDisponible.textContent = (stock - totalCalculado).toFixed(2);
+            stockDisponible.textContent = (stock - totalCalculado).toFixed(2);
         });
     }
 
@@ -140,6 +143,7 @@ class artController extends mainModel
 
     return $tabla;
 }
+
 
 
    

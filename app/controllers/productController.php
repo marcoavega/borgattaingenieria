@@ -301,8 +301,8 @@ if ($productoResult['success']) {
         return json_encode($alerta);
     }
 
-    // Inserción de stock de 0 para los almacenes 2 y 3
-    $almacenesAdicionales = [2, 3];
+    // Inserción de stock de 0 para los almacenes
+    $almacenesAdicionales = [2,3,4,5,6,7];
     foreach ($almacenesAdicionales as $id_almacen) {
         $datos_stock_almacen_adicional = [
             ["campo_nombre" => "id_producto", "campo_marcador" => ":IdProducto", "campo_valor" => $id_producto_recien_insertado],
@@ -366,9 +366,13 @@ return json_encode($alerta);
             unidades_medida.nombre_unidad,
             tipos_moneda.nombre_moneda,
             sub_categorias.nombre_subcategoria,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacén General' THEN stock_almacen.stock ELSE 0 END) AS stock_general,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacén de Maquinado' THEN stock_almacen.stock ELSE 0 END) AS stock_maquinados,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacén de Ensamble' THEN stock_almacen.stock ELSE 0 END) AS stock_ensamble
+            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen General' THEN stock_almacen.stock ELSE 0 END) AS stock_general,
+            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen de Maquinado' THEN stock_almacen.stock ELSE 0 END) AS stock_maquinados,
+            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen de Ensamble' THEN stock_almacen.stock ELSE 0 END) AS stock_ensamble,
+            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Dental Trade' THEN stock_almacen.stock ELSE 0 END) AS stock_dental,
+            SUM(CASE WHEN almacenes.nombre_almacen = 'Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_terminado,
+            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Radiotecnologia Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_rtproducto,
+            SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ventas' THEN stock_almacen.stock ELSE 0 END) AS stock_ventas
         FROM productos
         JOIN categorias ON productos.id_categoria = categorias.id_categoria
         JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
@@ -432,7 +436,7 @@ return json_encode($alerta);
                         <p class="card-text">Precio: ' . $rows['precio'] . '</p>
                         <p class="card-text">Moneda: ' . $rows['nombre_moneda'] . '</p>
                         <p class="card-text">Unidad de Medida: ' . $rows['nombre_unidad'] . '</p>
-                        <p class="card-text">Stock Almacén General: ' . $rows['stock_general'] . '<br> Almacén Maquinados: ' . $rows['stock_maquinados'] . '<br> Almacén Ensamble: ' . $rows['stock_ensamble'] . '</p>
+                        <p class="card-text">Stock Almacén General: ' . $rows['stock_general'] . '<br> Almacén Maquinados: ' . $rows['stock_maquinados'] . '<br> Almacén Ensamble: ' . $rows['stock_ensamble'] . ' <br> Almacen Dental Trade: ' . $rows['stock_dental'] . ' <br> Almacen Producto Terminado: ' . $rows['stock_rtproducto'] . ' <br> area de ventas: ' . $rows['stock_ventas'] . '</p>
                         <p class="card-text">Categoría: ' . $rows['nombre_categoria'] . '</p>
                         <p class="card-text">Sub-Categoría: ' . $rows['nombre_subcategoria'] . '</p>
                         <p class="card-text">Proveedor: ' . $rows['nombre_proveedor'] . '</p>

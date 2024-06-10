@@ -65,7 +65,6 @@ class movController2 extends mainModel
  /*----------  Controlador listar  ----------*/
  public function listarMovControlador2($pagina, $registros, $url, $busqueda)
  {
- 
      $pagina = $this->limpiarCadena($pagina);
      $registros = $this->limpiarCadena($registros);
  
@@ -75,188 +74,135 @@ class movController2 extends mainModel
      $busqueda = $this->limpiarCadena($busqueda);
      $tabla = "";
  
-     $pagina = (isset($pagina) && $pagina > 0) ? (int) $pagina : 1;
-     $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
- 
      $consulta_datos = "SELECT
      movimientos.id_movimiento,
-     productos.nombre_producto,
+     productos.*,
      origen.nombre_almacen AS nombre_almacen_origen,
      destino.nombre_almacen AS nombre_almacen_destino,
      empleados.nombre_empleado,
      movimientos.cantidad,
      movimientos.nota_movimiento,
      movimientos.fecha_movimiento
- FROM
+     FROM
      movimientos
- JOIN
+     JOIN
      productos ON movimientos.id_producto = productos.id_producto
- JOIN
+     JOIN
      almacenes AS origen ON movimientos.id_almacen_origen = origen.id_almacen
- JOIN
+     JOIN
      almacenes AS destino ON movimientos.id_almacen_destino = destino.id_almacen
- JOIN
+     JOIN
      empleados ON movimientos.id_empleado = empleados.id_empleado
- WHERE
- movimientos.id_movimiento LIKE '%$busqueda%'
- GROUP BY
+     WHERE
+     movimientos.id_movimiento LIKE '%$busqueda%'
+     GROUP BY
      movimientos.id_movimiento
- ORDER BY
-     movimientos.id_movimiento DESC
- LIMIT
-     $inicio, $registros;
+     ORDER BY
+     movimientos.id_movimiento DESC;";
  
+     $datos = $this->ejecutarConsulta($consulta_datos);
+     $datos = $datos->fetchAll();
  
- 
-     ";
- 
- $consulta_total = "SELECT COUNT(DISTINCT movimientos.id_movimiento)
- FROM movimientos
- JOIN productos ON movimientos.id_producto = productos.id_producto
- JOIN almacenes AS origen ON movimientos.id_almacen_origen = origen.id_almacen
- JOIN almacenes AS destino ON movimientos.id_almacen_destino = destino.id_almacen
- JOIN empleados ON movimientos.id_empleado = empleados.id_empleado
- WHERE movimientos.id_movimiento LIKE '%$busqueda%';        
- ";
- 
- 
- $datos = $this->ejecutarConsulta($consulta_datos);
- $datos = $datos->fetchAll();
- 
- $total = $this->ejecutarConsulta($consulta_total);
- $total = (int) $total->fetchColumn();
- 
- $numeroPaginas = ceil($total / $registros);
- 
- $tabla .= '
- <button class="btn btn-primary" onclick="imprimirArea(\'areaImprimir\')">Imprimir</button>
- <div id="areaImprimir">
- <div class="row row-cols-1 row-cols-md-3 g-4 p-5">';
- 
- if ($total >= 1 && $pagina <= $numeroPaginas) {
-     $contador = $inicio + 1;
-     $pag_inicio = $inicio + 1;
+     $total = count($datos);
  
      $tabla .= '
-<div class="table-responsive w-100">
-    <table class="table w-100">
-        <thead>
-            <tr>
-                <th>Artículo</th>
-                <th>Almacén origen</th>
-                <th>Almacén destino</th>
-                <th>Cantidad</th>
-                <th>Nombre Empleado</th>
-                <th>Fecha</th>
-            </tr>
-        </thead>
-        <tbody>';
-
-foreach ($datos as $rows) {
-    $fechaFormateada = date('d/m/Y', strtotime($rows['fecha_movimiento'])); // Convierte la fecha al formato deseado
-    $tabla .= '
-
-    <div style="display: flex; align-items: center;justify-content: space-between;">
-            <img src="' . APP_URL . 'app/views/fotos/logo_orden.png" alt="logo" style="width:250px; height:auto; margin-right: 20px;">
-            <div>
-                <h5>Movimiento de almacen: ' . $rows['id_movimiento'] . '</h5>
-                <p><strong>Fecha:</strong> ' . date('d/m/Y', strtotime($rows['fecha_movimiento'])) . '</p>
-            </div>
-        </div>
-        <div style="margin-top: 1px; margin-bottom: 10px;">
-            <p style="margin-top: 0; margin-bottom: 0;">RADIOTECNOLOGÍA INDUSTRIAL S.A. DE C.V.</p>
-            <p style="margin-top: 0; margin-bottom: 0;">RFC: RIN070219R38</p>
-            <p style="margin-top: 0; margin-bottom: 0;">Calle Puebla Sur. Manzana 4. Lote 5 Nave B Int. 2 Col. Jardín Industrial</p>
-            <p style="margin-top: 0; margin-bottom: 0;">Ixtapaluca. Edo. de México, C.P. 56535</p>
-        </div>
-
-        <tr>
-            <td>' . $rows['nombre_producto'] . '</td>
-            <td>' . $rows['nombre_almacen_origen'] . '</td>
-            <td>' . $rows['nombre_almacen_destino'] . '</td>
-            <td>' . $rows['cantidad'] . '</td>
-            <td>' . $rows['nombre_empleado'] . '</td>
-            <td>' . $fechaFormateada . '</td>  <!-- Usar la fecha formateada aquí -->
-        </tr>';
-    $contador++;
-}
-
-$tabla .= '
-    </tbody>
-</table>
-</div>
-</div>
-
-<script>
-function imprimirArea(id) {
-   var contenido = document.getElementById(id).innerHTML;
-   var ventanaImpresion = window.open("", "_blank");
-   ventanaImpresion.document.write("<html><head><title>Imprimir</title>");
-   
-   // Aquí puedes agregar tus estilos CSS
-   ventanaImpresion.document.write("<style>");
-   ventanaImpresion.document.write("body,td { font-family: Arial, sans-serif; line-height: 2; text-align: center; }"); // Centramos el texto
-   ventanaImpresion.document.write("table { border-collapse: collapse; border: 1px solid black; border-radius: 10px; overflow: hidden; }"); // Agregamos bordes y esquinas redondeadas
-   ventanaImpresion.document.write("td, th { border: 1px solid black; }"); // Agregamos bordes a las celdas
-   ventanaImpresion.document.write("</style>");
-   
-   ventanaImpresion.document.write("</head><body>");
-   ventanaImpresion.document.write(contenido);
-   ventanaImpresion.document.write("</body></html>");
-   ventanaImpresion.document.close();
-   ventanaImpresion.print();
-}
-</script>';
-
-
-$tabla .= '
-    <!-- Área de firma al final del documento, justo después de la tabla -->
-    <div class="w-100" style="padding: 20px; border-top: 1px solid #ccc; margin-top: 20px;">
-        <div class="d-flex justify-content-between">
-            <div>
-                <label>Firma de Recibido:</label>
-                <div style="width: 235px; height: 60px; border-bottom: 1px solid #000;margin-left: 35%;"></div> <!-- Espacio para la firma -->
-            </div>
-            <div>
-                <label style="margin-top: 20px;">Fecha de Impresión:</label>
-                <span>' . date("d/m/Y") . '</span>
-            </div>
-        </div>
-    </div>';
-
+     <button class="btn btn-primary" onclick="imprimirArea(\'areaImprimir\')">Imprimir</button>
+     <div id="areaImprimir">
+     <div class="row row-cols-1 row-cols-md-3 g-4 p-5">';
  
-     $pag_final = $contador - 1;
- } else {
      if ($total >= 1) {
          $tabla .= '
-             <div class="col">
-                 <a href="' . $url . '1/" class="button is-link is-rounded is-small mt-4 mb-4">
-                     Haga clic acá para recargar el listado
-                 </a>
-             </div>
-         ';
-     } else {
+         <div class="table-responsive w-100">
+             <table class="table w-100">
+                 <tbody>';
+ 
+         foreach ($datos as $rows) {
+             $fechaFormateada = date('d/m/Y', strtotime($rows['fecha_movimiento']));
+             $tabla .= '
+             <div class="invoice">
+                 <div style="margin-top: 1px; font-size: 13px; border: 1px solid #000; padding: 5px;">
+                 <p style="font-size: 14px; text-align: center;"><strong>Movimientos de Almacenes</strong></p>
+                 <div style="display: flex; align-items: center; justify-content: space-between;">
+                     <img src="' . APP_URL . 'app/views/fotos/logo_orden.png" alt="logo" style="width:200px; height:auto;">
+                     <div>
+                         <h5>Movimiento de almacen: ' . $rows['id_movimiento'] . '</h5>
+                         <p><strong>Fecha:</strong> ' . date('d/m/Y', strtotime($rows['fecha_movimiento'])) . '</p>
+                         <p style="font-size: 13px;"><strong>Formato:</strong>  PR-12-F03</p>
+                     </div>
+                 </div>
+                     <p style="margin-top: 0; margin-bottom: 0; text-align: left;">RADIOTECNOLOGÍA INDUSTRIAL S.A. DE C.V.</p>
+                     <p style="margin-top: 0; margin-bottom: 0; text-align: left;">RFC: RIN070219R38</p>
+                     <p style="margin-top: 0; margin-bottom: 0; text-align: left;">Calle Puebla Sur. Manzana 4. Lote 5 Nave B Int. 2 Col. Jardín Industrial</p>
+                     <p style="margin-top: 0; margin-bottom: 0; text-align: left;">Ixtapaluca. Edo. de México, C.P. 56535</p>
+                 </div>
+         
+                 <table class="table" style="width: 100%; padding-top: 10; font-size: 13px;">
+         <thead>
+             <tr>
+                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">codigo</th>
+                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Producto</th>
+                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Almacén origen</th>
+                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Almacén destino</th>
+                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Cantidad</th>
+                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Empleado</th>
+                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Motivo</th>
+             </tr>
+         </thead>
+         <tbody>
+         <tr>
+         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['codigo_producto'] . '</td>
+         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_producto'] . '</td>
+         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_almacen_origen'] . '</td>
+         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_almacen_destino'] . '</td>
+         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['cantidad'] . '</td>
+         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_empleado'] . '</td>
+         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nota_movimiento'] . '</td>
+         </tr>';
+         }
+ 
          $tabla .= '
-             <div class="col">
-                 No hay registros en el sistemaaaa
-             </div>
-         ';
+         </tbody>
+         </table>
+         </div>
+         </div>';
+ 
+         $tabla .= '
+         <script>
+         function imprimirArea(id) {
+             var contenido = document.getElementById(id).innerHTML;
+             var ventanaImpresion = window.open("", "_blank");
+             ventanaImpresion.document.write("<html><head><title>Movimiento de almacen: ' . $rows['id_movimiento'] . '-' . date('d/m/Y', strtotime($rows['fecha_movimiento'])) . '</title>");
+             ventanaImpresion.document.write("<style>");
+             ventanaImpresion.document.write("body { font-family: Arial, sans-serif; line-height: 1; text-align: center; }");
+             ventanaImpresion.document.write("table { border-collapse: collapse; width: 100%; margin: 0 auto; }");
+             ventanaImpresion.document.write("th, td { border: 1px solid black; padding: 8px; text-align: center; }");
+             ventanaImpresion.document.write("th { background-color: #f2f2f2; }");
+             ventanaImpresion.document.write("</style>");
+             ventanaImpresion.document.write("</head><body>");
+             ventanaImpresion.document.write(contenido);
+             ventanaImpresion.document.write(\'<div class=\"w-100 text-center\" style=\"padding: 20px; border-top: 1px solid #ccc; margin-top: 20px;\">\');
+             ventanaImpresion.document.write(\'<div><label>Firma de Recibido:</label><div style=\"width: 235px; height: 60px; border-bottom: 1px solid #000; margin: 0 auto;\"></div></div>\');
+             ventanaImpresion.document.write(\'<div><label style=\"margin-top: 20px;\">Fecha de Impresión:</label><span>' . date('d/m/Y') . '</span></div>\');
+             ventanaImpresion.document.write("</div>");
+             ventanaImpresion.document.write("</body></html>");
+             ventanaImpresion.document.close();
+             ventanaImpresion.print();
+         }
+         </script>';
+     } else {
+         $tabla .= '<div class="col">No hay registros en el sistema</div>';
      }
- }
  
- $tabla .= '</div>';
+     $tabla .= '</div>';
  
- 
-   ### Paginacion ###
- if ($total > 0 && $pagina <= $numeroPaginas) {
-     $tabla .= "<p class=\"pagination\">Mostrando productos <strong>  " . $pag_inicio . "   </strong> al <strong>  " . $pag_final . "   </strong> de un total de <strong>  " . $total . "   </strong></p>";
-     $tabla .= $this->paginadorTablas($pagina, $numeroPaginas, $url, $pagina);
- }
- 
-     
-     
      return $tabla;
  }
+ 
+
+
+
+
+
 
 
 

@@ -7,21 +7,22 @@ use app\models\mainModel;
 class piezasController extends mainModel
 {
 
-    
-   /*----------  Controlador listar productos  ----------*/
-   public function listarPiezasMaquinadosCpiControlador($pagina, $registros, $url, $busqueda)
-   {
-       $pagina = intval($this->limpiarCadena($pagina));
-       $registros = intval($this->limpiarCadena($registros));
-       $url = $this->limpiarCadena($url);
-       $url = APP_URL . $url . "/";
-       $busqueda = $this->limpiarCadena($busqueda);
-   
-       $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
-   
-       $consulta_datos = "SELECT
+
+    /*----------  Controlador listar productos  ----------*/
+    public function listarPiezasMaquinadosCpiControlador($pagina, $registros, $url, $busqueda)
+    {
+        $pagina = intval($this->limpiarCadena($pagina));
+        $registros = intval($this->limpiarCadena($registros));
+        $url = $this->limpiarCadena($url);
+        $url = APP_URL . $url . "/";
+        $busqueda = $this->limpiarCadena($busqueda);
+
+        $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
+
+        $consulta_datos = "SELECT
        p.codigo_producto,
        p.nombre_producto,
+       p.url_imagen,
        IF(cpi.nombre = 'CPI', pca.cantidad, 0) AS cantidad_cpi,
        sa.stock AS stock_almacen_general,
        IF(cpi.nombre = 'CPI', pca.cantidad, 0) * 1 AS total_cantidad
@@ -39,10 +40,10 @@ class piezasController extends mainModel
    ORDER BY p.codigo_producto ASC
    LIMIT $inicio, $registros;";
 
-   $datos = $this->ejecutarConsulta($consulta_datos);
-   $datos = $datos->fetchAll();
+        $datos = $this->ejecutarConsulta($consulta_datos);
+        $datos = $datos->fetchAll();
 
-   $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
+        $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
    FROM productos p
    JOIN categorias c ON p.id_categoria = c.id_categoria
    JOIN sub_categorias sc ON p.id_subcategoria = sc.id_subcategoria
@@ -52,16 +53,17 @@ class piezasController extends mainModel
    WHERE (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
    AND cpi.nombre = 'CPI' AND sc.id_subcategoria = 3;";
 
-       $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
-   
-       $numeroPaginas = ceil($total / $registros);
-   
-       $tabla = '<div class="container-fluid p-4">
+        $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
+
+        $numeroPaginas = ceil($total / $registros);
+
+        $tabla = '<div class="container-fluid p-4">
        <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
        <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
        <table id="tabla-productos" class="table table-bordered table-striped">
        <thead>
            <tr>
+               <th>Imagen</th>
                <th>Código Producto</th>
                <th>Nombre Producto</th>
                <th>Cantidad</th>
@@ -71,10 +73,11 @@ class piezasController extends mainModel
            </tr>
        </thead>
        <tbody>';
-   
-       if ($total > 0) {
-           foreach ($datos as $rows) {
-               $tabla .= '<tr>
+
+        if ($total > 0) {
+            foreach ($datos as $rows) {
+                $tabla .= '<tr>
+               <td><img src="' . APP_URL . 'app/views/img/img/' . htmlspecialchars($rows['url_imagen']) . '" alt="' . htmlspecialchars($rows['nombre_producto']) . '" style="width: 50px; height: 50px;"></td>
                    <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                    <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
                    <td class="cantidad-cpi">' . htmlspecialchars($rows['cantidad_cpi']) . '</td>
@@ -82,29 +85,30 @@ class piezasController extends mainModel
                    <td>' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
                    <td class="stock-disponible"></td>
                </tr>';
-           }
-       } else {
-           $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
-       }
-   
-       $tabla .= '</tbody></table>';
-       $tabla .= '</div>';
-   
-       // JavaScript para calcular totales dinámicamente
-       $tabla .= '<script>
+            }
+        } else {
+            $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        }
+
+        $tabla .= '</tbody></table>';
+        $tabla .= '</div>';
+
+        // JavaScript para calcular totales dinámicamente
+        $tabla .= '<script>
        function calcularTotales() {
            var multiplicador = document.getElementById("multiplicador").value;
            var filas = document.querySelectorAll("tbody tr");
            filas.forEach(function(fila) {
                var cpi = parseFloat(fila.querySelector(".cantidad-cpi").textContent) || 0;
                var total = fila.querySelector(".total");
-               var stock = parseFloat(fila.querySelector("td:nth-child(5)").textContent);
+               var stock = parseFloat(fila.querySelector("td:nth-child(6)").textContent);
                var stockDisponible = fila.querySelector(".stock-disponible");
                var totalCantidad = cpi * multiplicador;
                total.textContent = totalCantidad.toFixed(2);
                stockDisponible.textContent = (stock - totalCantidad).toFixed(2);
            });
        }
+
    
        function imprimirTabla() {
         var contenidoTabla = document.getElementById("tabla-productos").innerHTML;
@@ -130,39 +134,40 @@ class piezasController extends mainModel
         ventanaImpresion.print();
     }
        </script>';
-   
-       // Paginación
-       if ($total > 0 && $numeroPaginas > 1) {
-           $tabla .= "<nav><ul class='pagination'>";
-           if ($pagina > 1) {
-               $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
-           }
-           for ($i = 1; $i <= $numeroPaginas; $i++) {
-               $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
-           }
-           if ($pagina < $numeroPaginas) {
-               $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
-           }
-           $tabla .= "</ul></nav>";
-       }
-   
-       return $tabla;
-   }
-   
-   /*----------  Controlador listar productos  ----------*/
-   public function listarTormilleriaMaquinadosCpiControlador($pagina, $registros, $url, $busqueda)
-   {
-       $pagina = intval($this->limpiarCadena($pagina));
-       $registros = intval($this->limpiarCadena($registros));
-       $url = $this->limpiarCadena($url);
-       $url = APP_URL . $url . "/";
-       $busqueda = $this->limpiarCadena($busqueda);
-   
-       $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
-   
-       $consulta_datos = "SELECT
+
+        // Paginación
+        if ($total > 0 && $numeroPaginas > 1) {
+            $tabla .= "<nav><ul class='pagination'>";
+            if ($pagina > 1) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
+            }
+            for ($i = 1; $i <= $numeroPaginas; $i++) {
+                $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
+            }
+            if ($pagina < $numeroPaginas) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
+            }
+            $tabla .= "</ul></nav>";
+        }
+
+        return $tabla;
+    }
+
+    /*----------  Controlador listar productos  ----------*/
+    public function listarTormilleriaMaquinadosCpiControlador($pagina, $registros, $url, $busqueda)
+    {
+        $pagina = intval($this->limpiarCadena($pagina));
+        $registros = intval($this->limpiarCadena($registros));
+        $url = $this->limpiarCadena($url);
+        $url = APP_URL . $url . "/";
+        $busqueda = $this->limpiarCadena($busqueda);
+
+        $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
+
+        $consulta_datos = "SELECT
        p.codigo_producto,
        p.nombre_producto,
+       p.url_imagen,
        IF(cpi.nombre = 'CPI', pca.cantidad, 0) AS cantidad_cpi,
        sa.stock AS stock_almacen_general,
        IF(cpi.nombre = 'CPI', pca.cantidad, 0) * 1 AS total_cantidad
@@ -180,10 +185,10 @@ class piezasController extends mainModel
    ORDER BY p.codigo_producto ASC
    LIMIT $inicio, $registros;";
 
-   $datos = $this->ejecutarConsulta($consulta_datos);
-   $datos = $datos->fetchAll();
+        $datos = $this->ejecutarConsulta($consulta_datos);
+        $datos = $datos->fetchAll();
 
-   $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
+        $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
    FROM productos p
    JOIN categorias c ON p.id_categoria = c.id_categoria
    JOIN sub_categorias sc ON p.id_subcategoria = sc.id_subcategoria
@@ -193,16 +198,17 @@ class piezasController extends mainModel
    WHERE (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
    AND cpi.nombre = 'CPI' AND sc.id_subcategoria = 2;";
 
-       $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
-   
-       $numeroPaginas = ceil($total / $registros);
-   
-       $tabla = '<div class="container-fluid p-4">
+        $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
+
+        $numeroPaginas = ceil($total / $registros);
+
+        $tabla = '<div class="container-fluid p-4">
        <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
        <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
        <table id="tabla-productos" class="table table-bordered table-striped">
        <thead>
            <tr>
+           <th>Imagen</th>
                <th>Código Producto</th>
                <th>Nombre Producto</th>
                <th>Cantidad</th>
@@ -212,10 +218,11 @@ class piezasController extends mainModel
            </tr>
        </thead>
        <tbody>';
-   
-       if ($total > 0) {
-           foreach ($datos as $rows) {
-               $tabla .= '<tr>
+
+        if ($total > 0) {
+            foreach ($datos as $rows) {
+                $tabla .= '<tr>
+               <td><img src="' . APP_URL . 'app/views/img/img/' . htmlspecialchars($rows['url_imagen']) . '" alt="' . htmlspecialchars($rows['nombre_producto']) . '" style="width: 50px; height: 50px;"></td>
                    <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                    <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
                    <td class="cantidad-cpi">' . htmlspecialchars($rows['cantidad_cpi']) . '</td>
@@ -223,23 +230,23 @@ class piezasController extends mainModel
                    <td>' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
                    <td class="stock-disponible"></td>
                </tr>';
-           }
-       } else {
-           $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
-       }
-   
-       $tabla .= '</tbody></table>';
-       $tabla .= '</div>';
-   
-       // JavaScript para calcular totales dinámicamente
-       $tabla .= '<script>
+            }
+        } else {
+            $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        }
+
+        $tabla .= '</tbody></table>';
+        $tabla .= '</div>';
+
+        // JavaScript para calcular totales dinámicamente
+        $tabla .= '<script>
        function calcularTotales() {
            var multiplicador = document.getElementById("multiplicador").value;
            var filas = document.querySelectorAll("tbody tr");
            filas.forEach(function(fila) {
                var cpi = parseFloat(fila.querySelector(".cantidad-cpi").textContent) || 0;
                var total = fila.querySelector(".total");
-               var stock = parseFloat(fila.querySelector("td:nth-child(5)").textContent);
+               var stock = parseFloat(fila.querySelector("td:nth-child(6)").textContent);
                var stockDisponible = fila.querySelector(".stock-disponible");
                var totalCantidad = cpi * multiplicador;
                total.textContent = totalCantidad.toFixed(2);
@@ -271,39 +278,40 @@ class piezasController extends mainModel
         ventanaImpresion.print();
     }
        </script>';
-   
-       // Paginación
-       if ($total > 0 && $numeroPaginas > 1) {
-           $tabla .= "<nav><ul class='pagination'>";
-           if ($pagina > 1) {
-               $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
-           }
-           for ($i = 1; $i <= $numeroPaginas; $i++) {
-               $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
-           }
-           if ($pagina < $numeroPaginas) {
-               $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
-           }
-           $tabla .= "</ul></nav>";
-       }
-   
-       return $tabla;
-   }
 
-   /*----------  Controlador listar productos  ----------*/
-   public function listarTornilleriaExternaCpiControlador($pagina, $registros, $url, $busqueda)
-   {
-       $pagina = intval($this->limpiarCadena($pagina));
-       $registros = intval($this->limpiarCadena($registros));
-       $url = $this->limpiarCadena($url);
-       $url = APP_URL . $url . "/";
-       $busqueda = $this->limpiarCadena($busqueda);
-   
-       $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
-   
-       $consulta_datos = "SELECT
+        // Paginación
+        if ($total > 0 && $numeroPaginas > 1) {
+            $tabla .= "<nav><ul class='pagination'>";
+            if ($pagina > 1) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
+            }
+            for ($i = 1; $i <= $numeroPaginas; $i++) {
+                $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
+            }
+            if ($pagina < $numeroPaginas) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
+            }
+            $tabla .= "</ul></nav>";
+        }
+
+        return $tabla;
+    }
+
+    /*----------  Controlador listar productos  ----------*/
+    public function listarTornilleriaExternaCpiControlador($pagina, $registros, $url, $busqueda)
+    {
+        $pagina = intval($this->limpiarCadena($pagina));
+        $registros = intval($this->limpiarCadena($registros));
+        $url = $this->limpiarCadena($url);
+        $url = APP_URL . $url . "/";
+        $busqueda = $this->limpiarCadena($busqueda);
+
+        $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
+
+        $consulta_datos = "SELECT
        p.codigo_producto,
        p.nombre_producto,
+       p.url_imagen,
        IF(cpi.nombre = 'CPI', pca.cantidad, 0) AS cantidad_cpi,
        sa.stock AS stock_almacen_general,
        IF(cpi.nombre = 'CPI', pca.cantidad, 0) * 1 AS total_cantidad
@@ -321,10 +329,10 @@ class piezasController extends mainModel
    ORDER BY p.codigo_producto ASC
    LIMIT $inicio, $registros;";
 
-   $datos = $this->ejecutarConsulta($consulta_datos);
-   $datos = $datos->fetchAll();
+        $datos = $this->ejecutarConsulta($consulta_datos);
+        $datos = $datos->fetchAll();
 
-   $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
+        $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
    FROM productos p
    JOIN categorias c ON p.id_categoria = c.id_categoria
    JOIN sub_categorias sc ON p.id_subcategoria = sc.id_subcategoria
@@ -334,16 +342,17 @@ class piezasController extends mainModel
    WHERE (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
    AND cpi.nombre = 'CPI' AND sc.id_subcategoria = 1;";
 
-       $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
-   
-       $numeroPaginas = ceil($total / $registros);
-   
-       $tabla = '<div class="container-fluid p-4">
+        $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
+
+        $numeroPaginas = ceil($total / $registros);
+
+        $tabla = '<div class="container-fluid p-4">
        <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
        <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
        <table id="tabla-productos" class="table table-bordered table-striped">
        <thead>
            <tr>
+                <th>Imagen</th>
                <th>Código Producto</th>
                <th>Nombre Producto</th>
                <th>Cantidad</th>
@@ -353,10 +362,11 @@ class piezasController extends mainModel
            </tr>
        </thead>
        <tbody>';
-   
-       if ($total > 0) {
-           foreach ($datos as $rows) {
-               $tabla .= '<tr>
+
+        if ($total > 0) {
+            foreach ($datos as $rows) {
+                $tabla .= '<tr>
+               <td><img src="' . APP_URL . 'app/views/img/img/' . htmlspecialchars($rows['url_imagen']) . '" alt="' . htmlspecialchars($rows['nombre_producto']) . '" style="width: 50px; height: 50px;"></td>
                    <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                    <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
                    <td class="cantidad-cpi">' . htmlspecialchars($rows['cantidad_cpi']) . '</td>
@@ -364,23 +374,23 @@ class piezasController extends mainModel
                    <td>' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
                    <td class="stock-disponible"></td>
                </tr>';
-           }
-       } else {
-           $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
-       }
-   
-       $tabla .= '</tbody></table>';
-       $tabla .= '</div>';
-   
-       // JavaScript para calcular totales dinámicamente
-       $tabla .= '<script>
+            }
+        } else {
+            $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        }
+
+        $tabla .= '</tbody></table>';
+        $tabla .= '</div>';
+
+        // JavaScript para calcular totales dinámicamente
+        $tabla .= '<script>
        function calcularTotales() {
            var multiplicador = document.getElementById("multiplicador").value;
            var filas = document.querySelectorAll("tbody tr");
            filas.forEach(function(fila) {
                var cpi = parseFloat(fila.querySelector(".cantidad-cpi").textContent) || 0;
                var total = fila.querySelector(".total");
-               var stock = parseFloat(fila.querySelector("td:nth-child(5)").textContent);
+               var stock = parseFloat(fila.querySelector("td:nth-child(6)").textContent);
                var stockDisponible = fila.querySelector(".stock-disponible");
                var totalCantidad = cpi * multiplicador;
                total.textContent = totalCantidad.toFixed(2);
@@ -412,39 +422,40 @@ class piezasController extends mainModel
         ventanaImpresion.print();
     }
        </script>';
-   
-       // Paginación
-       if ($total > 0 && $numeroPaginas > 1) {
-           $tabla .= "<nav><ul class='pagination'>";
-           if ($pagina > 1) {
-               $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
-           }
-           for ($i = 1; $i <= $numeroPaginas; $i++) {
-               $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
-           }
-           if ($pagina < $numeroPaginas) {
-               $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
-           }
-           $tabla .= "</ul></nav>";
-       }
-   
-       return $tabla;
-   }
 
-   /*----------  Controlador listar productos  ----------*/
-   public function listarPiezasCompraExternaCPIControlador($pagina, $registros, $url, $busqueda)
-   {
-       $pagina = intval($this->limpiarCadena($pagina));
-       $registros = intval($this->limpiarCadena($registros));
-       $url = $this->limpiarCadena($url);
-       $url = APP_URL . $url . "/";
-       $busqueda = $this->limpiarCadena($busqueda);
-   
-       $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
-   
-       $consulta_datos = "SELECT
+        // Paginación
+        if ($total > 0 && $numeroPaginas > 1) {
+            $tabla .= "<nav><ul class='pagination'>";
+            if ($pagina > 1) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
+            }
+            for ($i = 1; $i <= $numeroPaginas; $i++) {
+                $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
+            }
+            if ($pagina < $numeroPaginas) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
+            }
+            $tabla .= "</ul></nav>";
+        }
+
+        return $tabla;
+    }
+
+    /*----------  Controlador listar productos  ----------*/
+    public function listarPiezasCompraExternaCPIControlador($pagina, $registros, $url, $busqueda)
+    {
+        $pagina = intval($this->limpiarCadena($pagina));
+        $registros = intval($this->limpiarCadena($registros));
+        $url = $this->limpiarCadena($url);
+        $url = APP_URL . $url . "/";
+        $busqueda = $this->limpiarCadena($busqueda);
+
+        $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
+
+        $consulta_datos = "SELECT
        p.codigo_producto,
        p.nombre_producto,
+       p.url_imagen,
        IF(cpi.nombre = 'CPI', pca.cantidad, 0) AS cantidad_cpi,
        sa.stock AS stock_almacen_general,
        IF(cpi.nombre = 'CPI', pca.cantidad, 0) * 1 AS total_cantidad
@@ -462,10 +473,10 @@ class piezasController extends mainModel
    ORDER BY p.codigo_producto ASC
    LIMIT $inicio, $registros;";
 
-   $datos = $this->ejecutarConsulta($consulta_datos);
-   $datos = $datos->fetchAll();
+        $datos = $this->ejecutarConsulta($consulta_datos);
+        $datos = $datos->fetchAll();
 
-   $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
+        $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
    FROM productos p
    JOIN categorias c ON p.id_categoria = c.id_categoria
    JOIN sub_categorias sc ON p.id_subcategoria = sc.id_subcategoria
@@ -475,16 +486,17 @@ class piezasController extends mainModel
    WHERE (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
    AND cpi.nombre = 'CPI' AND sc.id_subcategoria = 4;";
 
-       $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
-   
-       $numeroPaginas = ceil($total / $registros);
-   
-       $tabla = '<div class="container-fluid p-4">
+        $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
+
+        $numeroPaginas = ceil($total / $registros);
+
+        $tabla = '<div class="container-fluid p-4">
        <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
        <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
        <table id="tabla-productos" class="table table-bordered table-striped">
        <thead>
            <tr>
+           <th>Imagen</th>
                <th>Código Producto</th>
                <th>Nombre Producto</th>
                <th>Cantidad</th>
@@ -494,10 +506,11 @@ class piezasController extends mainModel
            </tr>
        </thead>
        <tbody>';
-   
-       if ($total > 0) {
-           foreach ($datos as $rows) {
-               $tabla .= '<tr>
+
+        if ($total > 0) {
+            foreach ($datos as $rows) {
+                $tabla .= '<tr>
+               <td><img src="' . APP_URL . 'app/views/img/img/' . htmlspecialchars($rows['url_imagen']) . '" alt="' . htmlspecialchars($rows['nombre_producto']) . '" style="width: 50px; height: 50px;"></td>
                    <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                    <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
                    <td class="cantidad-cpi">' . htmlspecialchars($rows['cantidad_cpi']) . '</td>
@@ -505,23 +518,23 @@ class piezasController extends mainModel
                    <td>' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
                    <td class="stock-disponible"></td>
                </tr>';
-           }
-       } else {
-           $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
-       }
-   
-       $tabla .= '</tbody></table>';
-       $tabla .= '</div>';
-   
-       // JavaScript para calcular totales dinámicamente
-       $tabla .= '<script>
+            }
+        } else {
+            $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        }
+
+        $tabla .= '</tbody></table>';
+        $tabla .= '</div>';
+
+        // JavaScript para calcular totales dinámicamente
+        $tabla .= '<script>
        function calcularTotales() {
            var multiplicador = document.getElementById("multiplicador").value;
            var filas = document.querySelectorAll("tbody tr");
            filas.forEach(function(fila) {
                var cpi = parseFloat(fila.querySelector(".cantidad-cpi").textContent) || 0;
                var total = fila.querySelector(".total");
-               var stock = parseFloat(fila.querySelector("td:nth-child(5)").textContent);
+               var stock = parseFloat(fila.querySelector("td:nth-child(6)").textContent);
                var stockDisponible = fila.querySelector(".stock-disponible");
                var totalCantidad = cpi * multiplicador;
                total.textContent = totalCantidad.toFixed(2);
@@ -553,39 +566,40 @@ class piezasController extends mainModel
         ventanaImpresion.print();
     }
        </script>';
-   
-       // Paginación
-       if ($total > 0 && $numeroPaginas > 1) {
-           $tabla .= "<nav><ul class='pagination'>";
-           if ($pagina > 1) {
-               $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
-           }
-           for ($i = 1; $i <= $numeroPaginas; $i++) {
-               $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
-           }
-           if ($pagina < $numeroPaginas) {
-               $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
-           }
-           $tabla .= "</ul></nav>";
-       }
-   
-       return $tabla;
-   }
-   
-   /*----------  Controlador listar productos  ----------*/
-   public function listarPiezasMaquinadosArtControlador($pagina, $registros, $url, $busqueda)
-   {
-       $pagina = intval($this->limpiarCadena($pagina));
-       $registros = intval($this->limpiarCadena($registros));
-       $url = $this->limpiarCadena($url);
-       $url = APP_URL . $url . "/";
-       $busqueda = $this->limpiarCadena($busqueda);
-   
-       $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
-   
-       $consulta_datos = "SELECT
+
+        // Paginación
+        if ($total > 0 && $numeroPaginas > 1) {
+            $tabla .= "<nav><ul class='pagination'>";
+            if ($pagina > 1) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
+            }
+            for ($i = 1; $i <= $numeroPaginas; $i++) {
+                $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
+            }
+            if ($pagina < $numeroPaginas) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
+            }
+            $tabla .= "</ul></nav>";
+        }
+
+        return $tabla;
+    }
+
+    /*----------  Controlador listar productos  ----------*/
+    public function listarPiezasMaquinadosArtControlador($pagina, $registros, $url, $busqueda)
+    {
+        $pagina = intval($this->limpiarCadena($pagina));
+        $registros = intval($this->limpiarCadena($registros));
+        $url = $this->limpiarCadena($url);
+        $url = APP_URL . $url . "/";
+        $busqueda = $this->limpiarCadena($busqueda);
+
+        $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
+
+        $consulta_datos = "SELECT
     p.codigo_producto,
     p.nombre_producto,
+    p.url_imagen,
     IF(articulador.nombre = 'ARTICULADOR', pca.cantidad, 0) AS cantidad_articulador,
     sa.stock AS stock_almacen_general,
     IF(articulador.nombre = 'ARTICULADOR', pca.cantidad, 0) * 1 AS total_cantidad
@@ -603,10 +617,10 @@ GROUP BY p.id_producto
 ORDER BY p.codigo_producto ASC
 LIMIT $inicio, $registros;";
 
-$datos = $this->ejecutarConsulta($consulta_datos);
-$datos = $datos->fetchAll();
+        $datos = $this->ejecutarConsulta($consulta_datos);
+        $datos = $datos->fetchAll();
 
-$consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
+        $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
 FROM productos p
 JOIN categorias c ON p.id_categoria = c.id_categoria
 JOIN sub_categorias sc ON p.id_subcategoria = sc.id_subcategoria
@@ -616,17 +630,18 @@ JOIN stock_almacen sa ON p.id_producto = sa.id_producto AND sa.id_almacen = 1
 WHERE (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
 AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 3;";
 
-       $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
-   
-       $numeroPaginas = ceil($total / $registros);
-   
-       $tabla = '<div class="container-fluid p-4">
+        $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
+
+        $numeroPaginas = ceil($total / $registros);
+
+        $tabla = '<div class="container-fluid p-4">
        <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
        <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
        <table id="tabla-productos" class="table table-bordered table-striped">
        <thead>
            <tr>
-               <th>Código Producto</th>
+           <th>Imagen</th>
+           <th>Código Producto</th>
                <th>Nombre Producto</th>
                <th>Cantidad</th>
                <th>Total</th>
@@ -635,10 +650,11 @@ AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 3;";
            </tr>
        </thead>
        <tbody>';
-   
-       if ($total > 0) {
-           foreach ($datos as $rows) {
-               $tabla .= '<tr>
+
+        if ($total > 0) {
+            foreach ($datos as $rows) {
+                $tabla .= '<tr>
+                <td><img src="' . APP_URL . 'app/views/img/img/' . htmlspecialchars($rows['url_imagen']) . '" alt="' . htmlspecialchars($rows['nombre_producto']) . '" style="width: 50px; height: 50px;"></td>
                    <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                    <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
                    <td class="cantidad-cpi">' . htmlspecialchars($rows['cantidad_articulador']) . '</td>
@@ -646,23 +662,23 @@ AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 3;";
                    <td>' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
                    <td class="stock-disponible"></td>
                </tr>';
-           }
-       } else {
-           $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
-       }
-   
-       $tabla .= '</tbody></table>';
-       $tabla .= '</div>';
-   
-       // JavaScript para calcular totales dinámicamente
-       $tabla .= '<script>
+            }
+        } else {
+            $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        }
+
+        $tabla .= '</tbody></table>';
+        $tabla .= '</div>';
+
+        // JavaScript para calcular totales dinámicamente
+        $tabla .= '<script>
        function calcularTotales() {
            var multiplicador = document.getElementById("multiplicador").value;
            var filas = document.querySelectorAll("tbody tr");
            filas.forEach(function(fila) {
                var cpi = parseFloat(fila.querySelector(".cantidad-cpi").textContent) || 0;
                var total = fila.querySelector(".total");
-               var stock = parseFloat(fila.querySelector("td:nth-child(5)").textContent);
+               var stock = parseFloat(fila.querySelector("td:nth-child(6)").textContent);
                var stockDisponible = fila.querySelector(".stock-disponible");
                var totalCantidad = cpi * multiplicador;
                total.textContent = totalCantidad.toFixed(2);
@@ -694,39 +710,40 @@ AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 3;";
         ventanaImpresion.print();
     }
        </script>';
-   
-       // Paginación
-       if ($total > 0 && $numeroPaginas > 1) {
-           $tabla .= "<nav><ul class='pagination'>";
-           if ($pagina > 1) {
-               $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
-           }
-           for ($i = 1; $i <= $numeroPaginas; $i++) {
-               $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
-           }
-           if ($pagina < $numeroPaginas) {
-               $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
-           }
-           $tabla .= "</ul></nav>";
-       }
-   
-       return $tabla;
-   }
 
- /*----------  Controlador listar productos  ----------*/
- public function listarTornilleriaMaquinadosArtControlador($pagina, $registros, $url, $busqueda)
- {
-     $pagina = intval($this->limpiarCadena($pagina));
-     $registros = intval($this->limpiarCadena($registros));
-     $url = $this->limpiarCadena($url);
-     $url = APP_URL . $url . "/";
-     $busqueda = $this->limpiarCadena($busqueda);
- 
-     $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
- 
-     $consulta_datos = "SELECT
+        // Paginación
+        if ($total > 0 && $numeroPaginas > 1) {
+            $tabla .= "<nav><ul class='pagination'>";
+            if ($pagina > 1) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
+            }
+            for ($i = 1; $i <= $numeroPaginas; $i++) {
+                $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
+            }
+            if ($pagina < $numeroPaginas) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
+            }
+            $tabla .= "</ul></nav>";
+        }
+
+        return $tabla;
+    }
+
+    /*----------  Controlador listar productos  ----------*/
+    public function listarTornilleriaMaquinadosArtControlador($pagina, $registros, $url, $busqueda)
+    {
+        $pagina = intval($this->limpiarCadena($pagina));
+        $registros = intval($this->limpiarCadena($registros));
+        $url = $this->limpiarCadena($url);
+        $url = APP_URL . $url . "/";
+        $busqueda = $this->limpiarCadena($busqueda);
+
+        $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
+
+        $consulta_datos = "SELECT
   p.codigo_producto,
   p.nombre_producto,
+  p.url_imagen,
   IF(articulador.nombre = 'ARTICULADOR', pca.cantidad, 0) AS cantidad_articulador,
   sa.stock AS stock_almacen_general,
   IF(articulador.nombre = 'ARTICULADOR', pca.cantidad, 0) * 1 AS total_cantidad
@@ -744,10 +761,10 @@ GROUP BY p.id_producto
 ORDER BY p.codigo_producto ASC
 LIMIT $inicio, $registros;";
 
-$datos = $this->ejecutarConsulta($consulta_datos);
-$datos = $datos->fetchAll();
+        $datos = $this->ejecutarConsulta($consulta_datos);
+        $datos = $datos->fetchAll();
 
-$consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
+        $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
 FROM productos p
 JOIN categorias c ON p.id_categoria = c.id_categoria
 JOIN sub_categorias sc ON p.id_subcategoria = sc.id_subcategoria
@@ -757,16 +774,17 @@ JOIN stock_almacen sa ON p.id_producto = sa.id_producto AND sa.id_almacen = 1
 WHERE (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
 AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 2;";
 
-     $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
- 
-     $numeroPaginas = ceil($total / $registros);
- 
-     $tabla = '<div class="container-fluid p-4">
+        $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
+
+        $numeroPaginas = ceil($total / $registros);
+
+        $tabla = '<div class="container-fluid p-4">
      <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
      <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
      <table id="tabla-productos" class="table table-bordered table-striped">
      <thead>
          <tr>
+         <th>Imagen</th>
              <th>Código Producto</th>
              <th>Nombre Producto</th>
              <th>Cantidad</th>
@@ -776,10 +794,11 @@ AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 2;";
          </tr>
      </thead>
      <tbody>';
- 
-     if ($total > 0) {
-         foreach ($datos as $rows) {
-             $tabla .= '<tr>
+
+        if ($total > 0) {
+            foreach ($datos as $rows) {
+                $tabla .= '<tr>
+                <td><img src="' . APP_URL . 'app/views/img/img/' . htmlspecialchars($rows['url_imagen']) . '" alt="' . htmlspecialchars($rows['nombre_producto']) . '" style="width: 50px; height: 50px;"></td>
                  <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                  <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
                  <td class="cantidad-cpi">' . htmlspecialchars($rows['cantidad_articulador']) . '</td>
@@ -787,23 +806,23 @@ AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 2;";
                  <td>' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
                  <td class="stock-disponible"></td>
              </tr>';
-         }
-     } else {
-         $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
-     }
- 
-     $tabla .= '</tbody></table>';
-     $tabla .= '</div>';
- 
-     // JavaScript para calcular totales dinámicamente
-     $tabla .= '<script>
+            }
+        } else {
+            $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        }
+
+        $tabla .= '</tbody></table>';
+        $tabla .= '</div>';
+
+        // JavaScript para calcular totales dinámicamente
+        $tabla .= '<script>
      function calcularTotales() {
          var multiplicador = document.getElementById("multiplicador").value;
          var filas = document.querySelectorAll("tbody tr");
          filas.forEach(function(fila) {
              var cpi = parseFloat(fila.querySelector(".cantidad-cpi").textContent) || 0;
              var total = fila.querySelector(".total");
-             var stock = parseFloat(fila.querySelector("td:nth-child(5)").textContent);
+             var stock = parseFloat(fila.querySelector("td:nth-child(6)").textContent);
              var stockDisponible = fila.querySelector(".stock-disponible");
              var totalCantidad = cpi * multiplicador;
              total.textContent = totalCantidad.toFixed(2);
@@ -835,40 +854,41 @@ AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 2;";
       ventanaImpresion.print();
   }
      </script>';
- 
-     // Paginación
-     if ($total > 0 && $numeroPaginas > 1) {
-         $tabla .= "<nav><ul class='pagination'>";
-         if ($pagina > 1) {
-             $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
-         }
-         for ($i = 1; $i <= $numeroPaginas; $i++) {
-             $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
-         }
-         if ($pagina < $numeroPaginas) {
-             $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
-         }
-         $tabla .= "</ul></nav>";
-     }
- 
-     return $tabla;
- }
+
+        // Paginación
+        if ($total > 0 && $numeroPaginas > 1) {
+            $tabla .= "<nav><ul class='pagination'>";
+            if ($pagina > 1) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
+            }
+            for ($i = 1; $i <= $numeroPaginas; $i++) {
+                $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
+            }
+            if ($pagina < $numeroPaginas) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
+            }
+            $tabla .= "</ul></nav>";
+        }
+
+        return $tabla;
+    }
 
 
- /*----------  Controlador listar productos  ----------*/
- public function listarTornilleriaExternaArticuladorControlador($pagina, $registros, $url, $busqueda)
- {
-     $pagina = intval($this->limpiarCadena($pagina));
-     $registros = intval($this->limpiarCadena($registros));
-     $url = $this->limpiarCadena($url);
-     $url = APP_URL . $url . "/";
-     $busqueda = $this->limpiarCadena($busqueda);
- 
-     $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
- 
-     $consulta_datos = "SELECT
+    /*----------  Controlador listar productos  ----------*/
+    public function listarTornilleriaExternaArticuladorControlador($pagina, $registros, $url, $busqueda)
+    {
+        $pagina = intval($this->limpiarCadena($pagina));
+        $registros = intval($this->limpiarCadena($registros));
+        $url = $this->limpiarCadena($url);
+        $url = APP_URL . $url . "/";
+        $busqueda = $this->limpiarCadena($busqueda);
+
+        $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
+
+        $consulta_datos = "SELECT
   p.codigo_producto,
   p.nombre_producto,
+  p.url_imagen,
   IF(articulador.nombre = 'ARTICULADOR', pca.cantidad, 0) AS cantidad_articulador,
   sa.stock AS stock_almacen_general,
   IF(articulador.nombre = 'ARTICULADOR', pca.cantidad, 0) * 1 AS total_cantidad
@@ -886,10 +906,10 @@ GROUP BY p.id_producto
 ORDER BY p.codigo_producto ASC
 LIMIT $inicio, $registros;";
 
-$datos = $this->ejecutarConsulta($consulta_datos);
-$datos = $datos->fetchAll();
+        $datos = $this->ejecutarConsulta($consulta_datos);
+        $datos = $datos->fetchAll();
 
-$consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
+        $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
 FROM productos p
 JOIN categorias c ON p.id_categoria = c.id_categoria
 JOIN sub_categorias sc ON p.id_subcategoria = sc.id_subcategoria
@@ -899,16 +919,17 @@ JOIN stock_almacen sa ON p.id_producto = sa.id_producto AND sa.id_almacen = 1
 WHERE (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
 AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 1;";
 
-     $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
- 
-     $numeroPaginas = ceil($total / $registros);
- 
-     $tabla = '<div class="container-fluid p-4">
+        $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
+
+        $numeroPaginas = ceil($total / $registros);
+
+        $tabla = '<div class="container-fluid p-4">
      <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
      <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
      <table id="tabla-productos" class="table table-bordered table-striped">
      <thead>
          <tr>
+         <th>Imagen</th>
              <th>Código Producto</th>
              <th>Nombre Producto</th>
              <th>Cantidad</th>
@@ -918,10 +939,11 @@ AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 1;";
          </tr>
      </thead>
      <tbody>';
- 
-     if ($total > 0) {
-         foreach ($datos as $rows) {
-             $tabla .= '<tr>
+
+        if ($total > 0) {
+            foreach ($datos as $rows) {
+                $tabla .= '<tr>
+                <td><img src="' . APP_URL . 'app/views/img/img/' . htmlspecialchars($rows['url_imagen']) . '" alt="' . htmlspecialchars($rows['nombre_producto']) . '" style="width: 50px; height: 50px;"></td>
                  <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                  <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
                  <td class="cantidad-cpi">' . htmlspecialchars($rows['cantidad_articulador']) . '</td>
@@ -929,23 +951,23 @@ AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 1;";
                  <td>' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
                  <td class="stock-disponible"></td>
              </tr>';
-         }
-     } else {
-         $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
-     }
- 
-     $tabla .= '</tbody></table>';
-     $tabla .= '</div>';
- 
-     // JavaScript para calcular totales dinámicamente
-     $tabla .= '<script>
+            }
+        } else {
+            $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        }
+
+        $tabla .= '</tbody></table>';
+        $tabla .= '</div>';
+
+        // JavaScript para calcular totales dinámicamente
+        $tabla .= '<script>
      function calcularTotales() {
          var multiplicador = document.getElementById("multiplicador").value;
          var filas = document.querySelectorAll("tbody tr");
          filas.forEach(function(fila) {
              var cpi = parseFloat(fila.querySelector(".cantidad-cpi").textContent) || 0;
              var total = fila.querySelector(".total");
-             var stock = parseFloat(fila.querySelector("td:nth-child(5)").textContent);
+             var stock = parseFloat(fila.querySelector("td:nth-child(6)").textContent);
              var stockDisponible = fila.querySelector(".stock-disponible");
              var totalCantidad = cpi * multiplicador;
              total.textContent = totalCantidad.toFixed(2);
@@ -977,40 +999,41 @@ AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 1;";
       ventanaImpresion.print();
   }
      </script>';
- 
-     // Paginación
-     if ($total > 0 && $numeroPaginas > 1) {
-         $tabla .= "<nav><ul class='pagination'>";
-         if ($pagina > 1) {
-             $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
-         }
-         for ($i = 1; $i <= $numeroPaginas; $i++) {
-             $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
-         }
-         if ($pagina < $numeroPaginas) {
-             $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
-         }
-         $tabla .= "</ul></nav>";
-     }
- 
-     return $tabla;
- }
+
+        // Paginación
+        if ($total > 0 && $numeroPaginas > 1) {
+            $tabla .= "<nav><ul class='pagination'>";
+            if ($pagina > 1) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
+            }
+            for ($i = 1; $i <= $numeroPaginas; $i++) {
+                $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
+            }
+            if ($pagina < $numeroPaginas) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
+            }
+            $tabla .= "</ul></nav>";
+        }
+
+        return $tabla;
+    }
 
 
- /*----------  Controlador listar productos  ----------*/
- public function listarPiezasCompraExternaArticuladorControlador($pagina, $registros, $url, $busqueda)
- {
-     $pagina = intval($this->limpiarCadena($pagina));
-     $registros = intval($this->limpiarCadena($registros));
-     $url = $this->limpiarCadena($url);
-     $url = APP_URL . $url . "/";
-     $busqueda = $this->limpiarCadena($busqueda);
- 
-     $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
- 
-     $consulta_datos = "SELECT
+    /*----------  Controlador listar productos  ----------*/
+    public function listarPiezasCompraExternaArticuladorControlador($pagina, $registros, $url, $busqueda)
+    {
+        $pagina = intval($this->limpiarCadena($pagina));
+        $registros = intval($this->limpiarCadena($registros));
+        $url = $this->limpiarCadena($url);
+        $url = APP_URL . $url . "/";
+        $busqueda = $this->limpiarCadena($busqueda);
+
+        $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
+
+        $consulta_datos = "SELECT
   p.codigo_producto,
   p.nombre_producto,
+  p.url_imagen,
   IF(articulador.nombre = 'ARTICULADOR', pca.cantidad, 0) AS cantidad_articulador,
   sa.stock AS stock_almacen_general,
   IF(articulador.nombre = 'ARTICULADOR', pca.cantidad, 0) * 1 AS total_cantidad
@@ -1028,10 +1051,10 @@ GROUP BY p.id_producto
 ORDER BY p.codigo_producto ASC
 LIMIT $inicio, $registros;";
 
-$datos = $this->ejecutarConsulta($consulta_datos);
-$datos = $datos->fetchAll();
+        $datos = $this->ejecutarConsulta($consulta_datos);
+        $datos = $datos->fetchAll();
 
-$consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
+        $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
 FROM productos p
 JOIN categorias c ON p.id_categoria = c.id_categoria
 JOIN sub_categorias sc ON p.id_subcategoria = sc.id_subcategoria
@@ -1041,16 +1064,17 @@ JOIN stock_almacen sa ON p.id_producto = sa.id_producto AND sa.id_almacen = 1
 WHERE (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
 AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 4;";
 
-     $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
- 
-     $numeroPaginas = ceil($total / $registros);
- 
-     $tabla = '<div class="container-fluid p-4">
+        $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
+
+        $numeroPaginas = ceil($total / $registros);
+
+        $tabla = '<div class="container-fluid p-4">
      <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
      <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
      <table id="tabla-productos" class="table table-bordered table-striped">
      <thead>
          <tr>
+         <th>Imagen</th>
              <th>Código Producto</th>
              <th>Nombre Producto</th>
              <th>Cantidad</th>
@@ -1060,10 +1084,11 @@ AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 4;";
          </tr>
      </thead>
      <tbody>';
- 
-     if ($total > 0) {
-         foreach ($datos as $rows) {
-             $tabla .= '<tr>
+
+        if ($total > 0) {
+            foreach ($datos as $rows) {
+                $tabla .= '<tr>
+                <td><img src="' . APP_URL . 'app/views/img/img/' . htmlspecialchars($rows['url_imagen']) . '" alt="' . htmlspecialchars($rows['nombre_producto']) . '" style="width: 50px; height: 50px;"></td>
                  <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                  <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
                  <td class="cantidad-cpi">' . htmlspecialchars($rows['cantidad_articulador']) . '</td>
@@ -1071,23 +1096,23 @@ AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 4;";
                  <td>' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
                  <td class="stock-disponible"></td>
              </tr>';
-         }
-     } else {
-         $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
-     }
- 
-     $tabla .= '</tbody></table>';
-     $tabla .= '</div>';
- 
-     // JavaScript para calcular totales dinámicamente
-     $tabla .= '<script>
+            }
+        } else {
+            $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        }
+
+        $tabla .= '</tbody></table>';
+        $tabla .= '</div>';
+
+        // JavaScript para calcular totales dinámicamente
+        $tabla .= '<script>
      function calcularTotales() {
          var multiplicador = document.getElementById("multiplicador").value;
          var filas = document.querySelectorAll("tbody tr");
          filas.forEach(function(fila) {
              var cpi = parseFloat(fila.querySelector(".cantidad-cpi").textContent) || 0;
              var total = fila.querySelector(".total");
-             var stock = parseFloat(fila.querySelector("td:nth-child(5)").textContent);
+             var stock = parseFloat(fila.querySelector("td:nth-child(6)").textContent);
              var stockDisponible = fila.querySelector(".stock-disponible");
              var totalCantidad = cpi * multiplicador;
              total.textContent = totalCantidad.toFixed(2);
@@ -1119,41 +1144,42 @@ AND articulador.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 4;";
       ventanaImpresion.print();
   }
      </script>';
- 
-     // Paginación
-     if ($total > 0 && $numeroPaginas > 1) {
-         $tabla .= "<nav><ul class='pagination'>";
-         if ($pagina > 1) {
-             $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
-         }
-         for ($i = 1; $i <= $numeroPaginas; $i++) {
-             $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
-         }
-         if ($pagina < $numeroPaginas) {
-             $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
-         }
-         $tabla .= "</ul></nav>";
-     }
- 
-     return $tabla;
- }
+
+        // Paginación
+        if ($total > 0 && $numeroPaginas > 1) {
+            $tabla .= "<nav><ul class='pagination'>";
+            if ($pagina > 1) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
+            }
+            for ($i = 1; $i <= $numeroPaginas; $i++) {
+                $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
+            }
+            if ($pagina < $numeroPaginas) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
+            }
+            $tabla .= "</ul></nav>";
+        }
+
+        return $tabla;
+    }
 
 
 
- /*----------  Controlador listar productos  ----------*/
-   public function listarPiezasMaquinadosArcoControlador($pagina, $registros, $url, $busqueda)
-   {
-       $pagina = intval($this->limpiarCadena($pagina));
-       $registros = intval($this->limpiarCadena($registros));
-       $url = $this->limpiarCadena($url);
-       $url = APP_URL . $url . "/";
-       $busqueda = $this->limpiarCadena($busqueda);
-   
-       $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
-   
-       $consulta_datos = "SELECT
+    /*----------  Controlador listar productos  ----------*/
+    public function listarPiezasMaquinadosArcoControlador($pagina, $registros, $url, $busqueda)
+    {
+        $pagina = intval($this->limpiarCadena($pagina));
+        $registros = intval($this->limpiarCadena($registros));
+        $url = $this->limpiarCadena($url);
+        $url = APP_URL . $url . "/";
+        $busqueda = $this->limpiarCadena($busqueda);
+
+        $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
+
+        $consulta_datos = "SELECT
     p.codigo_producto,
     p.nombre_producto,
+    p.url_imagen,
     IF(arco.nombre = 'ARCO', pca.cantidad, 0) AS cantidad_arco,
     sa.stock AS stock_almacen_general,
     IF(arco.nombre = 'ARCO', pca.cantidad, 0) * 1 AS total_cantidad
@@ -1171,10 +1197,10 @@ GROUP BY p.id_producto
 ORDER BY p.codigo_producto ASC
 LIMIT $inicio, $registros;";
 
-$datos = $this->ejecutarConsulta($consulta_datos);
-$datos = $datos->fetchAll();
+        $datos = $this->ejecutarConsulta($consulta_datos);
+        $datos = $datos->fetchAll();
 
-$consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
+        $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
 FROM productos p
 JOIN categorias c ON p.id_categoria = c.id_categoria
 JOIN sub_categorias sc ON p.id_subcategoria = sc.id_subcategoria
@@ -1184,16 +1210,17 @@ JOIN stock_almacen sa ON p.id_producto = sa.id_producto AND sa.id_almacen = 1
 WHERE (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
 AND arco.nombre = 'ARCO' AND sc.id_subcategoria = 3;";
 
-       $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
-   
-       $numeroPaginas = ceil($total / $registros);
-   
-       $tabla = '<div class="container-fluid p-4">
+        $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
+
+        $numeroPaginas = ceil($total / $registros);
+
+        $tabla = '<div class="container-fluid p-4">
        <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
        <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
        <table id="tabla-productos" class="table table-bordered table-striped">
        <thead>
            <tr>
+           <th>Imagen</th>
                <th>Código Producto</th>
                <th>Nombre Producto</th>
                <th>Cantidad</th>
@@ -1203,10 +1230,11 @@ AND arco.nombre = 'ARCO' AND sc.id_subcategoria = 3;";
            </tr>
        </thead>
        <tbody>';
-   
-       if ($total > 0) {
-           foreach ($datos as $rows) {
-               $tabla .= '<tr>
+
+        if ($total > 0) {
+            foreach ($datos as $rows) {
+                $tabla .= '<tr>
+                <td><img src="' . APP_URL . 'app/views/img/img/' . htmlspecialchars($rows['url_imagen']) . '" alt="' . htmlspecialchars($rows['nombre_producto']) . '" style="width: 50px; height: 50px;"></td>
                    <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                    <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
                    <td class="cantidad-cpi">' . htmlspecialchars($rows['cantidad_arco']) . '</td>
@@ -1214,23 +1242,23 @@ AND arco.nombre = 'ARCO' AND sc.id_subcategoria = 3;";
                    <td>' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
                    <td class="stock-disponible"></td>
                </tr>';
-           }
-       } else {
-           $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
-       }
-   
-       $tabla .= '</tbody></table>';
-       $tabla .= '</div>';
-   
-       // JavaScript para calcular totales dinámicamente
-       $tabla .= '<script>
+            }
+        } else {
+            $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        }
+
+        $tabla .= '</tbody></table>';
+        $tabla .= '</div>';
+
+        // JavaScript para calcular totales dinámicamente
+        $tabla .= '<script>
        function calcularTotales() {
            var multiplicador = document.getElementById("multiplicador").value;
            var filas = document.querySelectorAll("tbody tr");
            filas.forEach(function(fila) {
                var cpi = parseFloat(fila.querySelector(".cantidad-cpi").textContent) || 0;
                var total = fila.querySelector(".total");
-               var stock = parseFloat(fila.querySelector("td:nth-child(5)").textContent);
+               var stock = parseFloat(fila.querySelector("td:nth-child(6)").textContent);
                var stockDisponible = fila.querySelector(".stock-disponible");
                var totalCantidad = cpi * multiplicador;
                total.textContent = totalCantidad.toFixed(2);
@@ -1262,41 +1290,42 @@ AND arco.nombre = 'ARCO' AND sc.id_subcategoria = 3;";
         ventanaImpresion.print();
     }
        </script>';
-   
-       // Paginación
-       if ($total > 0 && $numeroPaginas > 1) {
-           $tabla .= "<nav><ul class='pagination'>";
-           if ($pagina > 1) {
-               $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
-           }
-           for ($i = 1; $i <= $numeroPaginas; $i++) {
-               $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
-           }
-           if ($pagina < $numeroPaginas) {
-               $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
-           }
-           $tabla .= "</ul></nav>";
-       }
-   
-       return $tabla;
-   }
+
+        // Paginación
+        if ($total > 0 && $numeroPaginas > 1) {
+            $tabla .= "<nav><ul class='pagination'>";
+            if ($pagina > 1) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
+            }
+            for ($i = 1; $i <= $numeroPaginas; $i++) {
+                $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
+            }
+            if ($pagina < $numeroPaginas) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
+            }
+            $tabla .= "</ul></nav>";
+        }
+
+        return $tabla;
+    }
 
 
 
-/*----------  Controlador listar productos  ----------*/
- public function listarTornilleriaMaquinadosArcoControlador($pagina, $registros, $url, $busqueda)
- {
-     $pagina = intval($this->limpiarCadena($pagina));
-     $registros = intval($this->limpiarCadena($registros));
-     $url = $this->limpiarCadena($url);
-     $url = APP_URL . $url . "/";
-     $busqueda = $this->limpiarCadena($busqueda);
- 
-     $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
- 
-     $consulta_datos = "SELECT
+    /*----------  Controlador listar productos  ----------*/
+    public function listarTornilleriaMaquinadosArcoControlador($pagina, $registros, $url, $busqueda)
+    {
+        $pagina = intval($this->limpiarCadena($pagina));
+        $registros = intval($this->limpiarCadena($registros));
+        $url = $this->limpiarCadena($url);
+        $url = APP_URL . $url . "/";
+        $busqueda = $this->limpiarCadena($busqueda);
+
+        $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
+
+        $consulta_datos = "SELECT
   p.codigo_producto,
   p.nombre_producto,
+  p.url_imagen,
   IF(arco.nombre = 'ARCO', pca.cantidad, 0) AS cantidad_arco,
   sa.stock AS stock_almacen_general,
   IF(arco.nombre = 'ARCO', pca.cantidad, 0) * 1 AS total_cantidad
@@ -1314,10 +1343,10 @@ GROUP BY p.id_producto
 ORDER BY p.codigo_producto ASC
 LIMIT $inicio, $registros;";
 
-$datos = $this->ejecutarConsulta($consulta_datos);
-$datos = $datos->fetchAll();
+        $datos = $this->ejecutarConsulta($consulta_datos);
+        $datos = $datos->fetchAll();
 
-$consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
+        $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
 FROM productos p
 JOIN categorias c ON p.id_categoria = c.id_categoria
 JOIN sub_categorias sc ON p.id_subcategoria = sc.id_subcategoria
@@ -1327,16 +1356,17 @@ JOIN stock_almacen sa ON p.id_producto = sa.id_producto AND sa.id_almacen = 1
 WHERE (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
 AND arco.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 2;";
 
-     $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
- 
-     $numeroPaginas = ceil($total / $registros);
- 
-     $tabla = '<div class="container-fluid p-4">
+        $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
+
+        $numeroPaginas = ceil($total / $registros);
+
+        $tabla = '<div class="container-fluid p-4">
      <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
      <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
      <table id="tabla-productos" class="table table-bordered table-striped">
      <thead>
          <tr>
+         <th>Imagen</th>
              <th>Código Producto</th>
              <th>Nombre Producto</th>
              <th>Cantidad</th>
@@ -1346,10 +1376,11 @@ AND arco.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 2;";
          </tr>
      </thead>
      <tbody>';
- 
-     if ($total > 0) {
-         foreach ($datos as $rows) {
-             $tabla .= '<tr>
+
+        if ($total > 0) {
+            foreach ($datos as $rows) {
+                $tabla .= '<tr>
+                <td><img src="' . APP_URL . 'app/views/img/img/' . htmlspecialchars($rows['url_imagen']) . '" alt="' . htmlspecialchars($rows['nombre_producto']) . '" style="width: 50px; height: 50px;"></td>
                  <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                  <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
                  <td class="cantidad-cpi">' . htmlspecialchars($rows['cantidad_arco']) . '</td>
@@ -1357,23 +1388,23 @@ AND arco.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 2;";
                  <td>' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
                  <td class="stock-disponible"></td>
              </tr>';
-         }
-     } else {
-         $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
-     }
- 
-     $tabla .= '</tbody></table>';
-     $tabla .= '</div>';
- 
-     // JavaScript para calcular totales dinámicamente
-     $tabla .= '<script>
+            }
+        } else {
+            $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        }
+
+        $tabla .= '</tbody></table>';
+        $tabla .= '</div>';
+
+        // JavaScript para calcular totales dinámicamente
+        $tabla .= '<script>
      function calcularTotales() {
          var multiplicador = document.getElementById("multiplicador").value;
          var filas = document.querySelectorAll("tbody tr");
          filas.forEach(function(fila) {
              var cpi = parseFloat(fila.querySelector(".cantidad-cpi").textContent) || 0;
              var total = fila.querySelector(".total");
-             var stock = parseFloat(fila.querySelector("td:nth-child(5)").textContent);
+             var stock = parseFloat(fila.querySelector("td:nth-child(6)").textContent);
              var stockDisponible = fila.querySelector(".stock-disponible");
              var totalCantidad = cpi * multiplicador;
              total.textContent = totalCantidad.toFixed(2);
@@ -1384,7 +1415,7 @@ AND arco.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 2;";
      function imprimirTabla() {
       var contenidoTabla = document.getElementById("tabla-productos").innerHTML;
       var ventanaImpresion = window.open("", "_blank");
-      ventanaImpresion.document.write("<html><head><title>TORNILLERIA MAQUINADOS ARTICULADOR</title>");
+      ventanaImpresion.document.write("<html><head><title>TORNILLERIA MAQUINADOS ARCO</title>");
       ventanaImpresion.document.write("<style>");
       ventanaImpresion.document.write("@media print {");
       ventanaImpresion.document.write("    table { page-break-inside: avoid; }");
@@ -1405,41 +1436,42 @@ AND arco.nombre = 'ARTICULADOR' AND sc.id_subcategoria = 2;";
       ventanaImpresion.print();
   }
      </script>';
- 
-     // Paginación
-     if ($total > 0 && $numeroPaginas > 1) {
-         $tabla .= "<nav><ul class='pagination'>";
-         if ($pagina > 1) {
-             $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
-         }
-         for ($i = 1; $i <= $numeroPaginas; $i++) {
-             $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
-         }
-         if ($pagina < $numeroPaginas) {
-             $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
-         }
-         $tabla .= "</ul></nav>";
-     }
- 
-     return $tabla;
- }
+
+        // Paginación
+        if ($total > 0 && $numeroPaginas > 1) {
+            $tabla .= "<nav><ul class='pagination'>";
+            if ($pagina > 1) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
+            }
+            for ($i = 1; $i <= $numeroPaginas; $i++) {
+                $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
+            }
+            if ($pagina < $numeroPaginas) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
+            }
+            $tabla .= "</ul></nav>";
+        }
+
+        return $tabla;
+    }
 
 
 
-/*----------  Controlador listar productos  ----------*/
- public function listarTornilleriaExternaArcoControlador($pagina, $registros, $url, $busqueda)
- {
-     $pagina = intval($this->limpiarCadena($pagina));
-     $registros = intval($this->limpiarCadena($registros));
-     $url = $this->limpiarCadena($url);
-     $url = APP_URL . $url . "/";
-     $busqueda = $this->limpiarCadena($busqueda);
- 
-     $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
- 
-     $consulta_datos = "SELECT
+    /*----------  Controlador listar productos  ----------*/
+    public function listarTornilleriaExternaArcoControlador($pagina, $registros, $url, $busqueda)
+    {
+        $pagina = intval($this->limpiarCadena($pagina));
+        $registros = intval($this->limpiarCadena($registros));
+        $url = $this->limpiarCadena($url);
+        $url = APP_URL . $url . "/";
+        $busqueda = $this->limpiarCadena($busqueda);
+
+        $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
+
+        $consulta_datos = "SELECT
   p.codigo_producto,
   p.nombre_producto,
+  p.url_imagen,
   IF(arco.nombre = 'ARCO', pca.cantidad, 0) AS cantidad_arco,
   sa.stock AS stock_almacen_general,
   IF(arco.nombre = 'ARCO', pca.cantidad, 0) * 1 AS total_cantidad
@@ -1457,10 +1489,10 @@ GROUP BY p.id_producto
 ORDER BY p.codigo_producto ASC
 LIMIT $inicio, $registros;";
 
-$datos = $this->ejecutarConsulta($consulta_datos);
-$datos = $datos->fetchAll();
+        $datos = $this->ejecutarConsulta($consulta_datos);
+        $datos = $datos->fetchAll();
 
-$consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
+        $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
 FROM productos p
 JOIN categorias c ON p.id_categoria = c.id_categoria
 JOIN sub_categorias sc ON p.id_subcategoria = sc.id_subcategoria
@@ -1470,16 +1502,17 @@ JOIN stock_almacen sa ON p.id_producto = sa.id_producto AND sa.id_almacen = 1
 WHERE (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
 AND arco.nombre = 'ARCO' AND sc.id_subcategoria = 1;";
 
-     $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
- 
-     $numeroPaginas = ceil($total / $registros);
- 
-     $tabla = '<div class="container-fluid p-4">
+        $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
+
+        $numeroPaginas = ceil($total / $registros);
+
+        $tabla = '<div class="container-fluid p-4">
      <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
      <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
      <table id="tabla-productos" class="table table-bordered table-striped">
      <thead>
          <tr>
+         <th>Imagen</th>
              <th>Código Producto</th>
              <th>Nombre Producto</th>
              <th>Cantidad</th>
@@ -1489,10 +1522,11 @@ AND arco.nombre = 'ARCO' AND sc.id_subcategoria = 1;";
          </tr>
      </thead>
      <tbody>';
- 
-     if ($total > 0) {
-         foreach ($datos as $rows) {
-             $tabla .= '<tr>
+
+        if ($total > 0) {
+            foreach ($datos as $rows) {
+                $tabla .= '<tr>
+                <td><img src="' . APP_URL . 'app/views/img/img/' . htmlspecialchars($rows['url_imagen']) . '" alt="' . htmlspecialchars($rows['nombre_producto']) . '" style="width: 50px; height: 50px;"></td>
                  <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                  <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
                  <td class="cantidad-cpi">' . htmlspecialchars($rows['cantidad_arco']) . '</td>
@@ -1500,23 +1534,23 @@ AND arco.nombre = 'ARCO' AND sc.id_subcategoria = 1;";
                  <td>' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
                  <td class="stock-disponible"></td>
              </tr>';
-         }
-     } else {
-         $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
-     }
- 
-     $tabla .= '</tbody></table>';
-     $tabla .= '</div>';
- 
-     // JavaScript para calcular totales dinámicamente
-     $tabla .= '<script>
+            }
+        } else {
+            $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        }
+
+        $tabla .= '</tbody></table>';
+        $tabla .= '</div>';
+
+        // JavaScript para calcular totales dinámicamente
+        $tabla .= '<script>
      function calcularTotales() {
          var multiplicador = document.getElementById("multiplicador").value;
          var filas = document.querySelectorAll("tbody tr");
          filas.forEach(function(fila) {
              var cpi = parseFloat(fila.querySelector(".cantidad-cpi").textContent) || 0;
              var total = fila.querySelector(".total");
-             var stock = parseFloat(fila.querySelector("td:nth-child(5)").textContent);
+             var stock = parseFloat(fila.querySelector("td:nth-child(6)").textContent);
              var stockDisponible = fila.querySelector(".stock-disponible");
              var totalCantidad = cpi * multiplicador;
              total.textContent = totalCantidad.toFixed(2);
@@ -1527,7 +1561,7 @@ AND arco.nombre = 'ARCO' AND sc.id_subcategoria = 1;";
      function imprimirTabla() {
       var contenidoTabla = document.getElementById("tabla-productos").innerHTML;
       var ventanaImpresion = window.open("", "_blank");
-      ventanaImpresion.document.write("<html><head><title>TORNILLERIA COMPRA EXTERNA ARTICULADOR</title>");
+      ventanaImpresion.document.write("<html><head><title>TORNILLERIA COMPRA EXTERNA ARCO</title>");
       ventanaImpresion.document.write("<style>");
       ventanaImpresion.document.write("@media print {");
       ventanaImpresion.document.write("    table { page-break-inside: avoid; }");
@@ -1548,40 +1582,41 @@ AND arco.nombre = 'ARCO' AND sc.id_subcategoria = 1;";
       ventanaImpresion.print();
   }
      </script>';
- 
-     // Paginación
-     if ($total > 0 && $numeroPaginas > 1) {
-         $tabla .= "<nav><ul class='pagination'>";
-         if ($pagina > 1) {
-             $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
-         }
-         for ($i = 1; $i <= $numeroPaginas; $i++) {
-             $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
-         }
-         if ($pagina < $numeroPaginas) {
-             $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
-         }
-         $tabla .= "</ul></nav>";
-     }
- 
-     return $tabla;
- }
+
+        // Paginación
+        if ($total > 0 && $numeroPaginas > 1) {
+            $tabla .= "<nav><ul class='pagination'>";
+            if ($pagina > 1) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
+            }
+            for ($i = 1; $i <= $numeroPaginas; $i++) {
+                $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
+            }
+            if ($pagina < $numeroPaginas) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
+            }
+            $tabla .= "</ul></nav>";
+        }
+
+        return $tabla;
+    }
 
 
-/*----------  Controlador listar productos  ----------*/
- public function listarPiezasCompraExternaArcoControlador($pagina, $registros, $url, $busqueda)
- {
-     $pagina = intval($this->limpiarCadena($pagina));
-     $registros = intval($this->limpiarCadena($registros));
-     $url = $this->limpiarCadena($url);
-     $url = APP_URL . $url . "/";
-     $busqueda = $this->limpiarCadena($busqueda);
- 
-     $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
- 
-     $consulta_datos = "SELECT
+    /*----------  Controlador listar productos  ----------*/
+    public function listarPiezasCompraExternaArcoControlador($pagina, $registros, $url, $busqueda)
+    {
+        $pagina = intval($this->limpiarCadena($pagina));
+        $registros = intval($this->limpiarCadena($registros));
+        $url = $this->limpiarCadena($url);
+        $url = APP_URL . $url . "/";
+        $busqueda = $this->limpiarCadena($busqueda);
+
+        $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
+
+        $consulta_datos = "SELECT
   p.codigo_producto,
   p.nombre_producto,
+  p.url_imagen,
   IF(arco.nombre = 'ARCO', pca.cantidad, 0) AS cantidad_arco,
   sa.stock AS stock_almacen_general,
   IF(arco.nombre = 'ARCO', pca.cantidad, 0) * 1 AS total_cantidad
@@ -1599,10 +1634,10 @@ GROUP BY p.id_producto
 ORDER BY p.codigo_producto ASC
 LIMIT $inicio, $registros;";
 
-$datos = $this->ejecutarConsulta($consulta_datos);
-$datos = $datos->fetchAll();
+        $datos = $this->ejecutarConsulta($consulta_datos);
+        $datos = $datos->fetchAll();
 
-$consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
+        $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
 FROM productos p
 JOIN categorias c ON p.id_categoria = c.id_categoria
 JOIN sub_categorias sc ON p.id_subcategoria = sc.id_subcategoria
@@ -1612,16 +1647,17 @@ JOIN stock_almacen sa ON p.id_producto = sa.id_producto AND sa.id_almacen = 1
 WHERE (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
 AND arco.nombre = 'ARCO' AND sc.id_subcategoria = 4;";
 
-     $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
- 
-     $numeroPaginas = ceil($total / $registros);
- 
-     $tabla = '<div class="container-fluid p-4">
+        $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
+
+        $numeroPaginas = ceil($total / $registros);
+
+        $tabla = '<div class="container-fluid p-4">
      <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
      <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
      <table id="tabla-productos" class="table table-bordered table-striped">
      <thead>
          <tr>
+         <th>Imagen</th>
              <th>Código Producto</th>
              <th>Nombre Producto</th>
              <th>Cantidad</th>
@@ -1631,10 +1667,11 @@ AND arco.nombre = 'ARCO' AND sc.id_subcategoria = 4;";
          </tr>
      </thead>
      <tbody>';
- 
-     if ($total > 0) {
-         foreach ($datos as $rows) {
-             $tabla .= '<tr>
+
+        if ($total > 0) {
+            foreach ($datos as $rows) {
+                $tabla .= '<tr>
+                <td><img src="' . APP_URL . 'app/views/img/img/' . htmlspecialchars($rows['url_imagen']) . '" alt="' . htmlspecialchars($rows['nombre_producto']) . '" style="width: 50px; height: 50px;"></td>
                  <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                  <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
                  <td class="cantidad-cpi">' . htmlspecialchars($rows['cantidad_arco']) . '</td>
@@ -1642,23 +1679,23 @@ AND arco.nombre = 'ARCO' AND sc.id_subcategoria = 4;";
                  <td>' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
                  <td class="stock-disponible"></td>
              </tr>';
-         }
-     } else {
-         $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
-     }
- 
-     $tabla .= '</tbody></table>';
-     $tabla .= '</div>';
- 
-     // JavaScript para calcular totales dinámicamente
-     $tabla .= '<script>
+            }
+        } else {
+            $tabla .= '<tr><td colspan="6" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        }
+
+        $tabla .= '</tbody></table>';
+        $tabla .= '</div>';
+
+        // JavaScript para calcular totales dinámicamente
+        $tabla .= '<script>
      function calcularTotales() {
          var multiplicador = document.getElementById("multiplicador").value;
          var filas = document.querySelectorAll("tbody tr");
          filas.forEach(function(fila) {
              var cpi = parseFloat(fila.querySelector(".cantidad-cpi").textContent) || 0;
              var total = fila.querySelector(".total");
-             var stock = parseFloat(fila.querySelector("td:nth-child(5)").textContent);
+             var stock = parseFloat(fila.querySelector("td:nth-child(6)").textContent);
              var stockDisponible = fila.querySelector(".stock-disponible");
              var totalCantidad = cpi * multiplicador;
              total.textContent = totalCantidad.toFixed(2);
@@ -1669,7 +1706,7 @@ AND arco.nombre = 'ARCO' AND sc.id_subcategoria = 4;";
      function imprimirTabla() {
       var contenidoTabla = document.getElementById("tabla-productos").innerHTML;
       var ventanaImpresion = window.open("", "_blank");
-      ventanaImpresion.document.write("<html><head><title>PIEZAS COMPRA EXTERNA ARTICULADOR</title>");
+      ventanaImpresion.document.write("<html><head><title>PIEZAS COMPRA EXTERNA ARCO</title>");
       ventanaImpresion.document.write("<style>");
       ventanaImpresion.document.write("@media print {");
       ventanaImpresion.document.write("    table { page-break-inside: avoid; }");
@@ -1690,24 +1727,24 @@ AND arco.nombre = 'ARCO' AND sc.id_subcategoria = 4;";
       ventanaImpresion.print();
   }
      </script>';
- 
-     // Paginación
-     if ($total > 0 && $numeroPaginas > 1) {
-         $tabla .= "<nav><ul class='pagination'>";
-         if ($pagina > 1) {
-             $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
-         }
-         for ($i = 1; $i <= $numeroPaginas; $i++) {
-             $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
-         }
-         if ($pagina < $numeroPaginas) {
-             $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
-         }
-         $tabla .= "</ul></nav>";
-     }
- 
-     return $tabla;
- }
+
+        // Paginación
+        if ($total > 0 && $numeroPaginas > 1) {
+            $tabla .= "<nav><ul class='pagination'>";
+            if ($pagina > 1) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
+            }
+            for ($i = 1; $i <= $numeroPaginas; $i++) {
+                $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
+            }
+            if ($pagina < $numeroPaginas) {
+                $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
+            }
+            $tabla .= "</ul></nav>";
+        }
+
+        return $tabla;
+    }
 
 
 }

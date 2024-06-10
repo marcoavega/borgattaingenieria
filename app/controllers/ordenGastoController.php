@@ -89,7 +89,7 @@ class ordenGastoController extends mainModel
 
         // Generando número de orden automático
         $ultimoNumeroOrden = $this->obtenerUltimoNumeroOrden();
-        $numero_orden = 'ROG-' . str_pad($ultimoNumeroOrden + 1, 3, '0', STR_PAD_LEFT);
+        $numero_orden = 'ROG-' . str_pad($ultimoNumeroOrden + 1, 8, '0', STR_PAD_LEFT);
 
         # Almacenando datos
         $id_proveedor = $_POST['id_proveedor'];
@@ -253,23 +253,25 @@ foreach ($datos as $rows) {
         $ordenActual = $rows['numero_orden'];
         $tabla .= '
         <div class="invoice">
-        <div style="display: flex; align-items: center;justify-content: space-between;">
-            <img src="' . APP_URL . 'app/views/fotos/logo_orden.png" alt="logo" style="width:250px; height:auto; margin-right: 20px;">
+        <div style="margin-top: 1px; font-size: 13px; border: 1px solid #000; padding: 5px;">
+        <p style="font-size: 14px; text-align: center;"><strong>Orden de Gasto</strong></p>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <img src="' . APP_URL . 'app/views/fotos/logo_orden.png" alt="logo" style="width:200px; height:auto;">
             <div>
-                <h5>Orden de Gasto: ' . $rows['numero_orden'] . '</h5>
-                <p><strong>Fecha:</strong> ' . date('d/m/Y', strtotime($rows['fecha'])) . '</p>
+                <p style="font-size: 13px;"><strong>Orden de Gasto:</strong> ' . $rows['numero_orden'] . '</p>
+                <p style="font-size: 13px;"><strong>Fecha:</strong> ' . date('d/m/Y', strtotime($rows['fecha'])) . '</p>
+                <p style="font-size: 13px;"><strong>Formato:</strong>  PR-12-F03</p>
             </div>
         </div>
-        <div style="margin-top: 1px; margin-bottom: 10px;">
             <p style="margin-top: 0; margin-bottom: 0;">RADIOTECNOLOGÍA INDUSTRIAL S.A. DE C.V.</p>
             <p style="margin-top: 0; margin-bottom: 0;">RFC: RIN070219R38</p>
             <p style="margin-top: 0; margin-bottom: 0;">Calle Puebla Sur. Manzana 4. Lote 5 Nave B Int. 2 Col. Jardín Industrial</p>
             <p style="margin-top: 0; margin-bottom: 0;">Ixtapaluca. Edo. de México, C.P. 56535</p>
         </div>
 
-        <div class="invoice" style="display: flex;">
-    <div style="flex: 1; margin-top: 1px; margin-bottom: 10px;">
-        <p style="margin-top: 0; margin-bottom: 0;"><strong>Datos Proveedor:</strong></p>
+    <div class="invoice" style="display: flex; font-size: 13px; border: 1px solid #000; padding: 5px;">
+    <div style="flex: 1; margin-top: 1px; margin-bottom: 10px; border: 1px solid #000; padding: 5px;">
+        <p style="margin-top: 0; margin-bottom: 0; border: 1px solid #000;"><strong>Datos Proveedor:</strong></p>
         <p style="margin-top: 0; margin-bottom: 0;"><strong>Proveedor:</strong> ' . $rows['nombre_proveedor'] . '</p>
         <p style="margin-top: 0; margin-bottom: 0;"><strong>RFC:</strong> ' . $rows['RFC_proveedor'] . '</p>
         <p style="margin-top: 0; margin-bottom: 0;"><strong>Contacto:</strong> ' . $rows['contacto_proveedor'] . '</p>
@@ -277,8 +279,8 @@ foreach ($datos as $rows) {
         <p style="margin-top: 0; margin-bottom: 0;"><strong>E-mail:</strong> ' . $rows['email_proveedor'] . '</p>
         <p style="margin-top: 0; margin-bottom: 0;"><strong>Dirección:</strong> ' . $rows['direccion_proveedor'] . '</p>
     </div>
-    <div style="flex: 1; margin-right: 10px; margin-top: 1px; margin-bottom: 10px;">
-        <p style="margin-top: 0; margin-bottom: 0;"><strong>ENVIAR A:</strong></p>
+    <div style="flex: 1; margin-right: 10px; margin-top: 1px; margin-bottom: 10px; border: 1px solid #000; padding: 5px;">
+        <p style="margin-top: 0; margin-bottom: 0; border: 1px solid #000;"><strong>ENVIAR A:</strong></p>
         <p style="margin-top: 0; margin-bottom: 0;">RADIOTECNOLOGÍA INDUSTRIAL S.A. DE C.V.</p>
         <p style="margin-top: 0; margin-bottom: 0;">RFC: RIN070219R38</p>
         <p style="margin-top: 0; margin-bottom: 0;">Calle Puebla Sur. Manzana 4. Lote 5 Nave B Int. 2 Col. Jardín Industrial</p>
@@ -288,75 +290,85 @@ foreach ($datos as $rows) {
 </div>
 
 
-    <table class="table" style="width: 100%; padding-top: 10;">
-                <thead>
-                    <tr>
-                        <th style="text-align: center;">Partida</th>
-                        <th style="text-align: center;">Producto</th>
-                        <th style="text-align: center;">Cantidad</th>
-                        <th style="text-align: center;">U.M.</th>
-                        <th style="text-align: center;">Precio</th>
-                        <th style="text-align: center;">Importe</th>
-                    </tr>
-                </thead>
-                <tbody>';
+<table class="table" style="width: 100%; padding-top: 10; font-size: 13px;">
+<thead>
+    <tr>
+        <th style="text-align: center; border: 1px solid #000; padding: 5px;">Partida</th>
+        <th style="text-align: center; border: 1px solid #000; padding: 5px;">Producto</th>
+        <th style="text-align: center; border: 1px solid #000; padding: 5px;">Cantidad</th>
+        <th style="text-align: center; border: 1px solid #000; padding: 5px;">U.M.</th>
+        <th style="text-align: center; border: 1px solid #000; padding: 5px;">Precio</th>
+        <th style="text-align: center; border: 1px solid #000; padding: 5px;">Importe</th>
+    </tr>
+</thead>
+<tbody>';
     }
 // Continúa 
 $tabla .= '  
-            <tr>
-                <td style="text-align: center;">' . $rows['numero_partida'] . '</td>
-                <td style="text-align: center;">' . $rows['nombre_producto'] . '</td>
-                <td style="text-align: center;">' . $rows['cantidad'] . '</td>
-                <td style="text-align: center;">' . $rows['nombre_unidad'] . '</td>
-                <td style="text-align: center;">' . $rows['precio_sin_IVA'] . '</td>
-                <td style="text-align: center;" data-importe="' . $rows['total'] . '">' . $rows['total'] . '</td>
-            </tr>
-            ';
+<tr>
+<td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['numero_partida'] . '</td>
+<td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_producto'] . '</td>
+<td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['cantidad'] . '</td>
+<td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_unidad'] . '</td>
+<td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['precio_sin_IVA'] . '</td>
+<td style="text-align: center; border: 1px solid #000; padding: 5px;" data-importe="' . $rows['total'] . '">' . $rows['total'] . '</td>
+</tr>';
 }
 // Cierra la última tabla
 if ($ordenActual !== '') {
     // Agrega la fila de totales
-    $tabla .= '
-    <tfoot>
+    $tabla .= '<tfoot>
     <tr>
-        <td colspan="5" style="text-align: right;">Suma de Importes:</td>
-        <td data-importe="suma" id="sumaImportes_' . $ordenActual . '"><div style="text-align: right;">' . '</div></td>
-    </tr>
-
-    <tr>
-        <td colspan="5" style="text-align: right;">IVA (16%):</td>
-        <td data-importe="iva" id="ivaImportes_' . $ordenActual . '"><div style="text-align: right;">' . '</div></td>
+        <td colspan="5" style="text-align: right; border: 1px solid #000; padding: 5px;">Suma de Importes:</td>
+        <td style="text-align: center; border: 1px solid #000; padding: 5px;" data-importe="suma" id="sumaImportes_' . $ordenActual . '"></td>
     </tr>
     <tr>
-        <td colspan="5" style="text-align: right;">Total ' . $rows['nombre_moneda'] . ':</td>
-        <td data-importe="total" id="totalImportes_' . $ordenActual . '"><div style="text-align: right;">' . '</div></td>
+        <td colspan="5" style="text-align: right; border: 1px solid #000; padding: 5px;">IVA (16%):</td>
+        <td style="text-align: center; border: 1px solid #000; padding: 5px;" data-importe="iva" id="ivaImportes_' . $ordenActual . '"></td>
     </tr>
-    
     <tr>
-    <td colspan="6" style="text-align: right; white-space: nowrap;">
-        <strong>Total en letras:</strong> <span style="margin-left: 20px;"></span><div id="totalLetras_' . $ordenActual . '" style="display: inline;"></div>
-    </td>
-</tr>
-
-
-<tr>
-    <td colspan="6" style="text-align: right; white-space: nowrap;">
-        <strong>Empleado que solicita:</strong> 
-        <span style="margin-left: 20px;"></span>
-        <div style="display: inline;">' . $rows['nombre_empleado'] . '</div>
-    </td>
-</tr>
-
-
-</tfoot>
-
-</div>
-
-';
+        <td colspan="5" style="text-align: right; border: 1px solid #000; padding: 5px;">Total ' . $rows['nombre_moneda'] . ':</td>
+        <td style="text-align: center; border: 1px solid #000; padding: 5px;" data-importe="total" id="totalImportes_' . $ordenActual . '"></td>
+    </tr>
+    <tr>
+        <td colspan="6" style="text-align: right; border: 1px solid #000; padding: 5px; white-space: nowrap;">
+            <strong>Total en letras:</strong> <span style="margin-left: 20px;"></span><div id="totalLetras_' . $ordenActual . '" style="display: inline;"></div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="6" style="text-align: right; border: 1px solid #000; padding: 5px; white-space: nowrap;">
+            <strong>Empleado que solicita:</strong> 
+            <span style="margin-left: 20px;"></span>
+            <div style="display: inline;">' . $rows['nombre_empleado'] . '</div>
+        </td>
+    </tr>
+    </tfoot>';
     $tabla .= '</tbody></table></div>';
 }
 
 $tabla .= '</div>';
+
+// Agregar el texto de "Sello" que solo se verá en la impresión
+$tabla .= '
+<style>
+@media print {
+    .sello-impresion {
+        position: fixed;
+        bottom: 50px;
+        width: 100%;
+        text-align: center;
+        font-weight: bold;
+        font-size: 13px;
+    }
+}
+@media screen {
+    .sello-impresion {
+        display: none;
+    }
+}
+</style>
+<div class="sello-impresion">Sello</div>
+';
 
 
 $tabla .= '<script>
@@ -460,26 +472,6 @@ function imprimirArea(id) {
 
 </script>';
 
-
-
-$tabla .= '
-</div>';
-
-        if ($total > 0 && $pagina <= $numeroPaginas) {
-            $tabla .= '<nav aria-label="Page navigation example">
-              <ul class="pagination justify-content-center">';
-            if ($pagina > 1) {
-                $tabla .= '<li class="page-item"><a class="page-link" href="' . $url . ($pagina - 1) . '">Anterior</a></li>';
-            }
-            for ($i = 1; $i <= $numeroPaginas; $i++) {
-                $tabla .= '<li class="page-item ' . ($i == $pagina ? 'active' : '') . '"><a class="page-link" href="' . $url . $i . '">' . $i . '</a></li>';
-            }
-            if ($pagina < $numeroPaginas) {
-                $tabla .= '<li class="page-item"><a class="page-link" href="' . $url . ($pagina + 1) . '">Siguiente</a></li>';
-            }
-            $tabla .= '</ul>
-            </nav>';
-        }
 
         return $tabla;
         

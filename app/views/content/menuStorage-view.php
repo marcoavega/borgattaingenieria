@@ -62,18 +62,6 @@
             </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-            <div class="media-object">
-                <a href="<?php echo APP_URL; ?>productSearch/" class="text-decoration-none">
-                   
-                    <div class="media-body">
-                        <h5 class="media-title">Buscar artículos</h5>
-                        <p class="media-text">Buscardor de artículos</p>
-                    </div>
-                </a>
-            </div>
-        </div>
-
 
         </div>
     </div>

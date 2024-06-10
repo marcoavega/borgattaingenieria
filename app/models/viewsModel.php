@@ -47,7 +47,18 @@
                             "piezasExternasArco",
                             "notaENew",
                             "notaEPNew",
-                            "notaESearch"
+                            "notaESearch",
+                            "piezasMaquinadosKit",
+                            "tornilleriaMaquinadosKit",
+                            "tornilleriaExternaKit",
+                            "piezasExternasKit",
+                            "inventoryList",
+                            "facturaNew",
+                            "facturaPNew",
+                            "facturaSearch",
+                            "movFactura",
+                            "productoTerminado",
+                            "venceFactura",
                         ];
 
             // Comprueba si la vista solicitada está en la lista blanca

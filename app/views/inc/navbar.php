@@ -1,146 +1,104 @@
-<!-- Contenedor SVG para los íconos que se usarán en la barra de navegación. El estilo "display: none" se usa para ocultar este contenedor. -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
     <!-- Definición de varios íconos (circle-half, moon-stars-fill, sun-fill) -->
 </svg>
 
-<!-- Inicio de la barra de navegación -->
-<nav class="navbar navbar-expand-lg py-3 border" data-bs-theme="">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-
-        <!-- Enlace de la navbar a la página de inicio del panel de control 
-        <a class="navbar-item" href="<?php echo APP_URL; ?>dashboard/">
-             Logo de la empresa 
-            <img src="<?php echo APP_URL; ?>app/views/img/blogo.png" alt="" width="112" height="28" title="Borgatta">
-        </a>
--->
-
-        <!-- Botón para desplegar la navbar en dispositivos móviles -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <a class="navbar-brand" href="<?php echo APP_URL; ?>dashboard/">B.I.</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-
-        <!-- Contenedor para los elementos de la navbar que se colapsarán en dispositivos móviles -->
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="collapse navbar-collapse" id="navbarContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-                <!-- Enlace a la página de inicio -->
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="<?php echo APP_URL; ?>dashboard/">BORGATTA INGENIERÍA</a>
-                </li>
-
-                <!-- Menú desplegable para las acciones relacionadas con los usuarios -->
                 <?php if ($_SESSION['permiso'] == 1) { ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Usuarios
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userNew/">Crear Nuevo usuario</a></li>
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userList/">Lista de Usuarios</a></li>
-                        </ul>
-                    </li>
-                <?php } ?>
-
-
-                    <!-- Menú desplegable para las acciones relacionadas con los productos -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Productos
-                    </a>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Usuarios</a>
                     <ul class="dropdown-menu">
-                        <?php if ($_SESSION['permiso'] == 1) { ?>
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productNew/">Alta de Artículos Nuevos</a></li>
-                        <?php } ?>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productList/">Lista de Artículos</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productSearch/">Buscar Artículos</a></li>
-                        <!--<li><a class="dropdown-item" href="http://localhost/borgattaingenieria/busqueda.php">Busqueda Rapída</a></li>-->
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userNew/">Crear Nuevo usuario</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userList/">Lista de Usuarios</a></li>
                     </ul>
                 </li>
-
-
-                <!-- Menú desplegable para las acciones relacionadas con los movimientos -->
+                <?php } ?>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Productos</a>
+                    <ul class="dropdown-menu">
+                        <?php if ($_SESSION['permiso'] == 1) { ?>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productNew/">Alta de Artículos Nuevos</a></li>
+                        <?php } ?>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productList/">Lista de Artículos</a></li>
+                       <!-- <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productSearch/">Buscar Artículos</a></li> -->
+                    </ul>
+                </li>
                 <?php if ($_SESSION['permiso'] == 1) { ?>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Movimientos
-                    </a>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Movimientos</a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movList/">Consultar Todos</a></li>
                         <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movSearch/">Buscar por nombre</a></li>
                         <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movSearch2/">Buscar por movimiento</a></li>
                     </ul>
-
                 </li>
                 <?php } ?>
-
-                <!-- Menú desplegable para las acciones relacionadas con los proveedores -->
                 <?php if ($_SESSION['permiso'] == 1) { ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Proveedores
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>provNew/">Nuevo</a></li>
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>provList/">Lista</a></li>
-                        </ul>
-                    </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Proveedores</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>provNew/">Nuevo</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>provList/">Lista</a></li>
+                    </ul>
+                </li>
                 <?php } ?>
-
-                <!-- Menú desplegable para las acciones relacionadas con los proveedores -->
                 <?php if ($_SESSION['permiso'] == 1) { ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Ordenes de Compra
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderCNew/">Nueva orden</a></li>
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderCPNew/">Alta de productos en orden</a></li>
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderSearch/">Consultar</a></li>
-                        </ul>
-                    </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Ordenes de Compra</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderCNew/">Nueva orden</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderCPNew/">Alta de productos en orden</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderSearch/">Consultar</a></li>
+                    </ul>
+                </li>
                 <?php } ?>
-                 <!-- Menú desplegable para las acciones relacionadas con los proveedores -->
-                 <?php if ($_SESSION['permiso'] == 1) { ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Ordenes de Gasto
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderGNew/">Nueva orden</a></li>
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderGPNew/">Alta de productos en orden</a></li>
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderGSearch/">Consultar</a></li>
-                        </ul>
-                    </li>
-                <?php } ?>
-
-                <!-- Menú desplegable para las acciones relacionadas con los proveedores -->
                 <?php if ($_SESSION['permiso'] == 1) { ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Nota de Entrada
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaENew/">Nueva Nota</a></li>
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaEPNew/">Alta de Productos en Nota</a></li>
-                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaESearch/">Consultar</a></li>
-                        </ul>
-                    </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Ordenes de Gasto</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderGNew/">Nueva orden</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderGPNew/">Alta de productos en orden</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderGSearch/">Consultar</a></li>
+                    </ul>
+                </li>
                 <?php } ?>
-
-
+                <?php if ($_SESSION['permiso'] == 1) { ?>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Nota de Entrada</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaENew/">Nueva Nota</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaEPNew/">Alta de Productos en Nota</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaESearch/">Consultar</a></li>
+                    </ul>
+                </li>
+                <?php } ?>
+                <?php if ($_SESSION['permiso'] == 1) { ?>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Facturas</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>facturaNew/">Capturar Factura</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>facturaPNew/">Alta</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>facturaSearch/">Consultar e imprimir</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movFactura/">Sacar Reporte</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>venceFactura/">Vencimiento de facturas</a></li>
+                    </ul>
+                </li>
+                <?php } ?>
             </ul>
-
-            <!-- Botón para cambiar el tema (light, dark, auto) -->
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item dropdown w-25" data-bs-theme="auto">
+                <li class="nav-item dropdown" data-bs-theme="auto">
                     <button class="btn btn-link nav-link py-1 px-0 px-lg-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static">
                         <svg class="bi my-1 theme-icon-active" width="16" height="16" fill="currentColor">
                             <use href="#circle-half"></use>
                         </svg>
                         <span class="d-lg-none ms-2">Toggle theme</span>
                     </button>
-
-                    <!-- Menú desplegable para seleccionar el tema -->
                     <ul class="dropdown-menu dropdown-menu-end px-1" aria-labelledby="bd-theme">
                         <li>
                             <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light">
@@ -169,31 +127,17 @@
                     </ul>
                 </li>
             </ul>
-
-            <!-- Información del usuario y opciones para la cuenta de usuario -->
             <ul class="navbar-nav mb-2 mb-lg-0">
-                <li class="nav-item dropdown w-25" data-bs-theme="auto">
+                <li class="nav-item dropdown" data-bs-theme="auto">
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <!-- Muestra la foto del usuario. Si no tiene una foto personalizada, muestra una foto por defecto. -->
-                            <?php
-                            if (is_file("./app/views/fotos/" . $_SESSION['foto'])) {
-                                echo '<img class="img-fluid img-thumbnail" width="50" height="30" src="' . APP_URL . 'app/views/fotos/' . $_SESSION['foto'] . '">';
-                            } else {
-                                echo '<img class="img-fluid img-thumbnail" width="50" height="30" src="' . APP_URL . 'app/views/fotos/default.png">';
-                            }
-                            ?>
-                            <!-- Menú desplegable con opciones para la cuenta del usuario -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <?php echo $_SESSION['usuario']; ?>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="<?php echo APP_URL . "userUpdate/" . $_SESSION['id'] . "/"; ?>">Mi
-                                            cuenta</a></li>
-                                    <li><a class="dropdown-item" href="<?php echo APP_URL . "userPhoto/" . $_SESSION['id'] . "/"; ?>">Mi
-                                            foto</a></li>
-                                    <!-- Enlace para cerrar la sesión -->
+                                    <li><a class="dropdown-item" href="<?php echo APP_URL . "userUpdate/" . $_SESSION['id'] . "/"; ?>">Mi cuenta</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo APP_URL . "userPhoto/" . $_SESSION['id'] . "/"; ?>">Mi foto</a></li>
                                     <li><a class="dropdown-item" href="<?php echo APP_URL . "logOut/"; ?>" id="btn_exit">Salir</a>
                                     </li>
                                 </ul>
@@ -204,3 +148,35 @@
         </div>
     </div>
 </nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const themeSwitcher = document.getElementById('bd-theme');
+        const storedTheme = localStorage.getItem('theme') || 'auto';
+
+        const getPreferredTheme = () => {
+            if (storedTheme === 'auto') {
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            return storedTheme;
+        };
+
+        const setTheme = theme => {
+            if (theme === 'auto') {
+                document.documentElement.setAttribute('data-bs-theme', getPreferredTheme());
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', theme);
+            }
+            localStorage.setItem('theme', theme);
+        };
+
+        setTheme(storedTheme);
+
+        themeSwitcher.addEventListener('click', event => {
+            const theme = event.target.getAttribute('data-bs-theme-value');
+            if (theme) {
+                setTheme(theme);
+            }
+        });
+    });
+</script>

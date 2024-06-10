@@ -52,9 +52,9 @@
                
                 <!-- Campo de selección para el nombre de empleado -->
                 <div class="form-group mt-3">
-                    <label for="id_almacen_origen" class="form-label">Nombre de empleado que solicita:</label>
+                    <label for="id_almacen_origen" class="form-label">Nombre de empleado que registra:</label>
                     <select class='form-control' name='id_empleado' id='id_empleado' required>
-                        <option value="">Empleado que solicita</option>
+                        <option value="">Empleado que registra</option>
                         <?php echo $opcionesEmpleados; ?>
                     </select>
                 </div>
