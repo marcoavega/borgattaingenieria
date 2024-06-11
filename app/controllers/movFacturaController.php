@@ -244,16 +244,24 @@ class movFacturaController extends mainModel
     <form method="POST" action="' . $url . '">
         <div class="row mb-3">
             <div class="col-md-3">
-                <input type="date" class="form-control" name="fechaInicio" placeholder="Fecha Inicio" value="' . htmlspecialchars($fechaInicio) . '">
+                <label for="fechaInicio" class="form-label">Fecha de Inicio:</label>
+                <input type="date" class="form-control" name="fechaInicio" id="fechaInicio" placeholder="Fecha de Inicio" value="' . htmlspecialchars($fechaInicio) . '">
             </div>
             <div class="col-md-3">
-                <input type="date" class="form-control" name="fechaFin" placeholder="Fecha Fin" value="' . htmlspecialchars($fechaFin) . '">
+                <label for="fechaFin" class="form-label">Fecha de Fin:</label>
+                <input type="date" class="form-control" name="fechaFin" id="fechaFin" placeholder="Fecha de Fin" value="' . htmlspecialchars($fechaFin) . '">
             </div>
             <div class="col-md-3">
-                <input type="number" step="0.01" class="form-control" name="precioDolar" placeholder="Tipo de cambio del dólar" value="' . htmlspecialchars($precioDolar) . '">
+                <label for="precioDolar" class="form-label">Tipo de cambio del dólar:</label>
+                <input type="number" step="0.01" class="form-control" name="precioDolar" id="precioDolar" placeholder="Precio del Dólar" value="' . htmlspecialchars($precioDolar) . '">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary">Filtrar</button>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <p class="form-text">Seleccione las fechas de inicio y fin para filtrar las facturas. Además, puede ajustar el tipo de cambio del dólar.</p>
             </div>
         </div>
     </form>';
@@ -371,7 +379,7 @@ class movFacturaController extends mainModel
 
 <thead>
              <tr>
-                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Número de Factura</th>
+                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Registro de Factura</th>
                  <th style="text-align: center; border: 1px solid #000; padding: 5px;">Num Factura</th>
                  <th style="text-align: center; border: 1px solid #000; padding: 5px;">Proveedor</th>
                  <th style="text-align: center; border: 1px solid #000; padding: 5px;">RFC</th>
@@ -402,7 +410,7 @@ class movFacturaController extends mainModel
             <table class="table table-striped table-bordered">
                 <thead class="table-dark">
                     <tr>
-                        <th style="text-align: center; border: 1px solid #000; padding: 5px;">Número de Factura</th>
+                        <th style="text-align: center; border: 1px solid #000; padding: 5px;">Registro de Factura</th>
                  <th style="text-align: center; border: 1px solid #000; padding: 5px;">Num Factura</th>
                  <th style="text-align: center; border: 1px solid #000; padding: 5px;">Proveedor</th>
                  <th style="text-align: center; border: 1px solid #000; padding: 5px;">RFC</th>
@@ -463,7 +471,7 @@ class movFacturaController extends mainModel
        function imprimirArea(id) {
     var contenido = document.getElementById(id).innerHTML;
     var ventanaImpresion = window.open("", "_blank");
-    ventanaImpresion.document.write("<html><head><title>' . $rows['num_factura'] . '</title>");
+    ventanaImpresion.document.write("<html><head><title>Reporte de Facturas Desde ' . htmlspecialchars($fechaInicio) . ' hasta ' . htmlspecialchars($fechaFin) . '</title>");
     
     // Aquí puedes agregar tus estilos CSS
     ventanaImpresion.document.write("<style>");

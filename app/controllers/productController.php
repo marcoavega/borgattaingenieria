@@ -89,6 +89,21 @@ class productController extends mainModel
 
         return $opciones_almacenes;
     }
+
+    public function obtenerAlmacenes()
+    {
+        $consulta_almacenes = "SELECT * FROM almacenes ORDER BY id_almacen";
+        $datos_almacenes = $this->ejecutarConsulta($consulta_almacenes);
+        $opciones_almacenes = "";
+
+        while ($almacenes = $datos_almacenes->fetch()) {
+            $opciones_almacenes .= '<option value="' . $almacenes['id_almacen'] . '">'
+                . $almacenes['nombre_almacen'] . '</option>';
+        }
+
+        return $opciones_almacenes;
+    }
+
     public function obtenerOpcionesUsuario()
     {
         $consulta_usuario = "SELECT * FROM usuario";
@@ -301,8 +316,8 @@ if ($productoResult['success']) {
         return json_encode($alerta);
     }
 
-    // Inserción de stock de 0 para los almacenes
-    $almacenesAdicionales = [2,3,4,5,6,7];
+    // Inserción de stock para los almacenes
+    $almacenesAdicionales = [2,3,4,5,6,7,8,9];
     foreach ($almacenesAdicionales as $id_almacen) {
         $datos_stock_almacen_adicional = [
             ["campo_nombre" => "id_producto", "campo_marcador" => ":IdProducto", "campo_valor" => $id_producto_recien_insertado],
@@ -372,7 +387,9 @@ return json_encode($alerta);
             SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Dental Trade' THEN stock_almacen.stock ELSE 0 END) AS stock_dental,
             SUM(CASE WHEN almacenes.nombre_almacen = 'Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_terminado,
             SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Radiotecnologia Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_rtproducto,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ventas' THEN stock_almacen.stock ELSE 0 END) AS stock_ventas
+            SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ventas' THEN stock_almacen.stock ELSE 0 END) AS stock_ventas,
+            SUM(CASE WHEN almacenes.nombre_almacen = 'Descarte de Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_descarte_terminado,
+            SUM(CASE WHEN almacenes.nombre_almacen = 'Descarte de Desgaste' THEN stock_almacen.stock ELSE 0 END) AS stock_descarte_desgaste
         FROM productos
         JOIN categorias ON productos.id_categoria = categorias.id_categoria
         JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
@@ -436,7 +453,19 @@ return json_encode($alerta);
                         <p class="card-text">Precio: ' . $rows['precio'] . '</p>
                         <p class="card-text">Moneda: ' . $rows['nombre_moneda'] . '</p>
                         <p class="card-text">Unidad de Medida: ' . $rows['nombre_unidad'] . '</p>
-                        <p class="card-text">Stock Almacén General: ' . $rows['stock_general'] . '<br> Almacén Maquinados: ' . $rows['stock_maquinados'] . '<br> Almacén Ensamble: ' . $rows['stock_ensamble'] . ' <br> Almacen Dental Trade: ' . $rows['stock_dental'] . ' <br> Almacen Producto Terminado: ' . $rows['stock_rtproducto'] . ' <br> area de ventas: ' . $rows['stock_ventas'] . '</p>
+
+                        <p class="card-text">
+                        Stock Almacén General: ' . $rows['stock_general'] . 
+                        '<br> Almacén Maquinados: ' . $rows['stock_maquinados'] . 
+                        '<br> Almacén Ensamble: ' . $rows['stock_ensamble'] . 
+                        '<br> Almacen Dental Trade: ' . $rows['stock_dental'] . 
+                        '<br> Almacen Producto Terminado : ' . $rows['stock_terminado'] .
+                        '<br> Almacen Radiotecnologia Producto Terminado : ' . $rows['stock_rtproducto'] .  
+                        '<br> area de ventas: ' . $rows['stock_ventas'] . 
+                        '<br> Descartados por producto terminado: ' . $rows['stock_descarte_terminado'] .
+                        '<br> Descartados por desgaste o uso: ' . $rows['stock_descarte_desgaste'] .
+                        '</p>
+
                         <p class="card-text">Categoría: ' . $rows['nombre_categoria'] . '</p>
                         <p class="card-text">Sub-Categoría: ' . $rows['nombre_subcategoria'] . '</p>
                         <p class="card-text">Proveedor: ' . $rows['nombre_proveedor'] . '</p>
@@ -703,6 +732,7 @@ return json_encode($alerta);
     {
         $id = $this->limpiarCadena($_POST['id_producto']);
         $nuevoStock = $this->limpiarCadena($_POST['stock']);  // La cantidad adicional de stock a agregar
+        $almacen = $this->limpiarCadena($_POST['almacen']);
     
         // Verificando producto
         $datos = $this->ejecutarConsulta("SELECT * FROM productos WHERE id_producto='$id'");
@@ -723,12 +753,12 @@ return json_encode($alerta);
         $actualizarProducto = $this->ejecutarConsulta("UPDATE productos SET stock = '$stockFinal' WHERE id_producto='$id'");
     
         // Actualizar el stock en la tabla stock_almacenes para el almacén general (id_almacen = 1)
-        $datosAlmacen = $this->ejecutarConsulta("SELECT stock FROM stock_almacen WHERE id_producto='$id' AND id_almacen = 1");
+        $datosAlmacen = $this->ejecutarConsulta("SELECT stock FROM stock_almacen WHERE id_producto='$id' AND id_almacen = $almacen");
         if ($datosAlmacen->rowCount() > 0) {
             $filaAlmacen = $datosAlmacen->fetch();
             $stockAlmacenActual = $filaAlmacen['stock'];
             $stockAlmacenFinal = $stockAlmacenActual + $nuevoStock;
-            $actualizarAlmacen = $this->ejecutarConsulta("UPDATE stock_almacen SET stock = '$stockAlmacenFinal' WHERE id_producto='$id' AND id_almacen = 1");
+            $actualizarAlmacen = $this->ejecutarConsulta("UPDATE stock_almacen SET stock = '$stockAlmacenFinal' WHERE id_producto='$id' AND id_almacen = $almacen");
         }
     
         if ($actualizarProducto && $actualizarAlmacen) {
@@ -746,6 +776,7 @@ return json_encode($alerta);
                 "icono" => "error"
             ]);
         }
+
     }
     
 

@@ -8,7 +8,10 @@
 <div class="container py-4">
     <?php
     use app\controllers\productController;
+
     $insProduct = new productController();
+
+    $opcionesAlmacen = $insProduct->obtenerAlmacenes();
 
     // Obtiene el ID del producto de la URL o redirecciona si no está presente
     $id = isset($url[1]) ? $insLogin->limpiarCadena($url[1]) : null;
@@ -30,9 +33,19 @@
     include "./app/views/inc/btn_back2.php";
     ?>
     <!-- Formulario de edición de producto -->
-    <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/productAjax.php" method="POST" autocomplete="off">
+    <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/productAjax.php"
+        method="POST" autocomplete="off">
         <input type="hidden" name="modulo_product" value="actualizarStock">
         <input type="hidden" name="id_producto" value="<?php echo $datos['id_producto']; ?>">
+
+        <!-- Campo de selección para el almacen -->
+        <div class="mb-3">
+            <label for="almacen" class="form-label">Selecciones el almacen</label>
+            <select class="form-control" name="almacen" id="almacen" required>
+                <option value="">Seleccione un almacen</option>
+                <?php echo $opcionesAlmacen; ?>
+            </select>
+        </div>
 
         <!-- Resto del formulario como antes -->
         <div class="mb-3">
