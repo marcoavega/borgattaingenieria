@@ -67,6 +67,7 @@ if (isset($_GET['views'])) {
         }
 
         // Mostrando la barra de navegación y la vista principal
+        require_once "./app/views/inc/navbar2.php";
         require_once "./app/views/inc/navbar.php";
         require_once $vista;
     }

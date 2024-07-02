@@ -59,6 +59,15 @@
                             "movFactura",
                             "productoTerminado",
                             "venceFactura",
+                            "controlProcesos",
+                            "regNumeroLote",
+                            "consultaNumeroLote",
+                            "regNumeroSerie",
+                            "consultaNumeroSerie",
+                            "salidasProductoTerminado",
+                            "salidaPTNew",
+                            "salidaPTSearch",
+                            "numSerSearch"
                         ];
 
             // Comprueba si la vista solicitada está en la lista blanca

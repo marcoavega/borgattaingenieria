@@ -7,7 +7,7 @@ use app\models\mainModel;
 
 class notaEntradaController extends mainModel
 {
-    public function obtenerOpcionesProveedores()
+   public function obtenerOpcionesProveedores()
     {
         $consulta_proveedores = "SELECT * FROM proveedores ORDER BY nombre_proveedor";
         $datos_proveedores = $this->ejecutarConsulta($consulta_proveedores);
@@ -66,7 +66,7 @@ class notaEntradaController extends mainModel
 
         return $opciones_notas;
     }
-
+    
     /*----------  Controlador registrar usuario  ----------*/
     public function registrarNotaEntradaControlador()
     {
@@ -151,7 +151,7 @@ class notaEntradaController extends mainModel
     $busqueda = $this->limpiarCadena($busqueda);
     $tabla = "";
 
-    // Consulta con JOIN para obtener el nombre del proveedor, empleado y unidad de medida
+    // Consulta con JOIN para obtener
     $consulta_datos = "
         SELECT 
             notas_entrada.id_nota_entrada, 

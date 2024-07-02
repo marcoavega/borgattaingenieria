@@ -49,7 +49,7 @@ class movController2 extends mainModel
 
     public function obtenerMovimientos()
     {
-        $consulta_movimientos = "SELECT * FROM movimientos ORDER BY id_movimiento";
+        $consulta_movimientos = "SELECT * FROM movimientos ORDER BY id_movimiento desc";
         $datos_movimientos = $this->ejecutarConsulta($consulta_movimientos);
         $opciones_movimientos = "";
 
@@ -94,7 +94,7 @@ class movController2 extends mainModel
      JOIN
      empleados ON movimientos.id_empleado = empleados.id_empleado
      WHERE
-     movimientos.id_movimiento LIKE '%$busqueda%'
+     movimientos.id_movimiento = '$busqueda'
      GROUP BY
      movimientos.id_movimiento
      ORDER BY

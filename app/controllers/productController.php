@@ -382,8 +382,8 @@ return json_encode($alerta);
             tipos_moneda.nombre_moneda,
             sub_categorias.nombre_subcategoria,
             SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen General' THEN stock_almacen.stock ELSE 0 END) AS stock_general,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen de Maquinado' THEN stock_almacen.stock ELSE 0 END) AS stock_maquinados,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen de Ensamble' THEN stock_almacen.stock ELSE 0 END) AS stock_ensamble,
+            SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Maquinado' THEN stock_almacen.stock ELSE 0 END) AS stock_maquinados,
+            SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ensamble' THEN stock_almacen.stock ELSE 0 END) AS stock_ensamble,
             SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Dental Trade' THEN stock_almacen.stock ELSE 0 END) AS stock_dental,
             SUM(CASE WHEN almacenes.nombre_almacen = 'Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_terminado,
             SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Radiotecnologia Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_rtproducto,
@@ -495,18 +495,18 @@ return json_encode($alerta);
         <table class="table table-bordered table-striped table-hover" id="tablaProductos">
             <thead class="thead-dark">
                 <tr>
-                    <th>Imagen</th>
-                    <th>Id</th>
-                    <th>Código</th>
-                    <th>Nombre</th>
-                    <th>Ubicación</th>
-                    <th>Precio</th>
-                    <th>Moneda</th>
-                    <th>Unidad de Medida</th>
-                    <th>Stock Almacén General</th>
-                    <th>Stock Maquinados</th>
-                    <th>Stock Ensamble</th>
-                    <th>Categoría</th>
+                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">Imagen</th>
+                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">Id</th>
+                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">Código</th>
+                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">Nombre</th>
+                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">Ubicación</th>
+                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">Precio</th>
+                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">Moneda</th>
+                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">Unidad de Medida</th>
+                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">Stock Almacén General</th>
+                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">Stock Maquinados</th>
+                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">Stock Ensamble</th>
+                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">Categoría</th>
                 </tr>
             </thead>
             <tbody id="productTableBody">';
@@ -516,17 +516,17 @@ return json_encode($alerta);
             $tabla .= '
             <tr class="lista-item">
                 <td><img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="img-thumbnail" alt="..." style="width: 50px; height: 50px;"></td>
-                <td>' . htmlspecialchars($rows['id_producto']) . '</td>
-                <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
-                <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
-                <td>' . htmlspecialchars($rows['ubicacion']) . '</td>
-                <td>' . htmlspecialchars($rows['precio']) . '</td>
-                <td>' . htmlspecialchars($rows['nombre_moneda']) . '</td>
-                <td>' . htmlspecialchars($rows['nombre_unidad']) . '</td>
-                <td>' . htmlspecialchars($rows['stock_general']) . '</td>
-                <td>' . htmlspecialchars($rows['stock_maquinados']) . '</td>
-                <td>' . htmlspecialchars($rows['stock_ensamble']) . '</td>
-                <td>' . htmlspecialchars($rows['nombre_categoria']) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['id_producto']) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['codigo_producto']) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['nombre_producto']) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['ubicacion']) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['precio']) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['nombre_moneda']) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['nombre_unidad']) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['stock_general']) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['stock_maquinados']) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['stock_ensamble']) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['nombre_categoria']) . '</td>
             </tr>';
         }
     } else {

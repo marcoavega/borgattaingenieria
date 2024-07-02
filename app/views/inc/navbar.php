@@ -1,182 +1,198 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
     <!-- Definición de varios íconos (circle-half, moon-stars-fill, sun-fill) -->
 </svg>
+<style>
+        .navbar-dark .navbar-brand,
+        .navbar-dark .dropdown-item {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="<?php echo APP_URL; ?>dashboard/">B.I.</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        .navbar-dark .navbar-brand:hover,
+        .navbar-dark .dropdown-item:hover {
+            background-color: #495057;
+            color: #ffffff;
+        }
+    </style>
+<div class="d-flex">
+    <nav class="sidebar navbar-dark bg-dark flex-shrink-0" style="height: 100vh; position: fixed; top: 0; left: 0; width: 250px;">
+        <div style="height: 100%; overflow-y: auto; padding-top: 5%;">
+            <div class="accordion" id="accordionSidebar">
                 <?php if ($_SESSION['permiso'] == 1) { ?>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Usuarios</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userNew/">Crear Nuevo usuario</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userList/">Lista de Usuarios</a></li>
-                    </ul>
-                </li>
-                <?php } ?>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Productos</a>
-                    <ul class="dropdown-menu">
-                        <?php if ($_SESSION['permiso'] == 1) { ?>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productNew/">Alta de Artículos Nuevos</a></li>
-                        <?php } ?>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productList/">Lista de Artículos</a></li>
-                       <!-- <li><a class="dropdown-item" href="<?php echo APP_URL; ?>productSearch/">Buscar Artículos</a></li> -->
-                    </ul>
-                </li>
-                <?php if ($_SESSION['permiso'] == 1) { ?>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Movimientos</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movList/">Consultar Todos</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movSearch/">Buscar por nombre</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movSearch2/">Buscar por movimiento</a></li>
-                    </ul>
-                </li>
-                <?php } ?>
-                <?php if ($_SESSION['permiso'] == 1) { ?>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Proveedores</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>provNew/">Nuevo</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>provList/">Lista</a></li>
-                    </ul>
-                </li>
-                <?php } ?>
-                <?php if ($_SESSION['permiso'] == 1) { ?>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Ordenes de Compra</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderCNew/">Nueva orden</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderCPNew/">Alta de productos en orden</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderSearch/">Consultar</a></li>
-                    </ul>
-                </li>
-                <?php } ?>
-                <?php if ($_SESSION['permiso'] == 1) { ?>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Ordenes de Gasto</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderGNew/">Nueva orden</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderGPNew/">Alta de productos en orden</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderGSearch/">Consultar</a></li>
-                    </ul>
-                </li>
-                <?php } ?>
-                <?php if ($_SESSION['permiso'] == 1) { ?>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Nota de Entrada</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaENew/">Nueva Nota</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaEPNew/">Alta de Productos en Nota</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaESearch/">Consultar</a></li>
-                    </ul>
-                </li>
-                <?php } ?>
-                <?php if ($_SESSION['permiso'] == 1) { ?>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Facturas</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>facturaNew/">Capturar Factura</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>facturaPNew/">Alta</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>facturaSearch/">Consultar e imprimir</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movFactura/">Sacar Reporte</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>venceFactura/">Vencimiento de facturas</a></li>
-                    </ul>
-                </li>
-                <?php } ?>
-            </ul>
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item dropdown" data-bs-theme="auto">
-                    <button class="btn btn-link nav-link py-1 px-0 px-lg-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static">
-                        <svg class="bi my-1 theme-icon-active" width="16" height="16" fill="currentColor">
-                            <use href="#circle-half"></use>
-                        </svg>
-                        <span class="d-lg-none ms-2">Toggle theme</span>
+                    <button class="navbar-brand btn btn-link text-white" onclick="location.href='<?php echo APP_URL; ?>dashboard/';">
+                        BORGATTA INGENIERÍA
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end px-1" aria-labelledby="bd-theme">
-                        <li>
-                            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light">
-                                <svg class="bi me-2 opacity-50 theme-icon" width="16" height="16" fill="currentColor">
-                                    <use href="#sun-fill"></use>
-                                </svg>
-                                Light
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark">
-                                <svg class="bi me-2 opacity-50 theme-icon" width="16" height="16" fill="currentColor">
-                                    <use href="#moon-stars-fill"></use>
-                                </svg>
-                                Dark
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto">
-                                <svg class="bi me-2 opacity-50 theme-icon" width="16" height="16" fill="currentColor">
-                                    <use href="#circle-half"></use>
-                                </svg>
-                                Auto
-                            </button>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-            <ul class="navbar-nav mb-2 mb-lg-0">
-                <li class="nav-item dropdown" data-bs-theme="auto">
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <?php echo $_SESSION['usuario']; ?>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="<?php echo APP_URL . "userUpdate/" . $_SESSION['id'] . "/"; ?>">Mi cuenta</a></li>
-                                    <li><a class="dropdown-item" href="<?php echo APP_URL . "userPhoto/" . $_SESSION['id'] . "/"; ?>">Mi foto</a></li>
-                                    <li><a class="dropdown-item" href="<?php echo APP_URL . "logOut/"; ?>" id="btn_exit">Salir</a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                </li>
-            </ul>
+                <?php } ?>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingUsuarios">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUsuarios" aria-expanded="false" aria-controls="collapseUsuarios">
+                            Usuarios
+                        </button>
+                    </h2>
+                    <div id="collapseUsuarios" class="accordion-collapse collapse" aria-labelledby="headingUsuarios" data-bs-parent="#accordionSidebar">
+                        <div class="accordion-body">
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>userNew/">Crear Nuevo usuario</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>userList/">Lista de Usuarios</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingProductos">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProductos" aria-expanded="false" aria-controls="collapseProductos">
+                            Productos
+                        </button>
+                    </h2>
+                    <div id="collapseProductos" class="accordion-collapse collapse" aria-labelledby="headingProductos" data-bs-parent="#accordionSidebar">
+                        <div class="accordion-body">
+                            <?php if ($_SESSION['permiso'] == 1) { ?>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>productNew/">Alta de Artículos Nuevos</a>
+                            <?php } ?>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>productList/">Lista de Artículos</a>
+                        </div>
+                    </div>
+                </div>
+
+                <?php if ($_SESSION['permiso'] == 1) { ?>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingMovimientos">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMovimientos" aria-expanded="false" aria-controls="collapseMovimientos">
+                            Movimientos
+                        </button>
+                    </h2>
+                    <div id="collapseMovimientos" class="accordion-collapse collapse" aria-labelledby="headingMovimientos" data-bs-parent="#accordionSidebar">
+                        <div class="accordion-body">
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>movList/">Consultar Todos</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>movSearch/">Buscar por nombre</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>movSearch2/">Buscar por movimiento</a>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+
+                <?php if ($_SESSION['permiso'] == 1) { ?>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingProveedores">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProveedores" aria-expanded="false" aria-controls="collapseProveedores">
+                            Proveedores
+                        </button>
+                    </h2>
+                    <div id="collapseProveedores" class="accordion-collapse collapse" aria-labelledby="headingProveedores" data-bs-parent="#accordionSidebar">
+                        <div class="accordion-body">
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>provNew/">Nuevo</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>provList/">Lista</a>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+
+                <?php if ($_SESSION['permiso'] == 1) { ?>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOrdenesCompra">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrdenesCompra" aria-expanded="false" aria-controls="collapseOrdenesCompra">
+                            Ordenes de Compra
+                        </button>
+                    </h2>
+                    <div id="collapseOrdenesCompra" class="accordion-collapse collapse" aria-labelledby="headingOrdenesCompra" data-bs-parent="#accordionSidebar">
+                        <div class="accordion-body">
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>orderCNew/">Nueva orden</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>orderCPNew/">Alta de productos en orden</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>orderSearch/">Consultar</a>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+
+                <?php if ($_SESSION['permiso'] == 1) { ?>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOrdenesGasto">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrdenesGasto" aria-expanded="false" aria-controls="collapseOrdenesGasto">
+                            Ordenes de Gasto
+                        </button>
+                    </h2>
+                    <div id="collapseOrdenesGasto" class="accordion-collapse collapse" aria-labelledby="headingOrdenesGasto" data-bs-parent="#accordionSidebar">
+                        <div class="accordion-body">
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>orderGNew/">Nueva orden</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>orderGPNew/">Alta de productos en orden</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>orderGSearch/">Consultar</a>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+
+                <?php if ($_SESSION['permiso'] == 1) { ?>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingNotaEntrada">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNotaEntrada" aria-expanded="false" aria-controls="collapseNotaEntrada">
+                            Nota de Entrada
+                        </button>
+                    </h2>
+                    <div id="collapseNotaEntrada" class="accordion-collapse collapse" aria-labelledby="headingNotaEntrada" data-bs-parent="#accordionSidebar">
+                        <div class="accordion-body">
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>notaENew/">Nueva Nota</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>notaEPNew/">Alta de Productos en Nota</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>notaESearch/">Consultar</a>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+
+                <?php if ($_SESSION['permiso'] == 1) { ?>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingFacturas">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFacturas" aria-expanded="false" aria-controls="collapseFacturas">
+                            Facturas
+                        </button>
+                    </h2>
+                    <div id="collapseFacturas" class="accordion-collapse collapse" aria-labelledby="headingFacturas" data-bs-parent="#accordionSidebar">
+                        <div class="accordion-body">
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>facturaNew/">Capturar Factura</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>facturaPNew/">Alta</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>facturaSearch/">Consultar e imprimir</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>movFactura/">Sacar Reporte</a>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+
+                <?php if ($_SESSION['permiso'] == 1) { ?>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingControlProcesos">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseControlProcesos" aria-expanded="false" aria-controls="collapseControlProcesos">
+                            Control de Procesos
+                        </button>
+                    </h2>
+                    <div id="collapseControlProcesos" class="accordion-collapse collapse" aria-labelledby="headingControlProcesos" data-bs-parent="#accordionSidebar">
+                        <div class="accordion-body">
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>regNumeroLote/">Registrar Número de Lote</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>consultaNumeroLote/">Consultar Números de Lote</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>regNumeroSerie/">Registar Número de Serie</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>consultaNumeroSerie/">Consultar Números de Serie</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>salidasProductoTerminado/">Registrar Salidas de Producto Terminado</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>salidaPTNew/">Registro Salidas de Numeros serie de Producto Terminado</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>salidaPTSearch/">Cosultar Vale de Salida</a>
+                            <a class="dropdown-item" href="<?php echo APP_URL; ?>numSerSearch/">Cosultar Registros</a>
+
+
+
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+            </div>
         </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-left: 250px;">
+        <?php
+        // Mostrando el contenido principal
+        if (isset($_GET['views'])) {
+            $url = explode("/", $_GET['views']);
+            $vista = $viewsController->obtenerVistasControlador($url[0]);
+            if ($vista != "login" && $vista != "404") {
+                require_once $vista;
+            }
+        }
+        ?>
     </div>
-</nav>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const themeSwitcher = document.getElementById('bd-theme');
-        const storedTheme = localStorage.getItem('theme') || 'auto';
-
-        const getPreferredTheme = () => {
-            if (storedTheme === 'auto') {
-                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            }
-            return storedTheme;
-        };
-
-        const setTheme = theme => {
-            if (theme === 'auto') {
-                document.documentElement.setAttribute('data-bs-theme', getPreferredTheme());
-            } else {
-                document.documentElement.setAttribute('data-bs-theme', theme);
-            }
-            localStorage.setItem('theme', theme);
-        };
-
-        setTheme(storedTheme);
-
-        themeSwitcher.addEventListener('click', event => {
-            const theme = event.target.getAttribute('data-bs-theme-value');
-            if (theme) {
-                setTheme(theme);
-            }
-        });
-    });
-</script>
+</div>

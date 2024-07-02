@@ -259,9 +259,11 @@ class movController extends mainModel
          $consulta_datos = "SELECT
              movimientos.id_movimiento,
              productos.nombre_producto,
+             productos.codigo_producto,
              origen.nombre_almacen AS nombre_almacen_origen,
              destino.nombre_almacen AS nombre_almacen_destino,
              empleados.nombre_empleado,
+             empleados.id_empleado,
              movimientos.cantidad,
              movimientos.nota_movimiento,
              movimientos.fecha_movimiento
@@ -301,22 +303,34 @@ class movController extends mainModel
          $tabla .= '
          <button class="btn btn-primary mb-3" onclick="imprimirArea(\'areaImprimir\')">Imprimir</button>
          <div id="areaImprimir">
-         <div class="text-center">
-             <h2>Reporte de Movimientos</h2>
-             <p>Desde ' . htmlspecialchars($fechaInicio) . ' hasta ' . htmlspecialchars($fechaFin) . '</p>
-         </div>
-         <div class="table-responsive">
-             <table class="table table-striped table-bordered">
-                 <thead class="table-dark">
-                     <tr>
-                         <th>Artículo</th>
-                         <th>Almacén origen</th>
-                         <th>Almacén destino</th>
-                         <th>Cantidad</th>
-                         <th>Nombre Empleado</th>
-                         <th>Fecha</th>
-                     </tr>
-                 </thead>
+          <div class="container-fluid"><div class="invoice">
+                 <div style="margin-top: 1px; font-size: 13px; border: 1px solid #000; padding: 5px;">
+                 <p style="font-size: 14px; text-align: center;"><strong>Reporte de Movimientos de Almacen <br> Desde ' . htmlspecialchars($fechaInicio) . ' hasta ' . htmlspecialchars($fechaFin) . '</strong></p>
+                 <div style="display: flex; align-items: center; justify-content: space-between;">
+                     <img src="' . APP_URL . 'app/views/fotos/logo_orden.png" alt="logo" style="width:200px; height:auto;">
+                     <div>
+                         <p style="font-size: 13px;"><strong>Formato:</strong>MA-12-F016</p>
+                     </div>
+                 </div>
+                     <p style="margin-top: 0; margin-bottom: 0; text-align: left;">RADIOTECNOLOGÍA INDUSTRIAL S.A. DE C.V.</p>
+                     <p style="margin-top: 0; margin-bottom: 0; text-align: left;">RFC: RIN070219R38</p>
+                     <p style="margin-top: 0; margin-bottom: 0; text-align: left;">Calle Puebla Sur. Manzana 4. Lote 5 Nave B Int. 2 Col. Jardín Industrial</p>
+                     <p style="margin-top: 0; margin-bottom: 0; text-align: left;">Ixtapaluca. Edo. de México, C.P. 56535</p>
+                 </div>
+
+<table class="table" style="width: 100%; padding-top: 10; font-size: 13px;">
+         <thead>
+             <tr>
+                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Código Producto</th>
+                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Artículo</th>
+                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Almacén origen</th>
+                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Almacén destino</th>
+                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Cantidad</th>
+                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Nombre Empleado</th>
+                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Fecha</th>
+             </tr>
+         </thead>
+
                  <tbody>';
  
          if ($total >= 1) {
@@ -324,12 +338,13 @@ class movController extends mainModel
                  $fechaFormateada = date('d/m/Y', strtotime($rows['fecha_movimiento']));
                  $tabla .= '
                      <tr>
-                         <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
-                         <td>' . htmlspecialchars($rows['nombre_almacen_origen']) . '</td>
-                         <td>' . htmlspecialchars($rows['nombre_almacen_destino']) . '</td>
-                         <td>' . htmlspecialchars($rows['cantidad']) . '</td>
-                         <td>' . htmlspecialchars($rows['nombre_empleado']) . '</td>
-                         <td>' . htmlspecialchars($fechaFormateada) . '</td>
+                         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['codigo_producto']) . '</td>
+                         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['nombre_producto']) . '</td>
+                         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['nombre_almacen_origen']) . '</td>
+                         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['nombre_almacen_destino']) . '</td>
+                         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['cantidad']) . '</td>
+                         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['nombre_empleado']) . '</td>
+                         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($fechaFormateada) . '</td>
                      </tr>';
              }
          } else {
@@ -340,26 +355,29 @@ class movController extends mainModel
                  </tbody>
              </table>
          </div>
-         </div>';
+         </div>
+          </div>
+        </div>';
  
          $tabla .= '
          <script>
-         function imprimirArea(id) {
-             var contenido = document.getElementById(id).innerHTML;
-             var ventanaImpresion = window.open("", "_blank");
-             ventanaImpresion.document.write("<html><head><title>Imprimir</title>");
-             ventanaImpresion.document.write("<style>");
-             ventanaImpresion.document.write("body,td { font-family: Arial, sans-serif; line-height: 1.6; text-align: center; }");
-             ventanaImpresion.document.write("table { border-collapse: collapse; width: 100%; }");
-             ventanaImpresion.document.write("th, td { border: 1px solid black; padding: 8px; }");
-             ventanaImpresion.document.write("th { background-color: #f2f2f2; }");
-             ventanaImpresion.document.write("</style>");
-             ventanaImpresion.document.write("</head><body>");
-             ventanaImpresion.document.write(contenido);
-             ventanaImpresion.document.write("</body></html>");
-             ventanaImpresion.document.close();
-             ventanaImpresion.print();
-         }
+          function imprimirArea(id) {
+    var contenido = document.getElementById(id).innerHTML;
+    var ventanaImpresion = window.open("", "_blank");
+    ventanaImpresion.document.write("<html><head><title> </title>");
+    
+    // Aquí puedes agregar tus estilos CSS
+    ventanaImpresion.document.write("<style>");
+    ventanaImpresion.document.write("body { font-family: Arial, sans-serif; line-height: 1; }");
+
+    ventanaImpresion.document.write("</style>");
+    
+    ventanaImpresion.document.write("</head><body>");
+    ventanaImpresion.document.write(contenido);
+    ventanaImpresion.document.write("</body></html>");
+    ventanaImpresion.document.close();
+    ventanaImpresion.print();
+}
          </script>';
      }
  
@@ -367,16 +385,192 @@ class movController extends mainModel
  }
  
 
+/*----------  Controlador listar  ----------*/
+public function listarMovControladorEmpleado($pagina, $registros, $url, $busqueda, $fechaInicio = '', $fechaFin = '', $id_empleado = '')
+{
+    $pagina = $this->limpiarCadena($pagina);
+    $registros = $this->limpiarCadena($registros);
+    $url = $this->limpiarCadena($url);
+    $url = APP_URL . $url . "/";
 
+    $busqueda = $this->limpiarCadena($busqueda);
+    $fechaInicio = isset($_POST['fechaInicio']) ? $this->limpiarCadena($_POST['fechaInicio']) : '';
+    $fechaFin = isset($_POST['fechaFin']) ? $this->limpiarCadena($_POST['fechaFin']) : '';
+    $id_empleado = isset($_POST['id_empleado']) ? $this->limpiarCadena($_POST['id_empleado']) : '';
 
+    $tabla = '
+<form method="POST" action="' . $url . '">
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <input type="date" class="form-control" name="fechaInicio" placeholder="Fecha Inicio" value="' . htmlspecialchars($fechaInicio) . '">
+        </div>
+        <div class="col-md-4">
+            <input type="date" class="form-control" name="fechaFin" placeholder="Fecha Fin" value="' . htmlspecialchars($fechaFin) . '">
+        </div>';
 
- 
+    // Consulta para obtener la lista de empleados
+    $consulta_empleados = "SELECT * FROM empleados ORDER BY nombre_empleado";
+    $datos_empleados = $this->ejecutarConsulta($consulta_empleados);
+    $opciones_empleados = "";
 
+    while ($empleados = $datos_empleados->fetch()) {
+        $selected = ($empleados['id_empleado'] == $id_empleado) ? 'selected' : '';
+        $opciones_empleados .= '<option value="' . $empleados['id_empleado'] . '" ' . $selected . '>'
+                             . htmlspecialchars($empleados['nombre_empleado']) . '</option>';
+    }
 
+    // Continuación del formulario en la cadena $tabla
+    $tabla .= '
+        <div class="col-md-4">
+            <select class="form-control" name="id_empleado" required>
+                <option value="">Seleccione Empleado</option>
+                ' . $opciones_empleados . '
+            </select>
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </div>
+</form>';
 
+    if (!empty($fechaInicio) && !empty($fechaFin)) {
+        $pagina = (isset($pagina) && $pagina > 0) ? (int) $pagina : 1;
+        $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
 
+        // Condiciones para la consulta SQL
+        $condiciones = "movimientos.fecha_movimiento BETWEEN '$fechaInicio' AND '$fechaFin'";
+        if (!empty($id_empleado)) {
+            $condiciones .= " AND empleados.id_empleado = $id_empleado";
+        }
 
+        $consulta_datos = "SELECT
+            movimientos.id_movimiento,
+            productos.nombre_producto,
+            productos.codigo_producto,
+            origen.nombre_almacen AS nombre_almacen_origen,
+            destino.nombre_almacen AS nombre_almacen_destino,
+            empleados.nombre_empleado,
+            empleados.id_empleado,
+            movimientos.cantidad,
+            movimientos.nota_movimiento,
+            movimientos.fecha_movimiento
+        FROM
+            movimientos
+        JOIN
+            productos ON movimientos.id_producto = productos.id_producto
+        JOIN
+            almacenes AS origen ON movimientos.id_almacen_origen = origen.id_almacen
+        JOIN
+            almacenes AS destino ON movimientos.id_almacen_destino = destino.id_almacen
+        JOIN
+            empleados ON movimientos.id_empleado = empleados.id_empleado
+        WHERE
+            $condiciones
+        GROUP BY
+            movimientos.id_movimiento
+        ORDER BY
+            movimientos.id_movimiento DESC
+        LIMIT
+            $inicio, $registros;";
 
+        $consulta_total = "SELECT COUNT(DISTINCT movimientos.id_movimiento)
+        FROM movimientos
+        JOIN productos ON movimientos.id_producto = productos.id_producto
+        JOIN almacenes AS origen ON movimientos.id_almacen_origen = origen.id_almacen
+        JOIN almacenes AS destino ON movimientos.id_almacen_destino = destino.id_almacen
+        JOIN empleados ON movimientos.id_empleado = empleados.id_empleado
+        WHERE
+            $condiciones;";
+
+        $datos = $this->ejecutarConsulta($consulta_datos);
+        $datos = $datos->fetchAll();
+
+        $total = $this->ejecutarConsulta($consulta_total);
+        $total = (int) $total->fetchColumn();
+
+        $tabla .= '
+<button class="btn btn-primary mb-3" onclick="imprimirArea(\'areaImprimir\')">Imprimir</button>
+<div id="areaImprimir">
+
+<div class="container-fluid"><div class="invoice">
+                 <div style="margin-top: 1px; font-size: 13px; border: 1px solid #000; padding: 5px;">
+                 <p style="font-size: 14px; text-align: center;"><strong>Consulta de Movimientos Por Fecha y Empleado
+<br> Desde ' . htmlspecialchars($fechaInicio) . ' hasta ' . htmlspecialchars($fechaFin) . '</strong></p>
+                 <div style="display: flex; align-items: center; justify-content: space-between;">
+                     <img src="' . APP_URL . 'app/views/fotos/logo_orden.png" alt="logo" style="width:200px; height:auto;">
+                     <div>
+                         <p style="font-size: 13px;"><strong>Formato: </strong>  MA-12-F016</p> 
+                         <p style="font-size: 13px;"><strong>Empleado: </strong>'.$datos[0]['nombre_empleado'].'</p>
+                     </div>
+                 </div>
+                     <p style="margin-top: 0; margin-bottom: 0; text-align: left;">RADIOTECNOLOGÍA INDUSTRIAL S.A. DE C.V.</p>
+                     <p style="margin-top: 0; margin-bottom: 0; text-align: left;">RFC: RIN070219R38</p>
+                     <p style="margin-top: 0; margin-bottom: 0; text-align: left;">Calle Puebla Sur. Manzana 4. Lote 5 Nave B Int. 2 Col. Jardín Industrial</p>
+                     <p style="margin-top: 0; margin-bottom: 0; text-align: left;">Ixtapaluca. Edo. de México, C.P. 56535</p>
+                 </div>
+
+<table class="table" style="width: 100%; padding-top: 10; font-size: 13px;">
+         <thead>
+             <tr>
+                <th style="text-align: center; border: 1px solid #000; padding: 5px;">Código Producto</th>
+                <th style="text-align: center; border: 1px solid #000; padding: 5px;">Artículo</th>
+                <th style="text-align: center; border: 1px solid #000; padding: 5px;">Almacén origen</th>
+                <th style="text-align: center; border: 1px solid #000; padding: 5px;">Almacén destino</th>
+                <th style="text-align: center; border: 1px solid #000; padding: 5px;">Cantidad</th>
+                <th style="text-align: center; border: 1px solid #000; padding: 5px;">Nombre Empleado</th>
+                <th style="text-align: center; border: 1px solid #000; padding: 5px;">Fecha</th>
+            </tr>
+        </thead>
+        <tbody>';
+
+        if ($total >= 1) {
+            foreach ($datos as $rows) {
+                $fechaFormateada = date('d/m/Y', strtotime($rows['fecha_movimiento']));
+                $tabla .= '
+<tr>
+    <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['codigo_producto']) . '</td>
+    <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['nombre_producto']) . '</td>
+    <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['nombre_almacen_origen']) . '</td>
+    <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['nombre_almacen_destino']) . '</td>
+    <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['cantidad']) . '</td>
+    <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($rows['nombre_empleado']) . '</td>
+    <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars($fechaFormateada) . '</td>
+</tr>';
+            }
+        } else {
+            $tabla .= '<tr><td colspan="7" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        }
+
+        $tabla .= '
+        </tbody>
+    </table>
+</div>
+</div>';
+
+        $tabla .= '
+<script>
+ function imprimirArea(id) {
+    var contenido = document.getElementById(id).innerHTML;
+    var ventanaImpresion = window.open("", "_blank");
+    ventanaImpresion.document.write("<html><head><title>Id_'.$datos[0]['id_movimiento'].'</title>");
+    
+    // Aquí puedes agregar tus estilos CSS
+    ventanaImpresion.document.write("<style>");
+    ventanaImpresion.document.write("body { font-family: Arial, sans-serif; line-height: 1; }");
+
+    ventanaImpresion.document.write("</style>");
+    
+    ventanaImpresion.document.write("</head><body>");
+    ventanaImpresion.document.write(contenido);
+    ventanaImpresion.document.write("</body></html>");
+    ventanaImpresion.document.close();
+    ventanaImpresion.print();
+}
+</script>';
+    }
+
+    return $tabla;
+}
 
 
 

@@ -19,7 +19,9 @@
             // Obtiene las opciones de órdenes de compra y unidades de medida
             $opcionesOrdenes = $insNotaEntradaProductos->obtenerOpcionesOrdenCompra();
             $opcionesUnidadesMedida = $insNotaEntradaProductos->obtenerOpcionesUnidadesMedida();
-            $opcionesNotasEntrada = $insNotaEntradaProductos->obtenerOpcionesNotas();
+            $opcionesNotasEntrada = $insNotaEntradaProductos->obtenerOpcionesNotas(); 
+            $opcionesProductos = $insNotaEntradaProductos->obtenerOpcionesProducto();
+            $opcionesProductosId = $insNotaEntradaProductos->obtenerOpcionesProductoId();
             ?>
 
             <?php
@@ -54,12 +56,23 @@
 
                     <div class="mb-3">
                         <label for="numero_partida" class="form-label">Numero de partida:</label>
-                        <input type="number" class="form-control" id="numero_partida" name="numero_partida" required>
+                        <input type="text" class="form-control" id="numero_partida" name="numero_partida" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="nombre_producto" class="form-label">Nombre Producto:</label>
-                        <textarea class="form-control" id="nombre_producto" name="nombre_producto" required></textarea>
+                        <label for="nombre_producto" class="form-label">Nombre de Producto</label>
+                        <select class="form-control" name="nombre_producto" id="nombre_producto" required>
+                            <option value="">Selecciona un Producto</option>
+                            <?php echo $opcionesProductos; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_producto" class="form-label">Confirmar nombre de Producto</label>
+                        <select class="form-control" name="id_producto" id="id_producto" required>
+                            <option value="">Selecciona un Producto</option>
+                            <?php echo $opcionesProductosId; ?>
+                        </select>
                     </div>
 
                     <div class="mb-3">

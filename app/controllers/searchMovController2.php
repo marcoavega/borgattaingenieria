@@ -11,7 +11,7 @@ class searchMovController2 extends mainModel
 	public function modulosBusquedaControlador2($modulo)
 	{
 
-		$listaModulos = ['userSearch', 'orderSearch', 'movSearch', 'movSearch2'];
+		$listaModulos = ['userSearch', 'orderSearch', 'movSearch2'];
 
 		if (in_array($modulo, $listaModulos)) {
 			return false;

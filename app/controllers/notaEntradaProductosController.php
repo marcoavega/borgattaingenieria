@@ -52,6 +52,37 @@ class notaEntradaProductosController extends mainModel
         return $opciones_notas;
     }
 
+    public function obtenerOpcionesProducto()
+    {
+        $consulta = "SELECT * FROM productos ORDER BY nombre_producto";
+        $datos = $this->ejecutarConsulta($consulta);
+        $opciones = "";
+
+        while ($dato = $datos->fetch()) {
+            $opciones .= '<option value="' . $dato['nombre_producto'] . '">
+            '. $dato['id_producto'] . '-'. $dato['nombre_producto'] . '</option>';
+        }
+
+        return $opciones;
+    }
+
+    public function obtenerOpcionesProductoId()
+    {
+        $consulta = "SELECT * FROM productos ORDER BY nombre_producto";
+        $datos = $this->ejecutarConsulta($consulta);
+        $opciones = "";
+
+        while ($dato = $datos->fetch()) {
+            $opciones .= '<option value="' . $dato['id_producto'] . '">
+            '. $dato['id_producto'] . '-'. $dato['nombre_producto'] . '</option>';
+        }
+
+        return $opciones;
+    }
+
+
+
+
     public function registrarNotaEntradaProductosControlador()
     {
         # Almacenando datos #
@@ -60,11 +91,13 @@ class notaEntradaProductosController extends mainModel
         $numero_orden = $_POST['numero_orden'];
         $numero_partida = $_POST['numero_partida'];
         $nombre_producto = $_POST['nombre_producto'];
+        $id_producto = $_POST['id_producto'];
         $cantidad = $_POST['cantidad'];
         $unidad_medida = $_POST['unidad_medida'];
+        $almacen = 1;
 
         # Verificando campos obligatorios #
-        if ($numero_orden == "" || $numero_partida == "" || $nombre_producto == "" || $cantidad == "" || $unidad_medida == "" || $id_nota_entrada == "") {
+        if ($numero_orden == "" || $numero_partida == "" || $nombre_producto == "" || $id_producto == "" || $cantidad == "" || $unidad_medida == "" || $id_nota_entrada == "") {
             $alerta = [
                 "tipo" => "simple",
                 "titulo" => "Ocurrió un error inesperado",
@@ -97,6 +130,11 @@ class notaEntradaProductosController extends mainModel
                 "campo_valor" => $nombre_producto
             ],
             [
+                "campo_nombre" => "id_producto",
+                "campo_marcador" => ":IdProducto",
+                "campo_valor" => $id_producto
+            ],
+            [
                 "campo_nombre" => "cantidad",
                 "campo_marcador" => ":Cantidad",
                 "campo_valor" => $cantidad
@@ -109,6 +147,64 @@ class notaEntradaProductosController extends mainModel
         ];
 
         $registrar_nota_entrada = $this->guardarDatos("detalle_nota_entrada", $detalle_datos_reg);
+        if ($registrar_nota_entrada->rowCount() == 1) {
+            $alerta = [
+                "tipo" => "limpiar",
+                "titulo" => "Nota Registrada",
+                "texto" => "La nota se registró con éxito",
+                "icono" => "success"
+            ];
+        } else {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "No se pudo registrar la orden, por favor intente nuevamente",
+                "icono" => "error"
+            ];
+        }
+
+
+        // Verificando producto
+        $datos = $this->ejecutarConsulta("SELECT * FROM productos WHERE id_producto='$id_producto'");
+        if ($datos->rowCount() <= 0) {
+            return json_encode([
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "No hemos encontrado el producto en el sistema",
+                "icono" => "error"
+            ]);
+        } else {
+            $datos = $datos->fetch();
+            $stockActual = $datos['stock'];  // Stock actual del producto
+        }
+    
+        // Actualizar el stock en la tabla de productos
+        $stockFinal = $stockActual + $cantidad;
+        $actualizarProducto = $this->ejecutarConsulta("UPDATE productos SET stock = '$stockFinal' WHERE id_producto='$id_producto'");
+    
+        // Actualizar el stock en la tabla stock_almacenes para el almacén general (id_almacen = 1)
+        $datosAlmacen = $this->ejecutarConsulta("SELECT stock FROM stock_almacen WHERE id_producto='$id_producto' AND id_almacen = $almacen");
+        if ($datosAlmacen->rowCount() > 0) {
+            $filaAlmacen = $datosAlmacen->fetch();
+            $stockAlmacenActual = $filaAlmacen['stock'];
+            $stockAlmacenFinal = $stockAlmacenActual + $cantidad;
+            $actualizarAlmacen = $this->ejecutarConsulta("UPDATE stock_almacen SET stock = '$stockAlmacenFinal' WHERE id_producto='$id_producto' AND id_almacen = $almacen");
+        }
+        if ($actualizarProducto && $actualizarAlmacen) {
+            return json_encode([
+                "tipo" => "recargar",
+                "titulo" => "Producto actualizado",
+                "texto" => "Los datos del producto se actualizaron correctamente",
+                "icono" => "success"
+            ]);
+        } else {
+            return json_encode([
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "No hemos podido actualizar los datos del producto, por favor intente nuevamente",
+                "icono" => "error"
+            ]);
+        }
 
         if ($registrar_nota_entrada->rowCount() == 1) {
             $alerta = [

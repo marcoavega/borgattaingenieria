@@ -133,9 +133,9 @@ class inventoryListController extends mainModel
             unidades_medida.nombre_unidad,
             tipos_moneda.nombre_moneda,
             sub_categorias.nombre_subcategoria,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacén General' THEN stock_almacen.stock ELSE 0 END) AS stock_general,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacén de Maquinado' THEN stock_almacen.stock ELSE 0 END) AS stock_maquinados,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacén de Ensamble' THEN stock_almacen.stock ELSE 0 END) AS stock_ensamble
+            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen General' THEN stock_almacen.stock ELSE 0 END) AS stock_general,
+            SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Maquinado' THEN stock_almacen.stock ELSE 0 END) AS stock_maquinados,
+            SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ensamble' THEN stock_almacen.stock ELSE 0 END) AS stock_ensamble
         FROM productos
         JOIN categorias ON productos.id_categoria = categorias.id_categoria
         JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
