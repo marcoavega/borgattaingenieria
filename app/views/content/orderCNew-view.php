@@ -21,7 +21,9 @@
             // Obtiene las opciones de proveedores.
             $opcionesProveedores = $insProduct->obtenerOpcionesProveedores();
             $opcionesTiposMoneda = $insMoneda->obtenerOpcionesMonedas();
-            $opcionesEmpleados = $insProduct->obtenerEmpleados();
+            $opcionesEmpleados = $insProduct->obtenerEmpleados(); 
+            $opcionesUsos = $insProduct->obtenerUsos(); 
+            $opcionesMetodosPago = $insProduct->obtenerMetodosPago(); 
             ?>
             <?php
             // Incluye el botón de regreso
@@ -63,10 +65,26 @@
                 </div>
                 <!-- Campo de selección para el nombre de empleado -->
                 <div class="form-group mt-3">
-                    <label for="id_almacen_origen" class="form-label">Nombre de empleado que solicita:</label>
+                    <label for="id_empleado" class="form-label">Nombre de empleado que solicita:</label>
                     <select class='form-control' name='id_empleado' id='id_empleado' required>
                         <option value="">Empleado que solicita</option>
                         <?php echo $opcionesEmpleados; ?>
+                    </select>
+                </div>
+                 <!-- Campo de selección para el nombre de empleado -->
+                <div class="form-group mt-3">
+                    <label for="id_uso" class="form-label">Uso de CFDI:</label>
+                    <select class='form-control' name='id_uso' id='id_uso' required>
+                        <option value="">Seleccione el uso de CFDI</option>
+                        <?php echo $opcionesUsos; ?>
+                    </select>
+                </div>
+                 <!-- Campo de selección para el nombre de empleado -->
+                <div class="form-group mt-3">
+                    <label for="id_metodo" class="form-label">Metodos de pago:</label>
+                    <select class='form-control' name='id_metodo' id='id_metodo' required>
+                        <option value="">Seleccione el metodo de pago</option>
+                        <?php echo $opcionesMetodosPago; ?>
                     </select>
                 </div>
                 <!-- Botón para enviar el formulario -->

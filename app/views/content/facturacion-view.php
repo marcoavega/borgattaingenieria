@@ -2,26 +2,27 @@
 <div class="container-fluid py-4">
 
     <!-- Título de la página -->
-    <h1 class="display-4 text-center">Orden de Gasto</h1>
+    <h1 class="display-4 text-center">FACTURACIÓN</h1>
     <!-- Subtítulo de la página -->
-    <h2 class="lead text-center">Nueva Orden</h2>
+    <h2 class="lead text-center">Nueva Factura</h2>
 
     <!-- Contenedor para el formulario de creación de producto -->
     <div class="row justify-content-center">
         <div class="col-lg-6">
             <?php
             // Importa el controlador de productos
-            use app\controllers\ordenGastoController;
+            use app\controllers\ordenCompraController;
 
             // Crea una instancia del controlador
-            $insProduct = new ordenGastoController();
-            $insMoneda = new ordenGastoController();
+            $insProduct = new ordenCompraController();
+            $insMoneda = new ordenCompraController();
+
 
             // Obtiene las opciones de proveedores.
             $opcionesProveedores = $insProduct->obtenerOpcionesProveedores();
             $opcionesTiposMoneda = $insMoneda->obtenerOpcionesMonedas();
-            $opcionesEmpleados = $insProduct->obtenerEmpleados();
-            $opcionesUsos = $insProduct->obtenerUsos();
+            $opcionesEmpleados = $insProduct->obtenerEmpleados(); 
+            $opcionesUsos = $insProduct->obtenerUsos(); 
             $opcionesMetodosPago = $insProduct->obtenerMetodosPago(); 
             ?>
             <?php
@@ -29,10 +30,11 @@
             include "./app/views/inc/btn_back2.php";
             ?>
             <!-- Formulario de creación de orden -->
-            <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/ordenGastoAjax.php"
-                method="POST" autocomplete="off" enctype="multipart/form-data">
+            <form class="FormularioAjax p-4 border rounded-3"
+                action="<?php echo APP_URL; ?>app/ajax/ordenCompraAjax.php" method="POST" autocomplete="off"
+                enctype="multipart/form-data">
                 <!-- Campo oculto para el módulo de orden compra -->
-                <input type="hidden" name="modulo_orden_gasto" value="registrar">
+                <input type="hidden" name="modulo_orden_compra" value="registrar">
 
                 <div class="row">
                     <!-- Campo para el número de orden (generado automáticamente) -->
@@ -63,7 +65,7 @@
                 </div>
                 <!-- Campo de selección para el nombre de empleado -->
                 <div class="form-group mt-3">
-                    <label for="id_almacen_origen" class="form-label">Nombre de empleado que solicita:</label>
+                    <label for="id_empleado" class="form-label">Nombre de empleado que solicita:</label>
                     <select class='form-control' name='id_empleado' id='id_empleado' required>
                         <option value="">Empleado que solicita</option>
                         <?php echo $opcionesEmpleados; ?>
@@ -77,7 +79,7 @@
                         <?php echo $opcionesUsos; ?>
                     </select>
                 </div>
-                  <!-- Campo de selección para el nombre de empleado -->
+                 <!-- Campo de selección para el nombre de empleado -->
                 <div class="form-group mt-3">
                     <label for="id_metodo" class="form-label">Metodos de pago:</label>
                     <select class='form-control' name='id_metodo' id='id_metodo' required>

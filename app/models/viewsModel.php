@@ -67,7 +67,8 @@
                             "salidasProductoTerminado",
                             "salidaPTNew",
                             "salidaPTSearch",
-                            "numSerSearch"
+                            "numSerSearch",
+                            "facturacion"
                         ];
 
             // Comprueba si la vista solicitada está en la lista blanca

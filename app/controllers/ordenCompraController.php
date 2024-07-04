@@ -79,6 +79,36 @@ class ordenCompraController extends mainModel
         return $opciones_empleados;
     }
 
+    public function obtenerUsos()
+    {
+        $consulta = "SELECT * FROM catusoscfdi ORDER BY clave";
+        $datos = $this->ejecutarConsulta($consulta);
+        $opciones = "";
+
+        while ($datosObt = $datos->fetch()) {
+            $opciones .= '<option value="' . $datosObt['id_catusoscfdi'] . '">'
+                . $datosObt['Clave'] . ' - '
+                . $datosObt['Nombre'] . '</option>';
+        }
+
+        return $opciones;
+    }
+
+    public function obtenerMetodosPago()
+    {
+        $consulta = "SELECT * FROM catmetodospago ORDER BY clave";
+        $datos = $this->ejecutarConsulta($consulta);
+        $opciones = "";
+
+        while ($datosObt = $datos->fetch()) {
+            $opciones .= '<option value="' . $datosObt['id_catmetodospago'] . '">'
+                . $datosObt['Clave'] . ' - '
+                . $datosObt['Descripcion'] . '</option>';
+        }
+
+        return $opciones;
+    }
+
     /*----------  Controlador registrar usuario  ----------*/
     public function registrarOrdenCompraControlador()
     {
@@ -95,6 +125,8 @@ class ordenCompraController extends mainModel
         $id_proveedor = $_POST['id_proveedor'];
         $id_moneda = $_POST['id_moneda'];
         $id_empleado = $this->limpiarCadena($_POST['id_empleado']);
+        $id_uso = $this->limpiarCadena($_POST['id_uso']);
+        $id_metodo = $this->limpiarCadena($_POST['id_metodo']);
 
         # Verificando campos obligatorios
         if ($id_proveedor == "") {
@@ -127,6 +159,16 @@ class ordenCompraController extends mainModel
                 "campo_nombre" => "id_empleado",
                 "campo_marcador" => ":IdEmpleado",
                 "campo_valor" => $id_empleado
+            ],
+            [
+                "campo_nombre" => "id_catusoscfdi",
+                "campo_marcador" => ":IdUso",
+                "campo_valor" => $id_uso
+            ],
+            [
+                "campo_nombre" => "id_catmetodospago",
+                "campo_marcador" => ":IdMetodo",
+                "campo_valor" => $id_metodo
             ]
         ];
 
@@ -185,34 +227,40 @@ class ordenCompraController extends mainModel
     $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
 
     $consulta_datos = "SELECT
-        detalle_orden_compra.*,
-        ordenes_compra.numero_orden,
-        proveedores.nombre_proveedor,
-        proveedores.RFC_proveedor,
-        proveedores.contacto_proveedor,
-        proveedores.telefono_proveedor,
-        proveedores.email_proveedor,
-        proveedores.direccion_proveedor,
-        ordenes_compra.fecha,
-        unidades_medida.id_unidad,
-        unidades_medida.nombre_unidad,
-        tipos_moneda.id_moneda,
-        tipos_moneda.nombre_moneda,
-        empleados.nombre_empleado
-    FROM
-        detalle_orden_compra
-    LEFT JOIN ordenes_compra ON detalle_orden_compra.id_orden_compra = ordenes_compra.id_orden_compra
-    LEFT JOIN proveedores ON ordenes_compra.id_proveedor = proveedores.id_proveedor
-    LEFT JOIN unidades_medida ON detalle_orden_compra.id_unidad = unidades_medida.id_unidad
-    LEFT JOIN tipos_moneda ON ordenes_compra.id_moneda = tipos_moneda.id_moneda
-    LEFT JOIN empleados ON ordenes_compra.id_empleado = empleados.id_empleado
-    WHERE
-        detalle_orden_compra.nombre_producto LIKE '%$busqueda%'
-        OR ordenes_compra.numero_orden LIKE '%$busqueda%'
-    ORDER BY
-        detalle_orden_compra.id_orden_compra DESC, detalle_orden_compra.id_detalle_orden ASC
-    LIMIT
-        $inicio, $registros;";
+    detalle_orden_compra.*,
+    ordenes_compra.numero_orden,
+    proveedores.nombre_proveedor,
+    proveedores.RFC_proveedor,
+    proveedores.contacto_proveedor,
+    proveedores.telefono_proveedor,
+    proveedores.email_proveedor,
+    proveedores.direccion_proveedor,
+    ordenes_compra.fecha,
+    unidades_medida.id_unidad,
+    unidades_medida.nombre_unidad,
+    tipos_moneda.id_moneda,
+    tipos_moneda.nombre_moneda,
+    empleados.nombre_empleado,
+    catusoscfdi.Clave AS clave_uso_cfdi,
+    catusoscfdi.Nombre AS nombre_uso_cfdi,
+    catmetodospago.Clave AS clave_metodo_pago,
+    catmetodospago.Descripcion AS descripcion_metodo_pago
+FROM
+    detalle_orden_compra
+LEFT JOIN ordenes_compra ON detalle_orden_compra.id_orden_compra = ordenes_compra.id_orden_compra
+LEFT JOIN proveedores ON ordenes_compra.id_proveedor = proveedores.id_proveedor
+LEFT JOIN unidades_medida ON detalle_orden_compra.id_unidad = unidades_medida.id_unidad
+LEFT JOIN tipos_moneda ON ordenes_compra.id_moneda = tipos_moneda.id_moneda
+LEFT JOIN empleados ON ordenes_compra.id_empleado = empleados.id_empleado
+LEFT JOIN catusoscfdi ON ordenes_compra.id_catusoscfdi = catusoscfdi.id_catusoscfdi
+LEFT JOIN catmetodospago ON ordenes_compra.id_catmetodospago = catmetodospago.id_catmetodospago
+WHERE
+    detalle_orden_compra.nombre_producto LIKE '%$busqueda%'
+    OR ordenes_compra.numero_orden LIKE '%$busqueda%'
+ORDER BY
+    detalle_orden_compra.id_orden_compra DESC, detalle_orden_compra.id_detalle_orden ASC
+LIMIT
+    $inicio, $registros;";
 
     $datos = $this->ejecutarConsulta($consulta_datos);
     $datos = $datos->fetchAll();
@@ -283,6 +331,20 @@ class ordenCompraController extends mainModel
         </div>
     </div>
     
+    
+<div style="font-size: 13px; border: 1px solid #000; padding: 5px; margin-top: 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="flex: 0 0 20%; text-align: left;">
+            <strong>Datos para Facturación:</strong>
+        </div>
+        <div style="flex: 0 0 40%; text-align: left; padding-left: 10px;">
+            <strong>Uso de CFDI:</strong> ' . $rows['clave_uso_cfdi'] . ' - ' . $rows['nombre_uso_cfdi'] . '
+        </div>
+        <div style="flex: 0 0 40%; text-align: left; padding-left: 10px;">
+            <strong>Método de Pago:</strong> ' . $rows['clave_metodo_pago'] . ' - ' . $rows['descripcion_metodo_pago'] . '
+        </div>
+    </div>
+</div>
     
     <table class="table" style="width: 100%; padding-top: 10; font-size: 13px;">
     <thead>

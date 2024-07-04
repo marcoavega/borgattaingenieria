@@ -369,9 +369,7 @@ class movController extends mainModel
     // Aquí puedes agregar tus estilos CSS
     ventanaImpresion.document.write("<style>");
     ventanaImpresion.document.write("body { font-family: Arial, sans-serif; line-height: 1; }");
-
     ventanaImpresion.document.write("</style>");
-    
     ventanaImpresion.document.write("</head><body>");
     ventanaImpresion.document.write(contenido);
     ventanaImpresion.document.write("</body></html>");

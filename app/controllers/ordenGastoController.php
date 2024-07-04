@@ -79,6 +79,36 @@ class ordenGastoController extends mainModel
         return $opciones_empleados;
     }
 
+     public function obtenerUsos()
+    {
+        $consulta = "SELECT * FROM catusoscfdi ORDER BY clave";
+        $datos = $this->ejecutarConsulta($consulta);
+        $opciones = "";
+
+        while ($datosObt = $datos->fetch()) {
+            $opciones .= '<option value="' . $datosObt['id_catusoscfdi'] . '">'
+                . $datosObt['Clave'] . ' - '
+                . $datosObt['Nombre'] . '</option>';
+        }
+
+        return $opciones;
+    }
+
+    public function obtenerMetodosPago()
+    {
+        $consulta = "SELECT * FROM catmetodospago ORDER BY clave";
+        $datos = $this->ejecutarConsulta($consulta);
+        $opciones = "";
+
+        while ($datosObt = $datos->fetch()) {
+            $opciones .= '<option value="' . $datosObt['id_catmetodospago'] . '">'
+                . $datosObt['Clave'] . ' - '
+                . $datosObt['Descripcion'] . '</option>';
+        }
+
+        return $opciones;
+    }
+
     /*----------  Controlador registrar usuario  ----------*/
     public function registrarOrdenGastoControlador()
     {
@@ -95,6 +125,9 @@ class ordenGastoController extends mainModel
         $id_proveedor = $_POST['id_proveedor'];
         $id_moneda = $_POST['id_moneda'];
         $id_empleado = $this->limpiarCadena($_POST['id_empleado']);
+         $id_uso = $this->limpiarCadena($_POST['id_uso']);
+        $id_metodo = $this->limpiarCadena($_POST['id_metodo']);
+
 
         # Verificando campos obligatorios
         if ($id_proveedor == "") {
@@ -127,6 +160,16 @@ class ordenGastoController extends mainModel
                 "campo_nombre" => "id_empleado",
                 "campo_marcador" => ":IdEmpleado",
                 "campo_valor" => $id_empleado
+            ],
+            [
+                "campo_nombre" => "id_catusoscfdi",
+                "campo_marcador" => ":IdUso",
+                "campo_valor" => $id_uso
+            ],
+            [
+                "campo_nombre" => "id_catmetodospago",
+                "campo_marcador" => ":IdMetodo",
+                "campo_valor" => $id_metodo
             ]
         ];
 
@@ -199,7 +242,11 @@ class ordenGastoController extends mainModel
         unidades_medida.nombre_unidad,
         tipos_moneda.id_moneda,
         tipos_moneda.nombre_moneda,
-        empleados.nombre_empleado
+        empleados.nombre_empleado,
+        catusoscfdi.Clave AS clave_uso_cfdi,
+        catusoscfdi.Nombre AS nombre_uso_cfdi,
+        catmetodospago.Clave AS clave_metodo_pago,
+        catmetodospago.Descripcion AS descripcion_metodo_pago
         
     FROM
         detalle_orden_gasto
@@ -208,6 +255,8 @@ class ordenGastoController extends mainModel
     LEFT JOIN unidades_medida ON detalle_orden_gasto.id_unidad = unidades_medida.id_unidad
     LEFT JOIN tipos_moneda ON ordenes_gasto.id_moneda = tipos_moneda.id_moneda
     LEFT JOIN empleados ON ordenes_gasto.id_empleado = empleados.id_empleado
+    LEFT JOIN catusoscfdi ON ordenes_gasto.id_catusoscfdi = catusoscfdi.id_catusoscfdi
+    LEFT JOIN catmetodospago ON ordenes_gasto.id_catmetodospago = catmetodospago.id_catmetodospago
     WHERE
         detalle_orden_gasto.nombre_producto LIKE '%$busqueda%'
         OR ordenes_gasto.numero_orden LIKE '%$busqueda%'
@@ -286,6 +335,21 @@ foreach ($datos as $rows) {
         <p style="margin-top: 0; margin-bottom: 0;">Calle Puebla Sur. Manzana 4. Lote 5 Nave B Int. 2 Col. Jardín Industrial</p>
         <p style="margin-top: 0; margin-bottom: 0;">Ixtapaluca. Edo. de México, C.P. 56535</p>
         <p style="margin-top: 0; margin-bottom: 0;">Teléfono: 5551336363 extenciones: 415, 414 ó 418</p>
+    </div>
+</div>
+
+
+<div style="font-size: 13px; border: 1px solid #000; padding: 5px; margin-top: 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="flex: 0 0 20%; text-align: left;">
+            <strong>Datos para Facturación:</strong>
+        </div>
+        <div style="flex: 0 0 40%; text-align: left; padding-left: 10px;">
+            <strong>Uso de CFDI:</strong> ' . $rows['clave_uso_cfdi'] . ' - ' . $rows['nombre_uso_cfdi'] . '
+        </div>
+        <div style="flex: 0 0 40%; text-align: left; padding-left: 10px;">
+            <strong>Método de Pago:</strong> ' . $rows['clave_metodo_pago'] . ' - ' . $rows['descripcion_metodo_pago'] . '
+        </div>
     </div>
 </div>
 
