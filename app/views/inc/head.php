@@ -9,7 +9,7 @@
 
 <!-- Establece el título de la página al valor de la constante APP_NAME -->
 <title><?php echo APP_NAME; ?></title>
-
+ 
 <!-- Enlaza el archivo CSS de Bootstrap, que es un marco de trabajo para el diseño de sitios y aplicaciones web -->
 <link rel="stylesheet" href="<?php echo APP_URL; ?>app/views/css/bootstrap.min.css">
 
