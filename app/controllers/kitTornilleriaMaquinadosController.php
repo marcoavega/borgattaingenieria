@@ -64,23 +64,33 @@ class kitTornilleriaMaquinadosController extends mainModel
     $tabla = '<div class="container-fluid p-4">
     <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
     <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
-    <table id="tabla-productos" class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Imagen</th>
-            <th>Código Producto</th>
-            <th>Nombre Producto</th>
-            <th>CPI</th>
-            <th>ARTICULADOR</th>
-            <th>ARCO FACIAL</th>
-            <th>EMPAQUE</th>
-            <th>Total</th>
-            <th>Stock Almacén General</th>
-            <th>Stock Área de Ensamble</th>
-            <th>Stock Descartes</th>
-            <th>Stock Restante</th>
-        </tr>
-    </thead>
+    <div style="max-height: 500px; overflow-y: auto; border: 1px solid #ddd;"> <!-- Ajusta la altura según tus necesidades -->
+        <table id="tabla-productos" class="table table-bordered table-striped">
+            <thead style="position: -webkit-sticky; position: sticky; top: 0; background-color: white; z-index: 1;">
+                <tr>
+                    <th>Imagen</th>
+                    <th>Código Producto</th>
+                    <th>Nombre Producto</th>
+                    <th>CPI</th>
+                    <th>ARTICULADOR</th>
+                    <th>ARCO FACIAL</th>
+                    <th>EMPAQUE</th>
+                    <th>Total</th>
+                    <th>Stock Almacén General</th>
+                    <th>Stock Área de Ensamble</th>
+                    <th>Stock Descartes</th>
+                    <th>Stock Restante</th>
+                    <th>Disponible para lote 3</th>
+                    <th>Necesarias para lote 3</th>
+                    <th>Restante de lote 3</th>
+                    <th>Disponible para lote 4</th>
+                    <th>Necesarias para lote 4</th>
+                    <th>Restante de lote 4</th>
+                    <th>Disponible para lote 5</th>
+                    <th>Necesarias para lote 5</th>
+                    <th>Restante de lote 5</th>
+                </tr>
+            </thead>
     <tbody>';
 
     if ($total > 0) {
@@ -95,14 +105,23 @@ class kitTornilleriaMaquinadosController extends mainModel
                 <td class="cantidad-arco-facial">' . htmlspecialchars($rows['cantidad_arco_facial']) . '</td>
                 <td class="cantidad-empaque">' . htmlspecialchars($rows['cantidad_empaque']) . '</td>
                 <td class="total">' . htmlspecialchars($total_cantidad) . '</td>
-                <td>' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
+                <td class="stock-general">' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
                 <td>' . htmlspecialchars($rows['stock_area_ensamble']) . '</td>
                 <td>' . htmlspecialchars($rows['stock_descartes']) . '</td>
                 <td class="stock-disponible"></td>
+                <td class="disponible-lote3">' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
+                <td class="necesarias-lote3">' . htmlspecialchars($total_cantidad) . '</td>
+                <td class="restante-lote3"></td>
+                <td class="disponible-lote4"></td>
+                <td class="necesarias-lote4">' . htmlspecialchars($total_cantidad) . '</td>
+                <td class="restante-lote4"></td>
+                <td class="disponible-lote5"></td>
+                <td class="necesarias-lote5">' . htmlspecialchars($total_cantidad) . '</td>
+                <td class="restante-lote5"></td>
             </tr>';
         }
     } else {
-        $tabla .= '<tr><td colspan="12" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        $tabla .= '<tr><td colspan="21" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
     }
 
     $tabla .= '</tbody></table>';
@@ -119,11 +138,31 @@ class kitTornilleriaMaquinadosController extends mainModel
             var arcoFacial = parseFloat(fila.querySelector(".cantidad-arco-facial").textContent) || 0;
             var empaque = parseFloat(fila.querySelector(".cantidad-empaque").textContent) || 0;
             var total = fila.querySelector(".total");
-            var stockGeneral = parseFloat(fila.querySelector("td:nth-child(9)").textContent);
+            var stockGeneral = parseFloat(fila.querySelector(".stock-general").textContent);
             var stockDisponible = fila.querySelector(".stock-disponible");
+            var disponibleLote3 = fila.querySelector(".disponible-lote3");
+            var necesariasLote3 = fila.querySelector(".necesarias-lote3");
+            var restanteLote3 = fila.querySelector(".restante-lote3");
+            var disponibleLote4 = fila.querySelector(".disponible-lote4");
+            var necesariasLote4 = fila.querySelector(".necesarias-lote4");
+            var restanteLote4 = fila.querySelector(".restante-lote4");
+            var disponibleLote5 = fila.querySelector(".disponible-lote5");
+            var necesariasLote5 = fila.querySelector(".necesarias-lote5");
+            var restanteLote5 = fila.querySelector(".restante-lote5");
             var totalCantidad = (cpi + articulador + arcoFacial + empaque) * multiplicador;
             total.textContent = totalCantidad.toFixed(2);
             stockDisponible.textContent = (stockGeneral - totalCantidad).toFixed(2);
+            disponibleLote3.textContent = stockGeneral.toFixed(2);
+            necesariasLote3.textContent = totalCantidad.toFixed(2);
+            var restanteLote3Value = stockGeneral - totalCantidad;
+            restanteLote3.textContent = restanteLote3Value.toFixed(2);
+            disponibleLote4.textContent = restanteLote3Value.toFixed(2);
+            necesariasLote4.textContent = totalCantidad.toFixed(2);
+            var restanteLote4Value = restanteLote3Value - totalCantidad;
+            restanteLote4.textContent = restanteLote4Value.toFixed(2);
+            disponibleLote5.textContent = restanteLote4Value.toFixed(2);
+            necesariasLote5.textContent = totalCantidad.toFixed(2);
+            restanteLote5.textContent = (restanteLote4Value - totalCantidad).toFixed(2);
         });
     }
 

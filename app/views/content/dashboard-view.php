@@ -99,5 +99,16 @@
                 </div>
             </div>
         </div>
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card dashboard-card h-100">
+                <div class="card-body d-flex flex-column justify-content-between" style="background-image: url('<?php echo APP_URL; ?>app/views/img/'); background-size: cover; background-position: center;">
+                    <div class="card-content text-white text-center p-3" style="background-color: rgba(0,0,0,0.6);">
+                        <h2 class="card-title">Lotes</h2>
+                        <p class="card-text">Control de Lotes</p>
+                    </div>
+                    <a href="<?php echo APP_URL; ?>controlLotes/" class="btn btn-primary mt-3">ENTRAR</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

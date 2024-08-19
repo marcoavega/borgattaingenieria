@@ -70,7 +70,8 @@
                             "numSerSearch",
                             "facturacion",
                             "clientNew",
-                            "clientList"
+                            "clientList",
+                            "controlLotes"
                         ];
 
             // Comprueba si la vista solicitada está en la lista blanca
