@@ -11,7 +11,7 @@ class ordenCompraController extends mainModel
 
     public function obtenerOpcionesOrdenes()
     {
-        $consulta_ordenes = "SELECT * FROM ordenes_compra ORDER BY id_orden_compra";
+        $consulta_ordenes = "SELECT * FROM ordenes_compra ORDER BY id_orden_compra DESC";
         $datos_ordenes = $this->ejecutarConsulta($consulta_ordenes);
         $opciones_ordenes = "";
 
@@ -346,30 +346,30 @@ LIMIT
     </div>
 </div>
     
-    <table class="table" style="width: 100%; padding-top: 10; font-size: 13px;">
-    <thead>
-        <tr>
-            <th style="text-align: center; border: 1px solid #000; padding: 5px;">Partida</th>
-            <th style="text-align: center; border: 1px solid #000; padding: 5px;">Producto</th>
-            <th style="text-align: center; border: 1px solid #000; padding: 5px;">Cantidad</th>
-            <th style="text-align: center; border: 1px solid #000; padding: 5px;">U.M.</th>
-            <th style="text-align: center; border: 1px solid #000; padding: 5px;">Precio</th>
-            <th style="text-align: center; border: 1px solid #000; padding: 5px;">Importe</th>
-        </tr>
-    </thead>
-    <tbody>';
-        }
+   <table class="table" style="width: 100%; padding-top: 10; font-size: 13px;">
+<thead>
+    <tr>
+        <th style="text-align: center; border: 1px solid #000; padding: 5px;">Partida</th>
+        <th style="text-align: center; border: 1px solid #000; padding: 5px;">Producto</th>
+        <th style="text-align: center; border: 1px solid #000; padding: 5px;">Cantidad</th>
+        <th style="text-align: center; border: 1px solid #000; padding: 5px;">U.M.</th>
+        <th style="text-align: center; border: 1px solid #000; padding: 5px;">Precio</th>
+        <th style="text-align: center; border: 1px solid #000; padding: 5px;">Importe</th>
+    </tr>
+</thead>
+<tbody>';
+    }
     // Continúa 
     $tabla .= '  
-    <tr>
-    <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['numero_partida'] . '</td>
-    <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_producto'] . '</td>
-    <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['cantidad'] . '</td>
-    <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_unidad'] . '</td>
-    <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['precio_sin_IVA'] . '</td>
-    <td style="text-align: center; border: 1px solid #000; padding: 5px;" data-importe="' . $rows['total'] . '">' . $rows['total'] . '</td>
-    </tr>';
-    }
+   <tr>
+<td style="text-align: center; border: 1px solid #000; padding: 5px;" class="numero-partida"></td>
+<td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_producto'] . '</td>
+<td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['cantidad'] . '</td>
+<td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_unidad'] . '</td>
+<td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['precio_sin_IVA'] . '</td>
+<td style="text-align: center; border: 1px solid #000; padding: 5px;" data-importe="' . $rows['total'] . '">' . $rows['total'] . '</td>
+</tr>';
+}
     // Cierra la última tabla
     if ($ordenActual !== '') {
         // Agrega la fila de totales
@@ -430,6 +430,16 @@ $tabla .= '
 
 
 $tabla .= '<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+    var ordenes = document.querySelectorAll(".invoice");
+    ordenes.forEach(function(orden) {
+        var filas = orden.querySelectorAll("tbody tr");
+        filas.forEach(function(fila, index) {
+            fila.querySelector(".numero-partida").textContent = index + 1;
+        });
+    });
+});
 
 function numeroALetras(numero) {
     const unidades = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];

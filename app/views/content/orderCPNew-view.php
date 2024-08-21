@@ -46,13 +46,12 @@
                 <?php echo $opcionesOrdenes; ?>
             </select>
         </div>
-
+<!--
         <div class="mb-3">
             <label for="numero_partida" class="form-label">Numero de partida:</label>
             <input type="number" class="form-control" id="numero_partida" name="numero_partida" required>
         </div>
-
-
+-->
         <div class="mb-3">
             <label for="nombre_producto" class="form-label">Nombre Producto:</label>
             <textarea class="form-control" id="nombre_producto" name="nombre_producto" required></textarea>
