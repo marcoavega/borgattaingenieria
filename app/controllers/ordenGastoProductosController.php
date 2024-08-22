@@ -10,7 +10,7 @@ class ordenGastoProductosController extends mainModel
     
     public function obtenerOpcionesProveedores()
     {
-        $consulta_proveedores = "SELECT * FROM proveedores ORDER BY nombre_proveedor";
+        $consulta_proveedores = "SELECT * FROM proveedores ORDER BY nombre_proveedor DESC";
         $datos_proveedores = $this->ejecutarConsulta($consulta_proveedores);
         $opciones_proveedores = "";
 
@@ -24,7 +24,7 @@ class ordenGastoProductosController extends mainModel
    
     public function obtenerOpcionesOrdenGasto()
     {
-        $consulta_orden_gasto = "SELECT * FROM ordenes_gasto ORDER BY numero_orden";
+        $consulta_orden_gasto = "SELECT * FROM ordenes_gasto ORDER BY numero_orden DESC";
         $datos_orden = $this->ejecutarConsulta($consulta_orden_gasto);
         $opciones_ordenes = "";
 
@@ -40,7 +40,7 @@ class ordenGastoProductosController extends mainModel
 
 public function obtenerOpcionesNombreProductos()
     {
-        $consulta_productos = "SELECT * FROM productos ORDER BY id_producto";
+        $consulta_productos = "SELECT * FROM productos ORDER BY id_producto DESC";
         $datos_productos = $this->ejecutarConsulta($consulta_productos);
         $opciones_productos = "";
 
@@ -55,7 +55,7 @@ public function obtenerOpcionesNombreProductos()
 
 public function obtenerOpcionesCodigoProductos()
     {
-        $consulta_codigo_productos = "SELECT * FROM productos ORDER BY id_producto";
+        $consulta_codigo_productos = "SELECT * FROM productos ORDER BY id_producto DESC";
         $datos_codigo_productos = $this->ejecutarConsulta($consulta_codigo_productos);
         $opciones_codigo_productos = "";
 
@@ -70,7 +70,7 @@ public function obtenerOpcionesCodigoProductos()
 
 public function obtenerOpcionesUnidadesMedida()
     {
-        $consulta_unidades = "SELECT * FROM unidades_medida ORDER BY nombre_unidad";
+        $consulta_unidades = "SELECT * FROM unidades_medida ORDER BY nombre_unidad DESC";
         $datos_unidades = $this->ejecutarConsulta($consulta_unidades);
         $opciones_unidades = "";
 
@@ -91,7 +91,7 @@ public function obtenerOpcionesUnidadesMedida()
 # Almacenando datos#
 
 $id_orden_gasto = $_POST['id_orden_gasto'];
-$numero_partida = $_POST['numero_partida'];
+/*$numero_partida = $_POST['numero_partida'];*/
 $nombre_producto = $_POST['nombre_producto'];
 $cantidad = $_POST['cantidad'];
 $unidad_medida = $_POST['unidad_medida'];
@@ -101,7 +101,7 @@ $total = $_POST['total'];
 
 
 # Verificando campos obligatorios #
-if ($id_orden_gasto == "" || $numero_partida == "" || $nombre_producto == "" || $cantidad == "" || $precio_sin_IVA == "" || $total == "" || $unidad_medida == "" ) {
+if ($id_orden_gasto == "" || $nombre_producto == "" || $cantidad == "" || $precio_sin_IVA == "" || $total == "" || $unidad_medida == "" ) {
     $alerta = [
         "tipo" => "simple",
         "titulo" => "Ocurrió un error inesperado",
@@ -122,11 +122,13 @@ $detalle_datos_reg = [
         "campo_marcador" => ":OrdenGasto",
         "campo_valor" => $id_orden_gasto
     ],
+    /*
     [
         "campo_nombre" => "numero_partida",
         "campo_marcador" => ":NumerPartida",
         "campo_valor" => $numero_partida
     ],
+    */
     [
         "campo_nombre" => "nombre_producto",
         "campo_marcador" => ":NombreProducto",

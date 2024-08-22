@@ -346,7 +346,7 @@ LIMIT
     </div>
 </div>
     
-   <table class="table" style="width: 100%; padding-top: 10; font-size: 13px;">
+<table class="table" style="width: 100%; padding-top: 10; font-size: 13px;">
 <thead>
     <tr>
         <th style="text-align: center; border: 1px solid #000; padding: 5px;">Partida</th>
@@ -360,7 +360,7 @@ LIMIT
 <tbody>';
     }
     // Continúa 
-    $tabla .= '  
+$tabla .= '  
    <tr>
 <td style="text-align: center; border: 1px solid #000; padding: 5px;" class="numero-partida"></td>
 <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_producto'] . '</td>

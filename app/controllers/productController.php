@@ -418,124 +418,153 @@ return json_encode($alerta);
     $total = $this->ejecutarConsulta($consulta_total);
     $total = (int)$total->fetchColumn();
 
-   // Botones para cambiar la vista y el buscador en tiempo real
+ // Botones para cambiar la vista y el buscador en tiempo real
 $tabla .= '
 <div class="container-fluid p-4">
-    <div class="row mb-3">
-        <div class="col-12 col-md-6 mb-2 mb-md-0">
-            <div class="input-group">
-                <input type="text" class="form-control" id="searchInput" placeholder="Buscar..." onkeyup="filtrarBusqueda()">
+    <div class="row">
+        <!-- Menú lateral -->
+        <div class="col-12 col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark custom-sidebar">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
+                <span class="fs-4">Menú</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item border-bottom mb-2">
+                    <a href="' . APP_URL . 'productNew/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Registrar Nuevo Producto
+                    </a>
+                </li>
+            </ul>
+            <hr>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="col-12 col-md-9 col-lg-10">
+            <div class="container-fluid mb-4">
+                <!-- Título de la página -->
+                <h1 class="display-4 text-center">Productos</h1>
+                <!-- Subtítulo de la página -->
+                <h2 class="lead text-center">Lista de productos</h2>
             </div>
-        </div>
-        <div class="col-12 col-md-6 d-flex flex-column flex-md-row align-items-stretch">
-            <button class="btn btn-primary mb-2 mb-md-0 me-md-2 w-100 w-md-auto" onclick="cambiarVista(\'tarjeta\')">Vista de Tarjeta</button>
-            <button class="btn btn-secondary mb-2 mb-md-0 me-md-2 w-100 w-md-auto" onclick="cambiarVista(\'lista\')">Vista de Lista</button>
-            <button class="btn btn-success w-100 w-md-auto" onclick="imprimirTabla()">Imprimir</button>
-        </div>
-    </div>
-';
-
-
-    // Vista de tarjeta
-    $tabla .= '<div id="vistaTarjeta" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">';
-
-    if ($total >= 1) {
-        foreach ($datos as $rows) {
-            $tabla .= '
-            <div class="col tarjeta-item">
-                <div class="card h-100">
-                    <div class="card-img-top-container">
-                        <img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="card-img-top img-fluid" alt="..."  loading="lazy">
+            <!-- Botones para cambiar la vista y el buscador en tiempo real -->
+            <div class="container-fluid p-4">
+                <div class="row mb-3">
+                    <div class="col-12 col-md-6 mb-2 mb-md-0">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="searchInput" placeholder="Buscar..." onkeyup="filtrarBusqueda()">
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <h5 class="card-title">' . $rows['nombre_producto'] . '</h5>
-                        <p class="card-text">Id: ' . $rows['id_producto'] . '</p>
-                        <p class="card-text">Código: ' . $rows['codigo_producto'] . '</p>
-                        <p class="card-text">Ubicación: ' . $rows['ubicacion'] . '</p>
-                        <p class="card-text">Precio: ' . $rows['precio'] . '</p>
-                        <p class="card-text">Moneda: ' . $rows['nombre_moneda'] . '</p>
-                        <p class="card-text">Unidad de Medida: ' . $rows['nombre_unidad'] . '</p>
-                        <p class="card-text">Categoría: ' . $rows['nombre_categoria'] . '</p>
-                        <p class="card-text">Sub-Categoría: ' . $rows['nombre_subcategoria'] . '</p>
-                        <p class="card-text">Proveedor: ' . $rows['nombre_proveedor'] . '</p>
-                        <p class="card-text">Stock en almacenes:</p>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">General: ' . $rows['stock_general'] . '</li>
-                            <li class="list-group-item">Maquinados: ' . $rows['stock_maquinados'] . '</li>
-                            <li class="list-group-item">Ensamble: ' . $rows['stock_ensamble'] . '</li>
-                            <li class="list-group-item">Dental Trade: ' . $rows['stock_dental'] . '</li>
-                            <li class="list-group-item">Terminado: ' . $rows['stock_terminado'] . '</li>
-                            <li class="list-group-item">RT Producto Terminado: ' . $rows['stock_rtproducto'] . '</li>
-                            <li class="list-group-item">Ventas: ' . $rows['stock_ventas'] . '</li>
-                            <li class="list-group-item">Descarte Terminado: ' . $rows['stock_descarte_terminado'] . '</li>
-                            <li class="list-group-item">Descarte Desgaste: ' . $rows['stock_descarte_desgaste'] . '</li>
-                        </ul>
-                    </div>';
+                    <div class="col-12 col-md-6 d-flex flex-column flex-md-row align-items-stretch">
+                        <button class="btn btn-primary mb-2 mb-md-0 me-md-2 w-100 w-md-auto" onclick="cambiarVista(\'tarjeta\')">Vista de Tarjeta</button>
+                        <button class="btn btn-secondary mb-2 mb-md-0 me-md-2 w-100 w-md-auto" onclick="cambiarVista(\'lista\')">Vista de Lista</button>
+                        <button class="btn btn-success w-100 w-md-auto" onclick="imprimirTabla()">Imprimir</button>
+                    </div>
+                </div>';
 
-            if ($_SESSION['permiso'] == 1) {
+            // Vista de tarjeta
+            $tabla .= '<div id="vistaTarjeta" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">';
+
+            if ($total >= 1) {
+                foreach ($datos as $rows) {
+                    $tabla .= '
+                    <div class="col tarjeta-item">
+                        <div class="card h-100">
+                            <div class="card-img-top-container">
+                                <img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="card-img-top img-fluid" alt="..."  loading="lazy">
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">' . $rows['nombre_producto'] . '</h5>
+                                <p class="card-text">Id: ' . $rows['id_producto'] . '</p>
+                                <p class="card-text">Código: ' . $rows['codigo_producto'] . '</p>
+                                <p class="card-text">Ubicación: ' . $rows['ubicacion'] . '</p>
+                                <p class="card-text">Precio: ' . $rows['precio'] . '</p>
+                                <p class="card-text">Moneda: ' . $rows['nombre_moneda'] . '</p>
+                                <p class="card-text">Unidad de Medida: ' . $rows['nombre_unidad'] . '</p>
+                                <p class="card-text">Categoría: ' . $rows['nombre_categoria'] . '</p>
+                                <p class="card-text">Sub-Categoría: ' . $rows['nombre_subcategoria'] . '</p>
+                                <p class="card-text">Proveedor: ' . $rows['nombre_proveedor'] . '</p>
+                                <p class="card-text">Stock en almacenes:</p>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">General: ' . $rows['stock_general'] . '</li>
+                                    <li class="list-group-item">Maquinados: ' . $rows['stock_maquinados'] . '</li>
+                                    <li class="list-group-item">Ensamble: ' . $rows['stock_ensamble'] . '</li>
+                                    <li class="list-group-item">Dental Trade: ' . $rows['stock_dental'] . '</li>
+                                    <li class="list-group-item">Terminado: ' . $rows['stock_terminado'] . '</li>
+                                    <li class="list-group-item">RT Producto Terminado: ' . $rows['stock_rtproducto'] . '</li>
+                                    <li class="list-group-item">Ventas: ' . $rows['stock_ventas'] . '</li>
+                                    <li class="list-group-item">Descarte Terminado: ' . $rows['stock_descarte_terminado'] . '</li>
+                                    <li class="list-group-item">Descarte Desgaste: ' . $rows['stock_descarte_desgaste'] . '</li>
+                                </ul>
+                            </div>';
+
+                    if ($_SESSION['permiso'] == 1) {
+                        $tabla .= '
+                            <div class="card-footer d-flex flex-column align-items-center">
+                                <a href="' . APP_URL . 'productPhoto/' . $rows['id_producto'] . '/" class="btn btn-warning w-100 mb-2 rounded">Foto</a>
+                                <a href="' . APP_URL . 'productUpdate/' . $rows['id_producto'] . '/" class="btn btn-success w-100 mb-2 rounded">Actualizar</a>
+                                <a href="' . APP_URL . 'productEntrance/' . $rows['id_producto'] . '/" class="btn btn-light w-100 mb-2 rounded">Entrada</a>
+                                <a href="' . APP_URL . 'movUpdate/' . $rows['id_producto'] . '/" class="btn btn-info w-100 mb-2 rounded">Movimiento Entre Almacenes</a>
+                                <a href="' . APP_URL . 'descInventory/' . $rows['id_producto'] . '/" class="btn btn-danger w-100 mb-2 rounded">Descontar</a>
+                            </div>';
+                    }
+
+                    $tabla .= '</div></div>';
+                }
+            } else {
                 $tabla .= '
-                    <div class="card-footer d-flex flex-column align-items-center">
-                        <a href="' . APP_URL . 'productPhoto/' . $rows['id_producto'] . '/" class="btn btn-warning w-100 mb-2 rounded">Foto</a>
-                        <a href="' . APP_URL . 'productUpdate/' . $rows['id_producto'] . '/" class="btn btn-success w-100 mb-2 rounded">Actualizar</a>
-                        <a href="' . APP_URL . 'productEntrance/' . $rows['id_producto'] . '/" class="btn btn-light w-100 mb-2 rounded">Entrada</a>
-                        <a href="' . APP_URL . 'movUpdate/' . $rows['id_producto'] . '/" class="btn btn-info w-100 mb-2 rounded">Movimiento Entre Almacenes</a>
-                        <a href="' . APP_URL . 'descInventory/' . $rows['id_producto'] . '/" class="btn btn-danger w-100 mb-2 rounded">Descontar</a>
+                    <div class="alert alert-warning text-center" role="alert">
+                        No hay registros disponibles
                     </div>';
             }
 
-            $tabla .= '</div></div>';
-        }
-    } else {
-        $tabla .= '
-            <div class="alert alert-warning text-center" role="alert">
-                No hay registros disponibles
-            </div>';
-    }
+            $tabla .= '</div>';  // Cierra vista de tarjeta
 
-    $tabla .= '</div>';  // Cierra vista de tarjeta
-
-    // Vista de lista
-    $tabla .= '
-    <div id="vistaLista" class="table-responsive d-none">
-        <table class="table table-bordered table-hover">
-            <thead>
-                <tr class="table-primary text-center">
-                    <th>ID</th>
-                    <th>Imagen</th>
-                    <th>Nombre</th>
-                    <th>Código</th>
-                    <th>Precio</th>
-                    <th>Moneda</th>
-                    <th>Ubicación</th>
-                    <th>Stock General</th>
-                    <th>Stock Ensamble</th>
-                </tr>
-            </thead>
-            <tbody>';
-
-    if ($total >= 1) {
-        foreach ($datos as $rows) {
+            // Vista de lista
             $tabla .= '
-                <tr class="text-center">
-                    <td>' . $rows['id_producto'] . '</td>
-                    <td><img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="img-thumbnail" style="width: 100px; height: auto;" alt="Imagen del producto" loading="lazy"></td>
-                    <td>' . $rows['nombre_producto'] . '</td>
-                    <td>' . $rows['codigo_producto'] . '</td>
-                    <td>' . $rows['precio'] . '</td>
-                    <td>' . $rows['nombre_moneda'] . '</td>
-                    <td>' . $rows['ubicacion'] . '</td>
-                    <td>' . $rows['stock_general'] . '</td>
-                    <td>' . $rows['stock_ensamble'] . '</td>
-                </tr>';
-        }
-    } else {
-        $tabla .= '
-            <tr>
-                <td colspan="14" class="text-center">No hay registros disponibles</td>
-            </tr>';
-    }
+            <div id="vistaLista" class="table-responsive d-none">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr class="table-primary text-center">
+                            <th>ID</th>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Código</th>
+                            <th>Precio</th>
+                            <th>Moneda</th>
+                            <th>Ubicación</th>
+                            <th>Stock General</th>
+                            <th>Stock Ensamble</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
 
-    $tabla .= '</tbody></table></div></div>';  // Cierra vista de lista y el contenedor principal
+            if ($total >= 1) {
+                foreach ($datos as $rows) {
+                    $tabla .= '
+                        <tr class="text-center">
+                            <td>' . $rows['id_producto'] . '</td>
+                            <td><img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="img-thumbnail" style="width: 100px; height: auto;" alt="Imagen del producto" loading="lazy"></td>
+                            <td>' . $rows['nombre_producto'] . '</td>
+                            <td>' . $rows['codigo_producto'] . '</td>
+                            <td>' . $rows['precio'] . '</td>
+                            <td>' . $rows['nombre_moneda'] . '</td>
+                            <td>' . $rows['ubicacion'] . '</td>
+                            <td>' . $rows['stock_general'] . '</td>
+                            <td>' . $rows['stock_ensamble'] . '</td>
+                        </tr>';
+                }
+            } else {
+                $tabla .= '
+                    <tr>
+                        <td colspan="14" class="text-center">No hay registros disponibles</td>
+                    </tr>';
+            }
+
+            $tabla .= '</tbody></table></div>';  // Cierra vista de lista
+$tabla .= '</div></div></div>'; // Cierra el contenido principal
+ // Cierra vista de lista y el contenedor principal
 
     // JavaScript para interactividad
     $tabla .= '

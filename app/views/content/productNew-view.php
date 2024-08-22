@@ -4,14 +4,29 @@
     // Obtiene el ID del producto a editar
     $id = $insLogin->limpiarCadena($url[1]);
     ?>
-    <!-- Título de la página -->
-    <h1 class="display-4 text-center">Productos</h1>
-    <!-- Subtítulo de la página -->
-    <h2 class="lead text-center">Nuevo Producto</h2>
+   
 
-    <!-- Contenedor para el formulario de creación de producto -->
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
+    <div class="row">
+        <!-- Menú lateral -->
+        <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
+                <span class="fs-4">Menú</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item">
+                    <a href="<?php echo APP_URL; ?>productList/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Lista de Productos
+                    </a>
+                </li>
+            </ul>
+            <hr>
+        </div>
+
+        <!-- Formulario de creación de producto -->
+        <div class="col-md-9 col-lg-10">
             <?php
             // Importa el controlador de productos
             use app\controllers\productController;
@@ -30,10 +45,13 @@
             // Incluye el botón de regreso
             include "./app/views/inc/btn_back2.php";
             ?>
+             <!-- Título de la página -->
+    <h1 class="display-4 text-center">Productos</h1>
+    <!-- Subtítulo de la página -->
+    <h2 class="lead text-center">Nuevo Producto</h2>
             <!-- Formulario de creación de producto -->
             <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/productAjax.php" method="POST" autocomplete="off" enctype="multipart/form-data">
                 <!-- Campo oculto para el módulo de producto -->
-
                 <input type="hidden" name="modulo_product" value="registrar">
 
                 <!-- Campo para el código del producto -->
@@ -47,7 +65,6 @@
                     <label for="nombre_producto" class="form-label">Nombre Producto:</label>
                     <textarea class="form-control" id="nombre_producto" name="nombre_producto" maxlength="180" required></textarea>
                 </div>
-
 
                 <!-- Campo para el precio del producto -->
                 <div class="mb-3">

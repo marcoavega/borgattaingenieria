@@ -11,7 +11,7 @@ class ordenGastoController extends mainModel
 
     public function obtenerOpcionesOrdenes()
     {
-        $consulta_ordenes = "SELECT * FROM ordenes_gasto ORDER BY id_orden_gasto";
+        $consulta_ordenes = "SELECT * FROM ordenes_gasto ORDER BY id_orden_gasto DESC";
         $datos_ordenes = $this->ejecutarConsulta($consulta_ordenes);
         $opciones_ordenes = "";
 
@@ -25,7 +25,7 @@ class ordenGastoController extends mainModel
 
     public function obtenerOpcionesProveedores()
     {
-        $consulta_proveedores = "SELECT * FROM proveedores ORDER BY nombre_proveedor";
+        $consulta_proveedores = "SELECT * FROM proveedores ORDER BY nombre_proveedor DESC";
         $datos_proveedores = $this->ejecutarConsulta($consulta_proveedores);
         $opciones_proveedores = "";
 
@@ -39,7 +39,7 @@ class ordenGastoController extends mainModel
 
     public function obtenerOpcionesOrdenCompra()
     {
-        $consulta_orden_compra = "SELECT * FROM ordenes_gasto ORDER BY numero_orden";
+        $consulta_orden_compra = "SELECT * FROM ordenes_gasto ORDER BY numero_orden DESC";
         $datos_orden = $this->ejecutarConsulta($consulta_orden_compra);
         $opciones_ordenes = "";
 
@@ -53,7 +53,7 @@ class ordenGastoController extends mainModel
 
     public function obtenerOpcionesMonedas()
     {
-        $consulta_tipos_moneda = "SELECT * FROM tipos_moneda ORDER BY id_moneda";
+        $consulta_tipos_moneda = "SELECT * FROM tipos_moneda ORDER BY id_moneda DESC";
         $datos_moneda = $this->ejecutarConsulta($consulta_tipos_moneda);
         $opciones_monedas = "";
 
@@ -67,7 +67,7 @@ class ordenGastoController extends mainModel
 
     public function obtenerEmpleados()
     {
-        $consulta_empleados = "SELECT * FROM empleados ORDER BY nombre_empleado";
+        $consulta_empleados = "SELECT * FROM empleados ORDER BY nombre_empleado DESC";
         $datos_empleados = $this->ejecutarConsulta($consulta_empleados);
         $opciones_empleados = "";
 
@@ -81,7 +81,7 @@ class ordenGastoController extends mainModel
 
      public function obtenerUsos()
     {
-        $consulta = "SELECT * FROM catusoscfdi ORDER BY clave";
+        $consulta = "SELECT * FROM catusoscfdi ORDER BY clave DESC";
         $datos = $this->ejecutarConsulta($consulta);
         $opciones = "";
 
@@ -96,7 +96,7 @@ class ordenGastoController extends mainModel
 
     public function obtenerMetodosPago()
     {
-        $consulta = "SELECT * FROM catmetodospago ORDER BY clave";
+        $consulta = "SELECT * FROM catmetodospago ORDER BY clave DESC";
         $datos = $this->ejecutarConsulta($consulta);
         $opciones = "";
 
@@ -370,7 +370,7 @@ foreach ($datos as $rows) {
 // Continúa 
 $tabla .= '  
 <tr>
-<td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['numero_partida'] . '</td>
+<td style="text-align: center; border: 1px solid #000; padding: 5px;" class="numero-partida"></td>
 <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_producto'] . '</td>
 <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['cantidad'] . '</td>
 <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_unidad'] . '</td>
@@ -436,6 +436,16 @@ $tabla .= '
 
 
 $tabla .= '<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+    var ordenes = document.querySelectorAll(".invoice");
+    ordenes.forEach(function(orden) {
+        var filas = orden.querySelectorAll("tbody tr");
+        filas.forEach(function(fila, index) {
+            fila.querySelector(".numero-partida").textContent = index + 1;
+        });
+    });
+});
 
 function numeroALetras(numero) {
     const unidades = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];

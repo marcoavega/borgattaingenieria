@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark ">
   <div class="container-fluid">
     <a class="navbar-brand" href="<?php echo APP_URL; ?>dashboard/">
       <small>BORGATTA INGENIERÍA</small>
@@ -11,7 +11,10 @@
         <?php if ($_SESSION['permiso'] == 1) { ?>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="usuariosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-users fa-sm"></i> Usuarios
+            <div class="d-flex flex-column align-items-center">
+              <img src="https://img.icons8.com/ios-filled/50/ffffff/user.png" alt="Users Icon" class="nav-icon">
+              Usuarios
+            </div>
           </a>
           <ul class="dropdown-menu" aria-labelledby="usuariosDropdown">
             <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userNew/">Crear Nuevo</a></li>
@@ -22,7 +25,10 @@
         
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="productosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-box fa-sm"></i> Productos
+            <div class="d-flex flex-column align-items-center">
+              <img src="https://img.icons8.com/ios-glyphs/30/ffffff/box.png" alt="Products Icon" class="nav-icon">
+              Productos
+            </div>
           </a>
           <ul class="dropdown-menu" aria-labelledby="productosDropdown">
             <?php if ($_SESSION['permiso'] == 1) { ?>
@@ -35,7 +41,10 @@
         <?php if ($_SESSION['permiso'] == 1) { ?>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="movimientosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-exchange-alt fa-sm"></i> Movimientos
+            <div class="d-flex flex-column align-items-center">
+              <img src="https://img.icons8.com/ios-glyphs/30/ffffff/shuffle.png" alt="Movements Icon" class="nav-icon">
+              Movimientos
+            </div>
           </a>
           <ul class="dropdown-menu" aria-labelledby="movimientosDropdown">
             <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movList/">Consultar Todos</a></li>
@@ -46,7 +55,10 @@
         
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="proveedoresDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-truck fa-sm"></i> Proveedores
+            <div class="d-flex flex-column align-items-center">
+              <img src="https://img.icons8.com/ios-glyphs/30/ffffff/truck.png" alt="Suppliers Icon" class="nav-icon">
+              Proveedores
+            </div>
           </a>
           <ul class="dropdown-menu" aria-labelledby="proveedoresDropdown">
             <li><a class="dropdown-item" href="<?php echo APP_URL; ?>provNew/">Nuevo</a></li>
@@ -56,7 +68,10 @@
         
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="clientesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-user-tie fa-sm"></i> Clientes
+            <div class="d-flex flex-column align-items-center">
+              <img src="https://img.icons8.com/ios-glyphs/30/ffffff/business-contact.png" alt="Clients Icon" class="nav-icon">
+              Clientes
+            </div>
           </a>
           <ul class="dropdown-menu" aria-labelledby="clientesDropdown">
             <li><a class="dropdown-item" href="<?php echo APP_URL; ?>clientNew/">Nuevo</a></li>
@@ -66,7 +81,10 @@
         
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="ordenesCompraDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-shopping-cart fa-sm"></i> Órdenes Compra
+            <div class="d-flex flex-column align-items-center">
+              <img src="https://img.icons8.com/ios-glyphs/30/ffffff/shopping-cart.png" alt="Purchase Orders Icon" class="nav-icon">
+              Órdenes Compra
+            </div>
           </a>
           <ul class="dropdown-menu" aria-labelledby="ordenesCompraDropdown">
             <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderCNew/">Nueva orden</a></li>
@@ -77,7 +95,10 @@
         
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="ordenesGastoDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-file-invoice-dollar fa-sm"></i> Órdenes Gasto
+            <div class="d-flex flex-column align-items-center">
+              <img src="https://img.icons8.com/ios-glyphs/30/ffffff/purchase-order.png" alt="Expense Orders Icon" class="nav-icon">
+              Órdenes Gasto
+            </div>
           </a>
           <ul class="dropdown-menu" aria-labelledby="ordenesGastoDropdown">
             <li><a class="dropdown-item" href="<?php echo APP_URL; ?>orderGNew/">Nueva orden</a></li>
@@ -88,7 +109,10 @@
         
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="notaEntradaDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-clipboard-check fa-sm"></i> Nota Entrada
+            <div class="d-flex flex-column align-items-center">
+              <img src="https://img.icons8.com/ios-glyphs/30/ffffff/checklist.png" alt="Entry Note Icon" class="nav-icon">
+              Nota Entrada
+            </div>
           </a>
           <ul class="dropdown-menu" aria-labelledby="notaEntradaDropdown">
             <li><a class="dropdown-item" href="<?php echo APP_URL; ?>notaENew/">Nueva Nota</a></li>
@@ -99,7 +123,10 @@
         
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="facturasDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-file-invoice fa-sm"></i> Facturas
+            <div class="d-flex flex-column align-items-center">
+              <img src="https://img.icons8.com/ios-glyphs/30/ffffff/invoice.png" alt="Invoices Icon" class="nav-icon">
+              Facturas
+            </div>
           </a>
           <ul class="dropdown-menu" aria-labelledby="facturasDropdown">
             <li><a class="dropdown-item" href="<?php echo APP_URL; ?>facturaNew/">Capturar</a></li>
@@ -111,7 +138,10 @@
         
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="controlProcesosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-cogs fa-sm"></i> Control Procesos
+            <div class="d-flex flex-column align-items-center">
+              <img src="https://img.icons8.com/ios-glyphs/30/ffffff/settings.png" alt="Process Control Icon" class="nav-icon">
+              Control Procesos
+            </div>
           </a>
           <ul class="dropdown-menu" aria-labelledby="controlProcesosDropdown">
             <li><a class="dropdown-item" href="<?php echo APP_URL; ?>regNumeroLote/">Registrar Nº Lote</a></li>
@@ -129,6 +159,7 @@
       <ul class="navbar-nav">
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="userOptionsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
             <i class="fas fa-user fa-sm"></i> Usuario
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userOptionsDropdown">
@@ -145,12 +176,12 @@
 <style>
 .navbar {
   font-size: 0.75rem;
-  padding-top: 0.2rem;
   padding-bottom: 0.2rem;
+  
 }
 
 .navbar .nav-link {
-  padding: 0.3rem 0.5rem;
+  
 }
 
 .navbar .fas {
@@ -171,11 +202,13 @@
   padding: 0.25rem 0.75rem;
 }
 
-@media (max-width: 991.98px) {
-  .navbar-nav .dropdown-menu {
-    position: static;
-    float: none;
-  }
+.nav-icon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 0.2rem;
+}
+
+
   
   .navbar-nav .nav-item {
     padding: 0.1rem 0;
