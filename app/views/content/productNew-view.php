@@ -45,9 +45,9 @@
             $opcionesSubCategorias = $insProduct->obtenerOpcionesSubCategorias();
             ?>
              <!-- Título de la página -->
-    <h1 class="display-4 text-center">Productos</h1>
+    <h4 class="text-center">Productos</h4>
     <!-- Subtítulo de la página -->
-    <h2 class="lead text-center">Nuevo Producto</h2>
+    <h5 class="lead text-center">Nuevo Producto</h5>
             <!-- Formulario de creación de producto -->
             <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/productAjax.php" method="POST" autocomplete="off" enctype="multipart/form-data">
                 <!-- Campo oculto para el módulo de producto -->

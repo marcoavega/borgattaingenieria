@@ -452,9 +452,9 @@ $tabla .= '
         <div class="col-12 col-md-9 col-lg-10">
             <div class="container-fluid mb-4">
                 <!-- Título de la página -->
-                <h1 class="display-4 text-center">Productos</h1>
+                <h4 class="text-center">Productos</h4>
                 <!-- Subtítulo de la página -->
-                <h2 class="lead text-center">Lista de productos</h2>
+                <h5 class="lead text-center">Lista de productos</h5>
             </div>
             <!-- Botones para cambiar la vista y el buscador en tiempo real -->
             <div class="container-fluid p-4">
@@ -483,7 +483,7 @@ $tabla .= '
                                 <img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="card-img-top img-fluid" alt="..."  loading="lazy">
                             </div>
                             <div class="card-body">
-                                <h5 class="card-title">' . $rows['nombre_producto'] . '</h5>
+                                <p class="card-title">' . $rows['nombre_producto'] . '</p>
                                 <p class="card-text">Id: ' . $rows['id_producto'] . '</p>
                                 <p class="card-text">Código: ' . $rows['codigo_producto'] . '</p>
                                 <p class="card-text">Ubicación: ' . $rows['ubicacion'] . '</p>
