@@ -19,8 +19,8 @@
 }
     </style>
 </head>
-<div class="container my-4">
-    <h1 class="text-center mb-4">Dashboard de Almacén</h1>
+<div class="container">
+    <h1 class="text-center">Dashboard de Almacén</h1>
     <div class="row g-4">
         <div class="col-12 col-md-6 col-lg-4">
             <div class="card dashboard-card h-100">

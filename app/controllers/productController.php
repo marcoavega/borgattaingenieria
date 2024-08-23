@@ -420,25 +420,33 @@ return json_encode($alerta);
 
  // Botones para cambiar la vista y el buscador en tiempo real
 $tabla .= '
-<div class="container-fluid p-4">
+<div class="container-fluid">
     <div class="row">
         <!-- Menú lateral -->
-        <div class="col-12 col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark custom-sidebar">
-            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
-                <span class="fs-4">Menú</span>
-            </a>
+
+         <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
             <hr>
-            <ul class="nav nav-pills flex-column mb-auto">
-                <li class="nav-item border-bottom mb-2">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productList/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Lista de Productos
+                    </a>
+                </li>
+            </ul>
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
                     <a href="' . APP_URL . 'productNew/" class="nav-link active" aria-current="page">
                         <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
-                        Registrar Nuevo Producto
+                        Registrar Nuevo
                     </a>
                 </li>
             </ul>
             <hr>
         </div>
+
+        
 
         <!-- Contenido principal -->
         <div class="col-12 col-md-9 col-lg-10">

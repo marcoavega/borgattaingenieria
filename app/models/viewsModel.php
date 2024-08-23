@@ -71,7 +71,8 @@
                             "facturacion",
                             "clientNew",
                             "clientList",
-                            "controlLotes"
+                            "controlLotes",
+                            "productMain"
                         ];
 
             // Comprueba si la vista solicitada está en la lista blanca

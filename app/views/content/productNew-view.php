@@ -1,24 +1,27 @@
 <!-- Contenedor principal -->
-<div class="container-fluid py-4">
+<div class="container-fluid">
     <?php
     // Obtiene el ID del producto a editar
     $id = $insLogin->limpiarCadena($url[1]);
     ?>
-   
-
     <div class="row">
         <!-- Menú lateral -->
-        <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark">
-            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
-                <span class="fs-4">Menú</span>
-            </a>
+        <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
             <hr>
-            <ul class="nav nav-pills flex-column mb-auto">
+            <ul class="nav flex-column">
                 <li class="nav-item">
                     <a href="<?php echo APP_URL; ?>productList/" class="nav-link active" aria-current="page">
                         <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
                         Lista de Productos
+                    </a>
+                </li>
+            </ul>
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="<?php echo APP_URL; ?>productNew/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Registrar Nuevo
                     </a>
                 </li>
             </ul>
@@ -40,10 +43,6 @@
             $opcionesUnidadesMedida = $insProduct->obtenerOpcionesUnidadesMedida();
             $opcionesTiposMoneda = $insProduct->obtenerOpcionesTiposMoneda();
             $opcionesSubCategorias = $insProduct->obtenerOpcionesSubCategorias();
-            ?>
-            <?php
-            // Incluye el botón de regreso
-            include "./app/views/inc/btn_back2.php";
             ?>
              <!-- Título de la página -->
     <h1 class="display-4 text-center">Productos</h1>
