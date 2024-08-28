@@ -1,20 +1,41 @@
 <!-- Contenedor principal -->
-<div class="container mb-4">
-    <!-- Títulos de la página -->
-    <h1 class="display-4 text-center">Usuarios</h1>
-    <h2 class="lead text-center">Nuevo usuario</h2>
-</div>
-
-<!-- Contenedor para el formulario de creación de usuario -->
-<div class="container py-4">
-
+<div class="container-fluid">
     <div class="row">
+        <!-- Menú lateral -->
+        <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="<?php echo APP_URL; ?>userList/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Lista de Usuarios
+                    </a>
+                </li>
+            </ul>
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="<?php echo APP_URL; ?>userNew/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Registrar Nuevo
+                    </a>
+                </li>
+            </ul>
+            <hr>
+        </div>
 
-        <div class="col-lg-8 mx-auto">
+        <!-- Formulario de creación de usuario -->
+        <div class="col-md-9 col-lg-10">
+            <!-- Título de la página -->
+            <h4 class="text-center">Usuarios</h4>
+            <!-- Subtítulo de la página -->
+            <h5 class="lead text-center">Nuevo Usuario</h5>
+
             <?php
             // Incluye el botón de regreso
             include "./app/views/inc/btn_back2.php";
             ?>
+
             <!-- Formulario de creación de usuario -->
             <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/usuarioAjax.php" method="POST" autocomplete="off" enctype="multipart/form-data">
                 <!-- Campo oculto para el módulo de usuario -->

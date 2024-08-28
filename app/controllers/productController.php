@@ -422,8 +422,8 @@ return json_encode($alerta);
 $tabla .= '
 <div class="container-fluid">
     <div class="row">
-        <!-- Menú lateral -->
 
+        <!-- Menú lateral -->
          <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
             <hr>
             <ul class="nav flex-column">

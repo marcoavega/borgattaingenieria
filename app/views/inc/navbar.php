@@ -6,23 +6,23 @@
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
+
       <ul class="navbar-nav me-auto">
+
         <?php if ($_SESSION['permiso'] == 1) { ?>
-        <li class="nav-item dropdown">
-          <a class="nav-link " href="#" id="usuariosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+          <li class="nav-item">
+          <a class="nav-link" href="<?php echo APP_URL; ?>userMain/" id="UserDropdown" role="button" aria-expanded="false">
             <div class="d-flex flex-column align-items-center">
-              <img src="https://img.icons8.com/ios-filled/50/ffffff/user.png" alt="Users Icon" class="nav-icon">
+              <img src="https://img.icons8.com/ios-filled/50/ffffff/user.png" alt="User Icon" class="nav-icon">
               Usuarios
             </div>
           </a>
-          <ul class="dropdown-menu" aria-labelledby="usuariosDropdown">
-            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userNew/">Crear Nuevo</a></li>
-            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userList/">Lista</a></li>
-          </ul>
         </li>
         <?php } ?>
-        
+
         <li class="nav-item">
           <a class="nav-link" href="<?php echo APP_URL; ?>productMain/" id="productosDropdown" role="button" aria-expanded="false">
             <div class="d-flex flex-column align-items-center">

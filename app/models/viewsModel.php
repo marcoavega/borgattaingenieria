@@ -72,7 +72,8 @@
                             "clientNew",
                             "clientList",
                             "controlLotes",
-                            "productMain"
+                            "productMain",
+                            "userMain"
                         ];
 
             // Comprueba si la vista solicitada está en la lista blanca

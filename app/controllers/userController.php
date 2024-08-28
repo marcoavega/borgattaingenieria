@@ -230,81 +230,111 @@
 
 			$numeroPaginas =ceil($total/$registros);
 
-			$tabla.='
-		        <div class="table-container">
-		        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
-		            <thead>
-		                <tr>
-		                    <th class="has-text-centered">#</th>
-		                    <th class="has-text-centered">Usuario</th>
-		                    <th class="has-text-centered">Creado</th>
-		                    <th class="has-text-centered">Actualizado</th>
-		                    <th class="has-text-centered" colspan="3">Opciones</th>
-		                </tr>
-		            </thead>
-		            <tbody>
-		    ';
+			$tabla .= '
+<div class="container-fluid">
+    <div class="row">
 
-		    if($total>=1 && $pagina<=$numeroPaginas){
-				$contador=$inicio+1;
-				$pag_inicio=$inicio+1;
-				foreach($datos as $rows){
-					$tabla.='
-						<tr class="has-text-centered" >
-							<td>'.$contador.'</td>
-							<td>'.$rows['usuario_usuario'].'</td>
-							<td>'.date("d-m-Y  h:i:s A",strtotime($rows['usuario_creado'])).'</td>
-							<td>'.date("d-m-Y  h:i:s A",strtotime($rows['usuario_actualizado'])).'</td>
-							<td>
-			                    <a href="'.APP_URL.'userPhoto/'.$rows['usuario_id'].'/" class="btn btn-primary">Foto</a>
-			                </td>
-			                <td>
-			                    <a href="'.APP_URL.'userUpdate/'.$rows['usuario_id'].'/" class="btn btn-info">Actualizar</a>
-			                </td>
-			                <td>
-			                	<form class="FormularioAjax" action="'.APP_URL.'app/ajax/usuarioAjax.php" method="POST" autocomplete="off" >
+        <!-- Menú lateral -->
+        <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'userList/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Lista de Usuarios
+                    </a>
+                </li>
+            </ul>
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'userNew/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Registrar Nuevo
+                    </a>
+                </li>
+            </ul>
+            <hr>
+        </div>
 
-			                		<input type="hidden" name="modulo_usuario" value="eliminar">
-			                		<input type="hidden" name="usuario_id" value="'.$rows['usuario_id'].'">
+        <!-- Contenido principal -->
+        <div class="col-12 col-md-9 col-lg-10">
+            <div class="container-fluid mb-4">
+                <!-- Título de la página -->
+                <h4 class="text-center">Usuarios</h4>
+                <!-- Subtítulo de la página -->
+                <h5 class="lead text-center">Lista de usuarios</h5>
+            </div>
 
-			                    	<button type="submit" class="btn btn-danger">Eliminar</button>
-			                    </form>
-			                </td>
-						</tr>
-					';
-					$contador++;
-				}
-				$pag_final=$contador-1;
-			}else{
-				if($total>=1){
-					$tabla.='
-						<tr class="has-text-centered" >
-			                <td colspan="7">
-			                    <a href="'.$url.'1/" class="button is-link is-rounded is-small mt-4 mb-4">
-			                        Haga clic acá para recargar el listado
-			                    </a>
-			                </td>
-			            </tr>
-					';
-				}else{
-					$tabla.='
-						<tr class="has-text-centered" >
-			                <td colspan="7">
-			                    No hay registros en el sistema
-			                </td>
-			            </tr>
-					';
-				}
-			}
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr class="table-primary text-center">
+                            <th>#</th>
+                            <th>Usuario</th>
+                            <th>Creado</th>
+                            <th>Actualizado</th>
+                            <th colspan="3">Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
 
-			$tabla.='</tbody></table></div>';
+        if($total >= 1 && $pagina <= $numeroPaginas){
+            $contador = $inicio + 1;
+            $pag_inicio = $inicio + 1;
+            foreach($datos as $rows){
+                $tabla .= '
+                    <tr class="text-center">
+                        <td>'.$contador.'</td>
+                        <td>'.$rows['usuario_usuario'].'</td>
+                        <td>'.date("d-m-Y  h:i:s A", strtotime($rows['usuario_creado'])).'</td>
+                        <td>'.date("d-m-Y  h:i:s A", strtotime($rows['usuario_actualizado'])).'</td>
+                        <td>
+                            <a href="'.APP_URL.'userPhoto/'.$rows['usuario_id'].'/" class="btn btn-primary btn-sm">Foto</a>
+                        </td>
+                        <td>
+                            <a href="'.APP_URL.'userUpdate/'.$rows['usuario_id'].'/" class="btn btn-info btn-sm">Actualizar</a>
+                        </td>
+                        <td>
+                            <form class="FormularioAjax" action="'.APP_URL.'app/ajax/usuarioAjax.php" method="POST" autocomplete="off">
+                                <input type="hidden" name="modulo_usuario" value="eliminar">
+                                <input type="hidden" name="usuario_id" value="'.$rows['usuario_id'].'">
+                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                ';
+                $contador++;
+            }
+            $pag_final = $contador - 1;
+        } else {
+            if($total >= 1){
+                $tabla .= '
+                    <tr class="text-center">
+                        <td colspan="7">
+                            <a href="'.$url.'1/" class="btn btn-link mt-4 mb-4">
+                                Haga clic acá para recargar el listado
+                            </a>
+                        </td>
+                    </tr>
+                ';
+            } else {
+                $tabla .= '
+                    <tr class="text-center">
+                        <td colspan="7">
+                            No hay registros en el sistema
+                        </td>
+                    </tr>
+                ';
+            }
+        }
 
-			### Paginacion ###
-			if($total>0 && $pagina<=$numeroPaginas){
-				$tabla.='<p class="has-text-right">Mostrando usuarios <strong>'.$pag_inicio.'</strong> al <strong>'.$pag_final.'</strong> de un <strong>total de '.$total.'</strong></p>';
-
-				$tabla.=$this->paginadorTablas($pagina,$numeroPaginas,$url,7);
-			}
+        $tabla .= '</tbody></table>
+            </div>
+        </div>
+    </div>
+</div>';
+			
 
 			return $tabla;
 		}
