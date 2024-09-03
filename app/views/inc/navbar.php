@@ -33,18 +33,13 @@
         </li>
         
         <?php if ($_SESSION['permiso'] == 1) { ?>
-        <li class="nav-item dropdown">
-          <a class="nav-link " href="#" id="movimientosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <li class="nav-item">
+          <a class="nav-link" href="<?php echo APP_URL; ?>movementsMain/" id="productosDropdown" role="button" aria-expanded="false">
             <div class="d-flex flex-column align-items-center">
               <img src="https://img.icons8.com/ios-glyphs/30/ffffff/shuffle.png" alt="Movements Icon" class="nav-icon">
               Movimientos
-            </div>
+              </div>
           </a>
-          <ul class="dropdown-menu" aria-labelledby="movimientosDropdown">
-            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movList/">Consultar Todos</a></li>
-            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movSearch/">Buscar por nombre</a></li>
-            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>movSearch2/">Buscar por movimiento</a></li>
-          </ul>
         </li>
         
         <li class="nav-item dropdown">
