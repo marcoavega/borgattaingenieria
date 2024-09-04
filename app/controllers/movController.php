@@ -275,7 +275,7 @@ class movController extends mainModel
             <div class="col-12 col-md-9 col-lg-10">
                 <div class="container-fluid mb-4">
                     <h4 class="text-center">Movimientos</h4>
-                    <h5 class="lead text-center">Lista de movimientos entre almacenes</h5>
+                    <h5 class="lead text-center">Lista de movimientos entre almacenes por fecha</h5>
                 </div>
                 
                 <!-- Formulario de filtro por fechas -->
@@ -439,14 +439,54 @@ public function listarMovControladorEmpleado($pagina, $registros, $url, $busqued
     $id_empleado = isset($_POST['id_empleado']) ? $this->limpiarCadena($_POST['id_empleado']) : '';
 
     $tabla = '
-<form method="POST" action="' . $url . '">
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <input type="date" class="form-control" name="fechaInicio" placeholder="Fecha Inicio" value="' . htmlspecialchars($fechaInicio) . '">
-        </div>
-        <div class="col-md-4">
-            <input type="date" class="form-control" name="fechaFin" placeholder="Fecha Fin" value="' . htmlspecialchars($fechaFin) . '">
-        </div>';
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Menú lateral -->
+            <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="' . APP_URL . 'movList/" class="nav-link active" aria-current="page">
+                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                            Movimientos
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="' . APP_URL . 'movSearch/" class="nav-link active" aria-current="page">
+                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                            Por Nombre
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="' . APP_URL . 'movSearch2/" class="nav-link active" aria-current="page">
+                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                            Por Movimiento
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Contenido principal -->
+            <div class="col-12 col-md-9 col-lg-10">
+                <!-- El contenido original comienza aquí -->
+                <div class="container-fluid mb-4">
+                    <h4 class="text-center">Movimientos</h4>
+                    <h5 class="lead text-center">Lista de movimientos entre almacenes por empleados</h5>
+                </div>
+                <form method="POST" action="' . $url . '">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <input type="date" class="form-control" name="fechaInicio" placeholder="Fecha Inicio" value="' . htmlspecialchars($fechaInicio) . '">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="date" class="form-control" name="fechaFin" placeholder="Fecha Fin" value="' . htmlspecialchars($fechaFin) . '">
+                        </div>';
 
     // Consulta para obtener la lista de empleados
     $consulta_empleados = "SELECT * FROM empleados ORDER BY nombre_empleado";
@@ -461,18 +501,19 @@ public function listarMovControladorEmpleado($pagina, $registros, $url, $busqued
 
     // Continuación del formulario en la cadena $tabla
     $tabla .= '
-        <div class="col-md-4">
-            <select class="form-control" name="id_empleado" required>
-                <option value="">Seleccione Empleado</option>
-                ' . $opciones_empleados . '
-            </select>
-        </div>
-        <div class="col-md-4">
-            <button type="submit" class="btn btn-primary">Filtrar</button>
-        </div>
-    </div>
-</form>';
+                        <div class="col-md-4">
+                            <select class="form-control" name="id_empleado" required>
+                                <option value="">Seleccione Empleado</option>
+                                ' . $opciones_empleados . '
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary">Filtrar</button>
+                        </div>
+                    </div>
+                </form>';
 
+    // El resto del código permanece exactamente igual
     if (!empty($fechaInicio) && !empty($fechaFin)) {
         $pagina = (isset($pagina) && $pagina > 0) ? (int) $pagina : 1;
         $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
@@ -608,6 +649,8 @@ public function listarMovControladorEmpleado($pagina, $registros, $url, $busqued
 }
 </script>';
     }
+
+    $tabla .= '</div></div></div>'; // Cierra el contenido principal y las filas/contenedores
 
     return $tabla;
 }
