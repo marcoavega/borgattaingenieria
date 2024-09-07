@@ -123,11 +123,6 @@ class salidaPTController extends mainModel
         return $resultado ? intval($resultado['ultimo_numero']) : 0;
     }
 
-
-
-
-
-
    /* Método para listar las salidas */
    public function listarSalidaControlador($pagina, $registros, $url, $busqueda)
 {

@@ -125,24 +125,15 @@
           </ul>
         </li>
         
-        <li class="nav-item dropdown">
-          <a class="nav-link" href="#" id="controlProcesosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <li class="nav-item">
+          <a class="nav-link" href="<?php echo APP_URL; ?>salidaTerminadoMain/" id="productosDropdown" role="button" aria-expanded="false">
             <div class="d-flex flex-column align-items-center">
-              <img src="https://img.icons8.com/ios-glyphs/30/ffffff/settings.png" alt="Process Control Icon" class="nav-icon">
-              Control Procesos
+              <img src="https://img.icons8.com/ios-glyphs/30/ffffff/settings.png" alt="Products Icon" class="nav-icon">
+              Salida Terminado
             </div>
           </a>
-          <ul class="dropdown-menu" aria-labelledby="controlProcesosDropdown">
-            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>regNumeroLote/">Registrar Nº Lote</a></li>
-            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>consultaNumeroLote/">Consultar Nº Lote</a></li>
-            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>regNumeroSerie/">Registrar Nº Serie</a></li>
-            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>consultaNumeroSerie/">Consultar Nº Serie</a></li>
-            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>salidasProductoTerminado/">Registrar Salidas PT</a></li>
-            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>salidaPTNew/">Registro Salidas Nº Serie PT</a></li>
-            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>salidaPTSearch/">Consultar Vale Salida</a></li>
-            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>numSerSearch/">Consultar Registros</a></li>
-          </ul>
         </li>
+
         <?php } ?>
       </ul>
       <ul class="navbar-nav">

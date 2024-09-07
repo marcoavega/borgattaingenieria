@@ -31,11 +31,6 @@
             <!-- Subtítulo de la página -->
             <h5 class="lead text-center">Nuevo Usuario</h5>
 
-            <?php
-            // Incluye el botón de regreso
-            include "./app/views/inc/btn_back2.php";
-            ?>
-
             <!-- Formulario de creación de usuario -->
             <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/usuarioAjax.php" method="POST" autocomplete="off" enctype="multipart/form-data">
                 <!-- Campo oculto para el módulo de usuario -->

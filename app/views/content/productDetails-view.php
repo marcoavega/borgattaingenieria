@@ -1,87 +1,173 @@
-<!-- Contenedor principal -->
-<div class="container-fluid mb-4">
-    <?php 
-        // Obtiene el ID del usuario a actualizar
-        $id=$insLogin->limpiarCadena($url[1]);
+<?php
+// Asegúrate de que todas las clases necesarias estén importadas
+use app\controllers\productController;
+
+// Contenedor principal
 ?>
+<div class="container-fluid">
+    <div class="row">
+       <!-- Menú lateral -->
+       <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="<?php echo APP_URL; ?>productList/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Lista de Productos
+                    </a>
+                </li>
+            </ul>
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="<?php echo APP_URL; ?>productNew/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Registrar Nuevo
+                    </a>
+                </li>
+            </ul>
+            <hr>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="col-md-9 col-lg-10">
+            <div class="container py-4">
+                <?php 
+                // Obtiene el ID del producto a mostrar
+                $id = $insLogin->limpiarCadena($url[1]);
+
+                // Crea una instancia del controlador de productos
+                $insProduct = new productController();
+
+                // Obtiene los datos del producto
+                $producto = $insProduct->obtenerDetallesProducto($id);
+
+                // Comprueba si se obtuvieron los datos del producto
+                if ($producto) {
+                ?>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h3 class="card-title">Detalles del Producto: <?php echo htmlspecialchars($producto['nombre_producto']); ?></h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Código:</strong> <?php echo htmlspecialchars($producto['codigo_producto']); ?></p>
+                                        <p><strong>Nombre:</strong> <?php echo htmlspecialchars($producto['nombre_producto']); ?></p>
+                                        <p><strong>Ubicación:</strong> <?php echo htmlspecialchars($producto['ubicacion']); ?></p>
+                                        <p><strong>Precio:</strong> <?php echo number_format($producto['precio'], 2); ?></p>
+                                        <p><strong>Categoría:</strong> <?php echo htmlspecialchars($producto['nombre_categoria']); ?></p>
+                                        <p><strong>Subcategoría:</strong> <?php echo htmlspecialchars($producto['nombre_subcategoria']); ?></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Proveedor:</strong> <?php echo htmlspecialchars($producto['nombre_proveedor']); ?></p>
+                                        <p><strong>Unidad:</strong> <?php echo htmlspecialchars($producto['nombre_unidad']); ?></p>
+                                        <p><strong>Moneda:</strong> <?php echo htmlspecialchars($producto['nombre_moneda']); ?></p>
+                                        <p><strong>Fecha de Registro:</strong> <?php echo date('d/m/Y H:i', strtotime($producto['fecha_registro'])); ?></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Nueva sección para el stock en almacenes -->
+                        <div class="card mt-3">
+                            <div class="card-header bg-info text-white">
+                                <h4 class="card-title">Stock en Almacenes</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Almacén</th>
+                                                <th>Stock</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $almacenes = [
+                                                'General' => 'stock_general',
+                                                'Maquinados' => 'stock_maquinados',
+                                                'Ensamble' => 'stock_ensamble',
+                                                'Dental Trade' => 'stock_dental',
+                                                'Terminado' => 'stock_terminado',
+                                                'RT Producto Terminado' => 'stock_rtproducto',
+                                                'Ventas' => 'stock_ventas',
+                                                'Descarte Terminado' => 'stock_descarte_terminado',
+                                                'Descarte Desgaste' => 'stock_descarte_desgaste'
+                                            ];
+                                            foreach ($almacenes as $nombre => $campo) {
+                                                echo "<tr>
+                                                    <td>{$nombre}</td>
+                                                    <td>" . (isset($producto[$campo]) ? $producto[$campo] : '0') . "</td>
+                                                </tr>";
+                                            }
+                                            ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header bg-secondary text-white">
+                                <h4 class="card-title">Imagen del Producto</h4>
+                            </div>
+                            <div class="card-body text-center">
+                                <?php
+                                if (!empty($producto['url_imagen'])) {
+                                    $rutaImagen = APP_URL . 'app/views/img/img/' . $producto['url_imagen'];
+                                    if (file_exists($_SERVER['DOCUMENT_ROOT'] . parse_url($rutaImagen, PHP_URL_PATH))) {
+                                        echo '<img src="' . $rutaImagen . '" alt="Imagen del producto" class="img-fluid">';
+                                    } else {
+                                        echo '<p>La imagen no se encuentra en el servidor.</p>';
+                                        echo '<p>Ruta de la imagen: ' . $rutaImagen . '</p>';
+                                    }
+                                } else {
+                                    echo '<p>No hay imagen disponible para este producto.</p>';
+                                }
+                                ?>
+                            </div>
+                        </div>
+                        <div class="card mt-3">
+                            <div class="card-header bg-secondary text-white">
+                                <h4 class="card-title">Acciones</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex flex-column align-items-center">
+                                    <?php
+                                    $actions = [
+                                        ['url' => 'productPhoto', 'text' => 'Foto', 'class' => 'btn-warning'],
+                                        ['url' => 'productUpdate', 'text' => 'Actualizar', 'class' => 'btn-success'],
+                                        ['url' => 'productEntrance', 'text' => 'Entrada', 'class' => 'btn-light'],
+                                        ['url' => 'movUpdate', 'text' => 'Movimiento Entre Almacenes', 'class' => 'btn-info'],
+                                        ['url' => 'descInventory', 'text' => 'Descontar', 'class' => 'btn-danger']
+                                    ];
+
+                                    foreach ($actions as $action) {
+                                        echo '<a href="' . APP_URL . $action['url'] . '/' . $producto['id_producto'] . '/" class="btn ' . $action['class'] . ' btn-sm w-100 mb-2 rounded">' . $action['text'] . '</a>';
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <?php
+                } else {
+                    // Si no se obtuvieron los datos del producto, muestra un mensaje de error
+                    include "./app/views/inc/error_alert.php";
+                }
+                ?>
+            </div>
+        </div>
+    </div>
 </div>
+Last edited just now
 
-<!-- Contenedor para el formulario de actualización -->
-<div class="container py-4">
-    <?php
-        // Incluye el botón de regreso
 
-        // Obtiene los datos del usuario a actualizar
-        $datos=$insLogin->seleccionarDatos("Unico","productos","id_producto",$id);
-
-        // Comprueba si se obtuvieron los datos del usuario
-        if($datos->rowCount()==1){
-            $datos=$datos->fetch();
-    ?>
-
-    <!-- Muestra el nombre de usuario -->
-    <h2 class="h3 text-center mb-4"><?php echo $datos['id_producto']; ?></h2>
-
-    <!-- Muestra las fechas de creación y actualización del usuario -->
-    <p class="text-center pb-4"><?php echo "<strong>Usuario creado:</strong> ".date("d-m-Y  h:i:s A",strtotime($datos['usuario_creado']))." &nbsp; <strong>Usuario actualizado:</strong> ".date("d-m-Y  h:i:s A",strtotime($datos['usuario_actualizado'])); ?></p>
-
-    <!-- Formulario para actualizar los datos del usuario -->
-    <form class="FormularioAjax" action="<?php echo APP_URL; ?>app/ajax/usuarioAjax.php" method="POST" autocomplete="off" >
-        <!-- Campo oculto para el módulo de usuario -->
-        <input type="hidden" name="modulo_usuario" value="actualizar">
-        <!-- Campo oculto para el ID del usuario -->
-        <input type="hidden" name="usuario_id" value="<?php echo $datos['usuario_id']; ?>">
-
-        <!-- Campo para el nombre de usuario -->
-        <div class="mb-3">
-            <label for="usuario_usuario" class="form-label">Nuevo nombre de Usuario</label>
-            <input type="text" class="form-control" id="usuario_usuario" name="usuario_usuario" pattern="[a-zA-Z0-9]{4,20}" maxlength="20" value="<?php echo $datos['usuario_usuario']; ?>" required>
-        </div>
-
-        <!-- Mensaje sobre la actualización de la clave -->
-        <p class="text-center">
-            SI desea actualizar la clave de este usuario por favor llene los 2 campos. Si NO desea actualizar la clave deje los campos vacíos.
-        </p>
-
-        <!-- Campos para la nueva clave -->
-        <div class="row g-3">
-            <div class="col">
-                <label for="usuario_clave_1" class="form-label">Nueva clave</label>
-                <input type="password" class="form-control" id="usuario_clave_1" name="usuario_clave_1" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100">
-            </div>
-            <div class="col">
-                <label for="usuario_clave_2" class="form-label">Repetir nueva clave</label>
-                <input type="password" class="form-control" id="usuario_clave_2" name="usuario_clave_2" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100">
-            </div>
-        </div>
-
-        <!-- Mensaje sobre la necesidad de ingresar el usuario y la clave del administrador -->
-        <p class="text-center mt-4">
-            Para poder actualizar los datos de este usuario por favor ingrese su USUARIO y CLAVE con la que ha iniciado sesión
-        </p>
-
-        <!-- Campos para el usuario y la clave del administrador -->
-        <div class="row g-3">
-            <div class="col">
-                <label for="administrador_usuario" class="form-label">Usuario</label>
-                <input type="text" class="form-control" id="administrador_usuario" name="administrador_usuario" pattern="[a-zA-Z0-9]{4,20}" maxlength="20" required>
-            </div>
-            <div class="col">
-                <label for="administrador_clave" class="form-label">Clave</label>
-                <input type="password" class="form-control" id="administrador_clave" name="administrador_clave" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" required>
-            </div>
-        </div>
-
-        <!-- Botón para enviar el formulario -->
-        <div class="d-grid gap-2 mt-4">
-            <button type="submit" class="btn btn-success">Actualizar</button>
-        </div>
-    </form>
-
-    <?php
-        }else{
-            // Si no se obtuvieron los datos del usuario, muestra un mensaje de error
-            include "./app/views/inc/error_alert.php";
-        }
-    ?>
-</div>

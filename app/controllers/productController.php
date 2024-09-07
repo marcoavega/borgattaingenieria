@@ -1034,5 +1034,122 @@ return json_encode($alerta);
 
 
 
+    public function obtenerCategoria($id_categoria)
+{
+    // Limpieza del ID de categoría (asumiendo que tienes un método limpiarCadena)
+    $id_categoria = $this->limpiarCadena($id_categoria);
+
+    // Consulta SQL para obtener el nombre de la categoría por ID
+    $consulta_categorias = "SELECT nombre_categoria FROM categorias WHERE id_categoria='$id_categoria' LIMIT 1";
+    
+    // Ejecutar la consulta
+    $datos_categorias = $this->ejecutarConsulta($consulta_categorias);
+    
+    // Verificar si se encontró la categoría
+    if ($datos_categorias->rowCount() > 0) {
+        $categoria = $datos_categorias->fetch();
+        return $categoria['nombre_categoria']; // Retorna el nombre de la categoría
+    } else {
+        return "Categoría no encontrada"; // En caso de que no se encuentre la categoría
+    }
+}
+    
+public function obtenerNombreSubcategoria($id_subcategoria)
+{
+    $id_subcategoria = $this->limpiarCadena($id_subcategoria);
+    $consulta = "SELECT nombre_subcategoria FROM sub_categorias WHERE id_subcategoria='$id_subcategoria' LIMIT 1";
+    $datos = $this->ejecutarConsulta($consulta);
+    
+    if ($datos->rowCount() > 0) {
+        $subcategoria = $datos->fetch();
+        return $subcategoria['nombre_subcategoria'];
+    } else {
+        return "Subcategoría no encontrada";
+    }
+}
+
+public function obtenerNombreProveedor($id_proveedor)
+{
+    $id_proveedor = $this->limpiarCadena($id_proveedor);
+    $consulta = "SELECT nombre_proveedor FROM proveedores WHERE id_proveedor='$id_proveedor' LIMIT 1";
+    $datos = $this->ejecutarConsulta($consulta);
+    
+    if ($datos->rowCount() > 0) {
+        $proveedor = $datos->fetch();
+        return $proveedor['nombre_proveedor'];
+    } else {
+        return "Proveedor no encontrado";
+    }
+}
+
+public function obtenerNombreUnidad($id_unidad)
+{
+    $id_unidad = $this->limpiarCadena($id_unidad);
+    $consulta = "SELECT nombre_unidad FROM unidades_medida WHERE id_unidad='$id_unidad' LIMIT 1";
+    $datos = $this->ejecutarConsulta($consulta);
+    
+    if ($datos->rowCount() > 0) {
+        $unidad = $datos->fetch();
+        return $unidad['nombre_unidad'];
+    } else {
+        return "Unidad no encontrada";
+    }
+}
+
+public function obtenerNombreMoneda($id_moneda)
+{
+    $id_moneda = $this->limpiarCadena($id_moneda);
+    $consulta = "SELECT nombre_moneda FROM tipos_moneda WHERE id_moneda='$id_moneda' LIMIT 1";
+    $datos = $this->ejecutarConsulta($consulta);
+    
+    if ($datos->rowCount() > 0) {
+        $moneda = $datos->fetch();
+        return $moneda['nombre_moneda'];
+    } else {
+        return "Moneda no encontrada";
+    }
+}
+
+
+public function obtenerDetallesProducto($id_producto)
+{
+    $id_producto = $this->limpiarCadena($id_producto);
+
+    $consulta = "SELECT
+        productos.*,
+        categorias.nombre_categoria,
+        proveedores.nombre_proveedor,
+        unidades_medida.nombre_unidad,
+        tipos_moneda.nombre_moneda,
+        sub_categorias.nombre_subcategoria,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen General' THEN stock_almacen.stock ELSE 0 END) AS stock_general,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Maquinado' THEN stock_almacen.stock ELSE 0 END) AS stock_maquinados,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ensamble' THEN stock_almacen.stock ELSE 0 END) AS stock_ensamble,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Dental Trade' THEN stock_almacen.stock ELSE 0 END) AS stock_dental,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_terminado,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Radiotecnologia Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_rtproducto,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ventas' THEN stock_almacen.stock ELSE 0 END) AS stock_ventas,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Descarte de Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_descarte_terminado,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Descarte de Desgaste' THEN stock_almacen.stock ELSE 0 END) AS stock_descarte_desgaste
+    FROM productos
+    LEFT JOIN categorias ON productos.id_categoria = categorias.id_categoria
+    LEFT JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
+    LEFT JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
+    LEFT JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
+    LEFT JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
+    LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
+    LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
+    WHERE productos.id_producto = '$id_producto'
+    GROUP BY productos.id_producto";
+
+    $datos = $this->ejecutarConsulta($consulta);
+    
+    if ($datos->rowCount() > 0) {
+        return $datos->fetch();
+    } else {
+        return null;
+    }
+}
+
 
 }
