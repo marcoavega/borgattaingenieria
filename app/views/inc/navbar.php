@@ -12,12 +12,22 @@
       <ul class="navbar-nav me-auto">
 
         <?php if ($_SESSION['permiso'] == 1) { ?>
-
           <li class="nav-item">
           <a class="nav-link" href="<?php echo APP_URL; ?>userMain/" id="UserDropdown" role="button" aria-expanded="false">
             <div class="d-flex flex-column align-items-center">
               <img src="https://img.icons8.com/ios-filled/50/ffffff/user.png" alt="User Icon" class="nav-icon">
               Usuarios
+            </div>
+          </a>
+        </li>
+        <?php } ?>
+
+        <?php if ($_SESSION['permiso'] == 1) { ?>
+          <li class="nav-item">
+          <a class="nav-link" href="<?php echo APP_URL; ?>almacenMain/" id="UserDropdown" role="button" aria-expanded="false">
+            <div class="d-flex flex-column align-items-center">
+              <img src="https://img.icons8.com/ios-filled/50/ffffff/box.png" alt="User Icon" class="nav-icon">
+              Almacenes
             </div>
           </a>
         </li>

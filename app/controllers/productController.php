@@ -292,62 +292,51 @@ class productController extends mainModel
 $productoResult = $this->guardarDatos2("productos", $producto_datos_reg);
 
 if ($productoResult['success']) {
-    // Obtén el ID del producto recién insertado
     $id_producto_recien_insertado = $productoResult['lastInsertId'];
 
-    // Datos para el primer almacén
-    $datos_stock_almacen = [
-        ["campo_nombre" => "id_producto", "campo_marcador" => ":IdProducto", "campo_valor" => $id_producto_recien_insertado],
-        ["campo_nombre" => "id_almacen", "campo_marcador" => ":IdAlmacen", "campo_valor" => 1], // Asumiendo que el id_almacen es 1 para este ejemplo
-        ["campo_nombre" => "stock", "campo_marcador" => ":Stock", "campo_valor" => $stock]
-    ];
+    // Obtener todos los almacenes existentes
+    $query_almacenes = "SELECT id_almacen FROM almacenes";
+    $resultado_almacenes = $this->ejecutarConsulta($query_almacenes);
 
-    // Inserta los datos en la tabla stock_almacen para el primer almacén
-    $resultado_stock_almacen = $this->guardarDatos2("stock_almacen", $datos_stock_almacen);
+    $errores = [];
 
-    if (!$resultado_stock_almacen['success']) {
-        // Si falla, manejar el error y terminar
+    if ($resultado_almacenes) {
+        while ($almacen = $resultado_almacenes->fetch()) {
+            $id_almacen = $almacen['id_almacen'];
+            $stock_inicial = ($id_almacen == 1) ? $stock : 0; // Stock inicial solo para el primer almacén
+
+            $datos_stock_almacen = [
+                ["campo_nombre" => "id_producto", "campo_marcador" => ":IdProducto", "campo_valor" => $id_producto_recien_insertado],
+                ["campo_nombre" => "id_almacen", "campo_marcador" => ":IdAlmacen", "campo_valor" => $id_almacen],
+                ["campo_nombre" => "stock", "campo_marcador" => ":Stock", "campo_valor" => $stock_inicial]
+            ];
+
+            $resultado_stock_almacen = $this->guardarDatos2("stock_almacen", $datos_stock_almacen);
+
+            if (!$resultado_stock_almacen['success']) {
+                $errores[] = "No se pudo registrar el stock en el almacén " . $id_almacen . ": " . $resultado_stock_almacen['error'];
+            }
+        }
+    } else {
+        $errores[] = "No se pudieron obtener los almacenes existentes";
+    }
+
+    if (empty($errores)) {
+        $alerta = [
+            "tipo" => "limpiar",
+            "titulo" => "Producto registrado",
+            "texto" => "El producto y el stock se han registrado correctamente en todos los almacenes",
+            "icono" => "success"
+        ];
+    } else {
         $alerta = [
             "tipo" => "simple",
-            "titulo" => "Error al registrar stock",
-            "texto" => "No se pudo registrar el stock en el almacén 1: " . $resultado_stock_almacen['error'],
-            "icono" => "error"
+            "titulo" => "Producto registrado con advertencias",
+            "texto" => "El producto se registró, pero hubo errores al agregar el stock en algunos almacenes: " . implode(", ", $errores),
+            "icono" => "warning"
         ];
-        return json_encode($alerta);
     }
-
-    // Inserción de stock para los almacenes
-    $almacenesAdicionales = [2,3,4,5,6,7,8,9];
-    foreach ($almacenesAdicionales as $id_almacen) {
-        $datos_stock_almacen_adicional = [
-            ["campo_nombre" => "id_producto", "campo_marcador" => ":IdProducto", "campo_valor" => $id_producto_recien_insertado],
-            ["campo_nombre" => "id_almacen", "campo_marcador" => ":IdAlmacen", "campo_valor" => $id_almacen],
-            ["campo_nombre" => "stock", "campo_marcador" => ":Stock", "campo_valor" => 0] // Stock inicial será 0
-        ];
-
-        $resultado_stock_almacen_adicional = $this->guardarDatos2("stock_almacen", $datos_stock_almacen_adicional);
-
-        if (!$resultado_stock_almacen_adicional['success']) {
-            // Si falla, manejar el error y terminar
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Error al registrar stock",
-                "texto" => "No se pudo registrar el stock en el almacén " . $id_almacen . ": " . $resultado_stock_almacen_adicional['error'],
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-        }
-    }
-
-    // Si todos los registros fueron exitosos
-    $alerta = [
-        "tipo" => "limpiar",
-        "titulo" => "Producto registrado",
-        "texto" => "El producto y el stock se han registrado correctamente en todos los almacenes",
-        "icono" => "success"
-    ];
 } else {
-    // Si falla el registro del producto, manejar el error
     $alerta = [
         "tipo" => "simple",
         "titulo" => "Error al registrar producto",
@@ -357,172 +346,114 @@ if ($productoResult['success']) {
 }
 
 return json_encode($alerta);
-    }
+}
+    
 
-    
-    public function listarProductControlador($pagina, $registros, $url, $busqueda)
-    {
-        $pagina = $this->limpiarCadena($pagina);
-        $registros = $this->limpiarCadena($registros);
-        $url = $this->limpiarCadena($url);
-        $url = APP_URL . $url . "/";
-        $busqueda = $this->limpiarCadena($busqueda);
-    
-        $tabla = "";
-    
-        $pagina = (isset($pagina) && $pagina > 0) ? (int)$pagina : 1;
-        $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
-    
-        $consulta_datos = "SELECT
-            productos.*,
-            categorias.nombre_categoria,
-            proveedores.nombre_proveedor,
-            unidades_medida.nombre_unidad,
-            tipos_moneda.nombre_moneda,
-            sub_categorias.nombre_subcategoria,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen General' THEN stock_almacen.stock ELSE 0 END) AS stock_general,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Maquinado' THEN stock_almacen.stock ELSE 0 END) AS stock_maquinados,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ensamble' THEN stock_almacen.stock ELSE 0 END) AS stock_ensamble,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Dental Trade' THEN stock_almacen.stock ELSE 0 END) AS stock_dental,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_terminado,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Radiotecnologia Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_rtproducto,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ventas' THEN stock_almacen.stock ELSE 0 END) AS stock_ventas,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Descarte de Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_descarte_terminado,
-            SUM(CASE WHEN almacenes.nombre_almacen = 'Descarte de Desgaste' THEN stock_almacen.stock ELSE 0 END) AS stock_descarte_desgaste
-            FROM productos
-            JOIN categorias ON productos.id_categoria = categorias.id_categoria
-            JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
-            JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
-            JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
-            JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
-            LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
-            LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
-            WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%'
-            GROUP BY productos.id_producto
-            ORDER BY productos.id_producto DESC;";
-    
-        $consulta_total = "SELECT COUNT(DISTINCT productos.id_producto)
-            FROM productos
-            JOIN categorias ON productos.id_categoria = categorias.id_categoria
-            JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
-            JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
-            JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
-            JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
-            LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
-            LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
-            WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%';";
-    
-        $datos = $this->ejecutarConsulta($consulta_datos);
-        $datos = $datos->fetchAll();
-    
-        $total = $this->ejecutarConsulta($consulta_total);
-        $total = (int)$total->fetchColumn();
-    
-        $tabla .= '
-        <div class="container-fluid">
-            <div class="row">
-                <!-- Menú lateral -->
-                <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
-                    <hr>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a href="' . APP_URL . 'productList/" class="nav-link active" aria-current="page">
-                                <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
-                                Lista de Productos
-                            </a>
-                        </li>
-                    </ul>
-                    <hr>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a href="' . APP_URL . 'productNew/" class="nav-link active" aria-current="page">
-                                <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
-                                Registrar Nuevo
-                            </a>
-                        </li>
-                    </ul>
-                    <hr>
-                </div>
-    
-                <!-- Contenido principal -->
-            <div class="col-12 col-md-9 col-lg-10">
-                <div class="container-fluid mb-4">
-                    <h4 class="text-center">Productos</h4>
-                    <h5 class="lead text-center">Lista de productos</h5>
-                </div>
-                <!-- Botones para cambiar la vista y el buscador en tiempo real -->
-                <div class="container-fluid p-4">
-                    <div class="row mb-3">
-                        <div class="col-12 col-md-6 mb-2 mb-md-0">
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="searchInput" placeholder="Buscar..." onkeyup="filtrarBusqueda()">
-                            </div>
+
+public function listarProductControlador($pagina, $registros, $url, $busqueda)
+{
+    $pagina = $this->limpiarCadena($pagina);
+    $registros = $this->limpiarCadena($registros);
+    $url = $this->limpiarCadena($url);
+    $url = APP_URL . $url . "/";
+    $busqueda = $this->limpiarCadena($busqueda);
+
+    $tabla = "";
+
+    $pagina = (isset($pagina) && $pagina > 0) ? (int)$pagina : 1;
+    $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
+
+    $consulta_datos = "SELECT
+        productos.*,
+        categorias.nombre_categoria,
+        proveedores.nombre_proveedor,
+        unidades_medida.nombre_unidad,
+        tipos_moneda.nombre_moneda,
+        sub_categorias.nombre_subcategoria,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen General' THEN stock_almacen.stock ELSE 0 END) AS stock_general,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Maquinado' THEN stock_almacen.stock ELSE 0 END) AS stock_maquinados,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ensamble' THEN stock_almacen.stock ELSE 0 END) AS stock_ensamble,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Dental Trade' THEN stock_almacen.stock ELSE 0 END) AS stock_dental,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_terminado,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Radiotecnologia Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_rtproducto,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ventas' THEN stock_almacen.stock ELSE 0 END) AS stock_ventas,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Descarte de Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_descarte_terminado,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Descarte de Desgaste' THEN stock_almacen.stock ELSE 0 END) AS stock_descarte_desgaste
+        FROM productos
+        JOIN categorias ON productos.id_categoria = categorias.id_categoria
+        JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
+        JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
+        JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
+        JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
+        LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
+        LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
+        WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%'
+        GROUP BY productos.id_producto
+        ORDER BY productos.id_producto DESC;";
+
+    $consulta_total = "SELECT COUNT(DISTINCT productos.id_producto)
+        FROM productos
+        JOIN categorias ON productos.id_categoria = categorias.id_categoria
+        JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
+        JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
+        JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
+        JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
+        LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
+        LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
+        WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%';";
+
+    $datos = $this->ejecutarConsulta($consulta_datos);
+    $datos = $datos->fetchAll();
+
+    $total = $this->ejecutarConsulta($consulta_total);
+    $total = (int)$total->fetchColumn();
+
+    $tabla .= '
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Menú lateral -->
+            <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="' . APP_URL . 'productList/" class="nav-link active" aria-current="page">
+                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                            Lista de Productos
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="' . APP_URL . 'productNew/" class="nav-link active" aria-current="page">
+                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                            Registrar Nuevo
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+            </div>
+
+            <!-- Contenido principal -->
+        <div class="col-12 col-md-9 col-lg-10">
+            <div class="container-fluid mb-4">
+                <h4 class="text-center">Productos</h4>
+                <h5 class="lead text-center">Lista de productos</h5>
+            </div>
+            <!-- Buscador en tiempo real y botón de impresión -->
+            <div class="container-fluid p-4">
+                <div class="row mb-3">
+                    <div class="col-12 col-md-6 mb-2 mb-md-0">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="searchInput" placeholder="Buscar..." onkeyup="filtrarBusqueda()">
                         </div>
-                        <div class="col-12 col-md-6 d-flex flex-column flex-md-row align-items-stretch">
-                            <button class="btn btn-secondary mb-2 mb-md-0 me-md-2 w-100 w-md-auto" onclick="cambiarVista(\'tarjeta\')">Vista de Tarjeta</button>
-                            <button class="btn btn-primary mb-2 mb-md-0 me-md-2 w-100 w-md-auto" onclick="cambiarVista(\'lista\')">Vista de Lista</button>
-                            <button class="btn btn-success w-100 w-md-auto" onclick="imprimirTabla()">Imprimir</button>
-                        </div>
-                    </div>';
-
-    // Vista de tarjeta (oculta por defecto)
-    $tabla .= '<div id="vistaTarjeta" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 d-none">';
-
-    if ($total >= 1) {
-        foreach ($datos as $rows) {
-            $tabla .= '
-            <div class="col tarjeta-item">
-                <div class="card h-100">
-                    <div class="card-img-top-container" style="height: 150px; overflow: hidden;">
-                        <img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="card-img-top img-fluid" alt="..." style="object-fit: cover; height: 100%; width: 100%;" loading="lazy">
                     </div>
-                    <div class="card-body">
-                        <h6 class="card-title"><a href="' . APP_URL . 'productDetails/' . $rows['id_producto'] . '/" class="text-decoration-none">' . $rows['nombre_producto'] . '</a></h6>
-                        <p class="card-text small">Id: ' . $rows['id_producto'] . '</p>
-                        <p class="card-text small">Código: ' . $rows['codigo_producto'] . '</p>
-                        <p class="card-text small">Ubicación: ' . $rows['ubicacion'] . '</p>
-                        <p class="card-text small">Precio: ' . $rows['precio'] . ' ' . $rows['nombre_moneda'] . '</p>
-                        <p class="card-text small">Unidad de Medida: ' . $rows['nombre_unidad'] . '</p>
-                        <p class="card-text small">Categoría: ' . $rows['nombre_categoria'] . '</p>
-                        <p class="card-text small">Sub-Categoría: ' . $rows['nombre_subcategoria'] . '</p>
-                        <p class="card-text small">Proveedor: ' . $rows['nombre_proveedor'] . '</p>
-                        <p class="card-text small">Stock en almacenes:</p>
-                        <ul class="list-group list-group-flush small">
-                            <li class="list-group-item py-1">General: ' . $rows['stock_general'] . '</li>
-                            <li class="list-group-item py-1">Maquinados: ' . $rows['stock_maquinados'] . '</li>
-                            <li class="list-group-item py-1">Ensamble: ' . $rows['stock_ensamble'] . '</li>
-                            <li class="list-group-item py-1">Dental Trade: ' . $rows['stock_dental'] . '</li>
-                            <li class="list-group-item py-1">Terminado: ' . $rows['stock_terminado'] . '</li>
-                            <li class="list-group-item py-1">RT Producto Terminado: ' . $rows['stock_rtproducto'] . '</li>
-                            <li class="list-group-item py-1">Ventas: ' . $rows['stock_ventas'] . '</li>
-                            <li class="list-group-item py-1">Descarte Terminado: ' . $rows['stock_descarte_terminado'] . '</li>
-                            <li class="list-group-item py-1">Descarte Desgaste: ' . $rows['stock_descarte_desgaste'] . '</li>
-                        </ul>
-                    </div>';
+                    <div class="col-12 col-md-6 d-flex justify-content-end">
+                        <button class="btn btn-success" onclick="imprimirTabla()">Imprimir</button>
+                    </div>
+                </div>';
 
-            if ($_SESSION['permiso'] == 1) {
-                $tabla .= '
-                    <div class="card-footer d-flex flex-column align-items-center">
-                        <a href="' . APP_URL . 'productPhoto/' . $rows['id_producto'] . '/" class="btn btn-warning btn-sm w-100 mb-2 rounded">Foto</a>
-                        <a href="' . APP_URL . 'productUpdate/' . $rows['id_producto'] . '/" class="btn btn-success btn-sm w-100 mb-2 rounded">Actualizar</a>
-                        <a href="' . APP_URL . 'productEntrance/' . $rows['id_producto'] . '/" class="btn btn-light btn-sm w-100 mb-2 rounded">Entrada</a>
-                        <a href="' . APP_URL . 'movUpdate/' . $rows['id_producto'] . '/" class="btn btn-info btn-sm w-100 mb-2 rounded">Movimiento Entre Almacenes</a>
-                        <a href="' . APP_URL . 'descInventory/' . $rows['id_producto'] . '/" class="btn btn-danger btn-sm w-100 mb-2 rounded">Descontar</a>
-                    </div>';
-            }
-
-            $tabla .= '</div></div>';
-        }
-    } else {
-        $tabla .= '
-            <div class="alert alert-warning text-center" role="alert">
-                No hay registros disponibles
-            </div>';
-    }
-
-    $tabla .= '</div>';  // Cierra vista de tarjeta
-
-    // Vista de lista (visible por defecto)
+    // Vista de lista
     $tabla .= '
     <div id="vistaLista" class="table-responsive">
         <table class="table table-bordered table-hover">
@@ -566,31 +497,14 @@ return json_encode($alerta);
     $tabla .= '</tbody></table></div>';  // Cierra vista de lista
     $tabla .= '</div></div></div>'; // Cierra el contenido principal
 
-    // JavaScript para interactividad (sin cambios)
+    // JavaScript para interactividad
     $tabla .= '
     <script>
-    function cambiarVista(vista) {
-        if (vista === "tarjeta") {
-            document.getElementById("vistaTarjeta").classList.remove("d-none");
-            document.getElementById("vistaLista").classList.add("d-none");
-        } else {
-            document.getElementById("vistaLista").classList.remove("d-none");
-            document.getElementById("vistaTarjeta").classList.add("d-none");
-        }
-    }
-
     function filtrarBusqueda() {
         let input = document.getElementById("searchInput");
         let filter = input.value.toLowerCase();
         let words = filter.split(" ").filter(Boolean);
-        let itemsTarjeta = document.querySelectorAll("#vistaTarjeta .tarjeta-item");
         let rowsLista = document.querySelectorAll("#vistaLista tbody tr");
-
-        itemsTarjeta.forEach(function (item) {
-            let text = item.innerText.toLowerCase();
-            let matches = words.every(word => text.includes(word));
-            item.style.display = matches ? "" : "none";
-        });
 
         rowsLista.forEach(function (row) {
             let text = row.innerText.toLowerCase();
@@ -1149,6 +1063,99 @@ public function obtenerDetallesProducto($id_producto)
     } else {
         return null;
     }
+}
+
+
+public function obtenerDetallesProductoConAlmacenes($id_producto) {
+    $id_producto = $this->limpiarCadena($id_producto);
+
+    // Primero, obtenemos los detalles del producto
+    $consulta_producto = "SELECT 
+        productos.*,
+        categorias.nombre_categoria,
+        proveedores.nombre_proveedor,
+        unidades_medida.nombre_unidad,
+        tipos_moneda.nombre_moneda,
+        sub_categorias.nombre_subcategoria
+    FROM productos
+    LEFT JOIN categorias ON productos.id_categoria = categorias.id_categoria
+    LEFT JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
+    LEFT JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
+    LEFT JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
+    LEFT JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
+    WHERE productos.id_producto = '$id_producto'";
+
+    $datos_producto = $this->ejecutarConsulta($consulta_producto);
+    
+    if ($datos_producto->rowCount() > 0) {
+        $producto = $datos_producto->fetch();
+
+        // Ahora, obtenemos el stock por almacén
+        $consulta_stock = "SELECT 
+            almacenes.id_almacen,
+            almacenes.nombre_almacen,
+            COALESCE(stock_almacen.stock, 0) AS stock
+        FROM almacenes
+        LEFT JOIN stock_almacen ON almacenes.id_almacen = stock_almacen.id_almacen
+            AND stock_almacen.id_producto = '$id_producto'";
+
+        $datos_stock = $this->ejecutarConsulta($consulta_stock);
+        
+        $almacenes = [];
+        while ($stock = $datos_stock->fetch()) {
+            $almacenes[] = [
+                'id_almacen' => $stock['id_almacen'],
+                'nombre_almacen' => $stock['nombre_almacen'],
+                'stock' => $stock['stock']
+            ];
+        }
+
+        $producto['almacenes'] = $almacenes;
+        return $producto;
+    } else {
+        return null;
+    }
+}
+
+
+public function eliminarProductControlador(){
+    $id = $this->limpiarCadena($_POST['id_producto']);
+
+    // Verificar si el producto existe
+    $check_producto = $this->ejecutarConsulta("SELECT * FROM productos WHERE id_producto='$id'");
+    if($check_producto->rowCount()<=0){
+        $alerta = [
+            "tipo" => "simple",
+            "titulo" => "Ocurrió un error inesperado",
+            "texto" => "El producto que intenta eliminar no existe en el sistema",
+            "icono" => "error"
+        ];
+        return json_encode($alerta);
+    }
+
+    // Eliminar registros relacionados en stock_almacen
+    $eliminar_stock = $this->eliminarRegistro("stock_almacen", "id_producto", $id);
+
+    // Eliminar el producto
+    $eliminar_producto = $this->eliminarRegistro("productos", "id_producto", $id);
+
+    if($eliminar_producto->rowCount()==1){
+        $alerta = [
+            "tipo" => "recargar",
+            "titulo" => "Producto eliminado",
+            "texto" => "El producto ha sido eliminado del sistema correctamente",
+            "icono" => "success"
+        ];
+    }else{
+        $alerta = [
+            "tipo" => "simple",
+            "titulo" => "Ocurrió un error inesperado",
+            "texto" => "No se pudo eliminar el producto, por favor intente nuevamente",
+            "icono" => "error"
+        ];
+    }
+
+    return json_encode($alerta);
 }
 
 

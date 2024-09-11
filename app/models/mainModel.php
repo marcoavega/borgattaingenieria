@@ -284,6 +284,18 @@ public function actualizarStock($id_producto, $id_almacen, $nuevo_stock)
 }*/
 
 
+protected function beginTransaction() {
+    return $this->conectar()->beginTransaction();
+}
+
+protected function commit() {
+    return $this->conectar()->commit();
+}
+
+protected function rollBack() {
+    return $this->conectar()->rollBack();
+}
+
 
 
 
