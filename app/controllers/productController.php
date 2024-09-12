@@ -463,11 +463,11 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
                     <th>Imagen</th>
                     <th>Nombre</th>
                     <th>Código</th>
-                    <th>Precio</th>
-                    <th>Moneda</th>
                     <th>Ubicación</th>
                     <th>Stock General</th>
                     <th>Stock Ensamble</th>
+                    <th>Stock Maquinados</th>
+                    <th>Stock Deseado</th>
                 </tr>
             </thead>
             <tbody>';
@@ -480,17 +480,17 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
                     <td><img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;" alt="Imagen del producto" loading="lazy"></td>
                     <td><a href="' . APP_URL . 'productDetails/' . $rows['id_producto'] . '/" class="text-decoration-none">' . $rows['nombre_producto'] . '</a></td>
                     <td>' . $rows['codigo_producto'] . '</td>
-                    <td>' . $rows['precio'] . '</td>
-                    <td>' . $rows['nombre_moneda'] . '</td>
                     <td>' . $rows['ubicacion'] . '</td>
                     <td>' . $rows['stock_general'] . '</td>
                     <td>' . $rows['stock_ensamble'] . '</td>
+                    <td>' . $rows['stock_maquinados'] . '</td>
+                    <td>' . $rows['stock_deseado'] . '</td>
                 </tr>';
         }
     } else {
         $tabla .= '
             <tr>
-                <td colspan="9" class="text-center">No hay registros disponibles</td>
+                <td colspan="11" class="text-center">No hay registros disponibles</td>
             </tr>';
     }
 
@@ -1157,6 +1157,43 @@ public function eliminarProductControlador(){
 
     return json_encode($alerta);
 }
+
+
+public function obtenerProductosAResurtir()
+{
+    $consulta = "SELECT 
+        p.id_producto, 
+        p.nombre_producto, 
+        p.codigo_producto,
+        p.stock_deseado,
+        p.id_categoria,
+        c.nombre_categoria,
+        COALESCE(SUM(sa.stock), 0) as stock_total
+    FROM 
+        productos p
+    LEFT JOIN 
+        stock_almacen sa ON p.id_producto = sa.id_producto
+    LEFT JOIN
+        categorias c ON p.id_categoria = c.id_categoria
+    GROUP BY 
+        p.id_producto, p.nombre_producto, p.codigo_producto, p.stock_deseado, p.id_categoria, c.nombre_categoria
+    HAVING 
+        COALESCE(SUM(sa.stock), 0) < p.stock_deseado
+    ORDER BY 
+        (p.stock_deseado - COALESCE(SUM(sa.stock), 0)) DESC";
+
+    $datos = $this->ejecutarConsulta($consulta);
+    
+    return $datos->fetchAll();
+}
+
+public function obtenerCategorias()
+{
+    $consulta = "SELECT id_categoria, nombre_categoria FROM categorias ORDER BY nombre_categoria";
+    $datos = $this->ejecutarConsulta($consulta);
+    return $datos->fetchAll();
+}
+    
 
 
 }

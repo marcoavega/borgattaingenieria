@@ -78,6 +78,7 @@ use app\controllers\productController;
                                                     <p><strong>Código:</strong> <?php echo htmlspecialchars($producto['codigo_producto']); ?></p>
                                                     <p><strong>Nombre:</strong> <?php echo htmlspecialchars($producto['nombre_producto']); ?></p>
                                                     <p><strong>Ubicación:</strong> <?php echo htmlspecialchars($producto['ubicacion']); ?></p>
+                                                    <p><strong>Stock Deseado:</strong> <?php echo htmlspecialchars($producto['stock_deseado']); ?></p>
                                                     <p><strong>Precio:</strong> <?php echo number_format($producto['precio'], 2); ?></p>
                                                     <p><strong>Categoría:</strong> <?php echo htmlspecialchars($producto['nombre_categoria']); ?></p>
                                                     <p><strong>Subcategoría:</strong> <?php echo htmlspecialchars($producto['nombre_subcategoria']); ?></p>
