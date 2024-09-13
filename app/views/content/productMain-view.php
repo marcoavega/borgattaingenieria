@@ -1,13 +1,12 @@
 <?php
 // Asegúrate de que todas las clases necesarias estén importadas
 use app\controllers\productController;
-
-// Contenedor principal
 ?>
+
 <div class="container-fluid">
     <div class="row">
-         <!-- Menú lateral -->
-         <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
+        <!-- Menú lateral -->
+        <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
             <hr>
             <ul class="nav flex-column">
                 <li class="nav-item">
@@ -27,6 +26,15 @@ use app\controllers\productController;
                 </li>
             </ul>
             <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="<?php echo APP_URL; ?>productInvent/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Inventario
+                    </a>
+                </li>
+            </ul>
+            <hr>
         </div>
 
         <!-- Contenido principal -->
@@ -37,7 +45,7 @@ use app\controllers\productController;
                 <!-- Sección de productos que necesitan resurtirse -->
                 <div class="card mb-4">
                     <div class="card-header bg-warning text-dark">
-                        <h5 class="card-title mb-0">Productos que necesitan resurtirse</h5>
+                        <h5 class="card-title mb-0">Productos que necesitan resurtirse (Almacén General)</h5>
                     </div>
                     <div class="card-body">
                         <!-- Selector de categorías -->
@@ -62,9 +70,9 @@ use app\controllers\productController;
                                         <th>Código</th>
                                         <th>Nombre</th>
                                         <th>Categoría</th>
-                                        <th>Stock Actual</th>
+                                        <th>Stock Actual (General)</th>
                                         <th>Stock Deseado</th>
-                                        <th>Diferencia</th>
+                                        <th>Faltante</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -74,21 +82,21 @@ use app\controllers\productController;
 
                                     if (!empty($productosAResurtir)) {
                                         foreach ($productosAResurtir as $producto) {
-                                            $diferencia = $producto['stock_deseado'] - $producto['stock_total'];
+                                            $faltante = $producto['stock_deseado'] - $producto['stock_general'];
                                             echo "<tr data-categoria='" . $producto['id_categoria'] . "'>
                                                 <td>" . htmlspecialchars($producto['codigo_producto']) . "</td>
                                                 <td>" . htmlspecialchars($producto['nombre_producto']) . "</td>
                                                 <td>" . htmlspecialchars($producto['nombre_categoria']) . "</td>
-                                                <td>" . htmlspecialchars($producto['stock_total']) . "</td>
+                                                <td>" . htmlspecialchars($producto['stock_general']) . "</td>
                                                 <td>" . htmlspecialchars($producto['stock_deseado']) . "</td>
-                                                <td class='text-danger'>" . htmlspecialchars($diferencia) . "</td>
+                                                <td class='text-danger'>" . htmlspecialchars($faltante) . "</td>
                                                 <td>
                                                     <a href='" . APP_URL . "productEntrance/" . $producto['id_producto'] . "/' class='btn btn-primary btn-sm'>Entrada</a>
                                                 </td>
                                             </tr>";
                                         }
                                     } else {
-                                        echo "<tr><td colspan='7' class='text-center'>No hay productos que necesiten resurtirse en este momento.</td></tr>";
+                                        echo "<tr><td colspan='7' class='text-center'>No hay productos que necesiten resurtirse en el Almacén General en este momento.</td></tr>";
                                     }
                                     ?>
                                 </tbody>
@@ -96,6 +104,9 @@ use app\controllers\productController;
                         </div>
                     </div>
                 </div>
+
+                <!-- Aquí puedes agregar más secciones o contenido para la gestión de productos -->
+
             </div>
         </div>
     </div>

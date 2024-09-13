@@ -81,6 +81,7 @@
                             "almacenNew",
                             "almacenList",
                             "almacenUpdate",
+                            "productInvent",
                         ];
 
             // Comprueba si la vista solicitada está en la lista blanca

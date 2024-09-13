@@ -450,6 +450,17 @@ class almacenController extends mainModel {
     }
 
 
+// En almacenController.php
+public function obtenerAlmacenes() {
+    $consulta = "SELECT id_almacen, nombre_almacen FROM almacenes ORDER BY nombre_almacen";
+    $datos = $this->ejecutarConsulta($consulta);
+    $almacenes = [];
+    while ($row = $datos->fetch()) {
+        $almacenes[] = $row;
+    }
+    return $almacenes;
+}
+
 
 
 }

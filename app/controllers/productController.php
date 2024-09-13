@@ -1159,22 +1159,25 @@ public function eliminarProductControlador(){
 }
 
 
-public function obtenerProductosAResurtir()
-{
+public function obtenerProductosAResurtir() {
     $consulta = "SELECT 
         p.id_producto, 
-        p.nombre_producto, 
+        p.nombre_producto,
         p.codigo_producto,
         p.stock_deseado,
         p.id_categoria,
         c.nombre_categoria,
-        COALESCE(SUM(sa.stock), 0) as stock_total
+        COALESCE(SUM(sa.stock), 0) as stock_general
     FROM 
         productos p
     LEFT JOIN 
         stock_almacen sa ON p.id_producto = sa.id_producto
     LEFT JOIN
         categorias c ON p.id_categoria = c.id_categoria
+    LEFT JOIN
+        almacenes a ON sa.id_almacen = a.id_almacen
+    WHERE 
+        a.nombre_almacen = 'Almacen General' OR a.nombre_almacen IS NULL
     GROUP BY 
         p.id_producto, p.nombre_producto, p.codigo_producto, p.stock_deseado, p.id_categoria, c.nombre_categoria
     HAVING 
@@ -1187,6 +1190,7 @@ public function obtenerProductosAResurtir()
     return $datos->fetchAll();
 }
 
+
 public function obtenerCategorias()
 {
     $consulta = "SELECT id_categoria, nombre_categoria FROM categorias ORDER BY nombre_categoria";
@@ -1194,6 +1198,47 @@ public function obtenerCategorias()
     return $datos->fetchAll();
 }
     
+
+// En productController.php
+public function obtenerProductosConStock() {
+    $consulta = "SELECT 
+        p.id_producto, 
+        p.codigo_producto, 
+        p.nombre_producto, 
+        p.id_categoria,
+        c.nombre_categoria,
+        sa.id_almacen,
+        sa.stock
+    FROM 
+        productos p
+    LEFT JOIN 
+        categorias c ON p.id_categoria = c.id_categoria
+    LEFT JOIN 
+        stock_almacen sa ON p.id_producto = sa.id_producto
+    ORDER BY 
+        p.nombre_producto";
+
+    $datos = $this->ejecutarConsulta($consulta);
+    $productos = [];
+
+    while ($row = $datos->fetch()) {
+        if (!isset($productos[$row['id_producto']])) {
+            $productos[$row['id_producto']] = [
+                'id_producto' => $row['id_producto'],
+                'codigo_producto' => $row['codigo_producto'],
+                'nombre_producto' => $row['nombre_producto'],
+                'id_categoria' => $row['id_categoria'],
+                'nombre_categoria' => $row['nombre_categoria'],
+                'stocks' => []
+            ];
+        }
+        if ($row['id_almacen'] !== null) {
+            $productos[$row['id_producto']]['stocks'][$row['id_almacen']] = $row['stock'];
+        }
+    }
+
+    return array_values($productos);
+}
 
 
 }
