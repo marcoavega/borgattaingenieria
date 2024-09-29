@@ -9,19 +9,54 @@ class ordenCompraController extends mainModel
 {
 
 
-    public function obtenerOpcionesOrdenes()
-    {
-        $consulta_ordenes = "SELECT * FROM ordenes_compra ORDER BY id_orden_compra DESC";
+    public function obtenerOpcionesOrdenes() {
+        $consulta_ordenes = "
+            SELECT 
+                og.id_orden_compra,
+                og.numero_orden,
+                og.fecha,
+                p.nombre_proveedor,
+                (SELECT SUM(total) FROM detalle_orden_compra WHERE id_orden_compra = og.id_orden_compra) as total,
+                tm.nombre_moneda
+            FROM ordenes_compra og
+            LEFT JOIN proveedores p ON og.id_proveedor = p.id_proveedor
+            LEFT JOIN tipos_moneda tm ON og.id_moneda = tm.id_moneda
+            ORDER BY og.numero_orden DESC
+        ";
+        
         $datos_ordenes = $this->ejecutarConsulta($consulta_ordenes);
-        $opciones_ordenes = "";
-
+        $ordenes_agrupadas = [];
+        
         while ($orden = $datos_ordenes->fetch()) {
-            $opciones_ordenes .= '<option value="' . $orden['numero_orden'] . '">'
-                . $orden['numero_orden'] . '</option>';
+            $fecha = new \DateTime($orden['fecha']);
+            $mes_anio = $fecha->format('F Y'); // Mes y año en formato texto
+            
+            if (!isset($ordenes_agrupadas[$mes_anio])) {
+                $ordenes_agrupadas[$mes_anio] = [];
+            }
+            
+            $ordenes_agrupadas[$mes_anio][] = $orden;
         }
-
-        return $opciones_ordenes;
+        
+        $lista_ordenes = '';
+        
+        foreach ($ordenes_agrupadas as $mes_anio => $ordenes) {
+            $lista_ordenes .= '<div class="mes-anio">' . htmlspecialchars($mes_anio) . '</div>';
+            
+            foreach ($ordenes as $orden) {
+                $lista_ordenes .= '<div class="orden-item" data-value="' . htmlspecialchars($orden['numero_orden']) . '">'
+                    . htmlspecialchars($orden['fecha'])
+                    . ' - ' . htmlspecialchars($orden['numero_orden'])
+                    . ' - ' . htmlspecialchars($orden['nombre_proveedor'])
+                    . ' - ' . htmlspecialchars($orden['total']) . ' ' . htmlspecialchars($orden['nombre_moneda']). ' + IVA '
+                    . '</div>';
+            }
+        }
+        
+        return $lista_ordenes;
     }
+
+
 
     public function obtenerOpcionesProveedores()
     {

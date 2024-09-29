@@ -136,12 +136,13 @@ class productController extends mainModel
         $unidad_medida = $this->limpiarCadena($_POST['unidad_medida']);
         $tipo_moneda = $this->limpiarCadena($_POST['tipo_moneda']);
         $subcategoria = $this->limpiarCadena($_POST['subcategoria']);
+        $stock_deseado = $this->limpiarCadena($_POST['stock_deseado']);
   
 
         # Verificando campos obligatorios #
         if (
             $codigo_producto == "" || $nombre_producto == "" || $precio == "" || $stock == "" || $categoria == "" || $proveedor == "" ||
-            $unidad_medida == "" || $tipo_moneda == "" || $ubicacion == "" || $subcategoria == ""
+            $unidad_medida == "" || $tipo_moneda == "" || $ubicacion == "" || $subcategoria == "" || $stock_deseado == ""
         ) {
             $alerta = [
                 "tipo" => "simple",
@@ -284,6 +285,11 @@ class productController extends mainModel
                 "campo_nombre" => "id_subcategoria",
                 "campo_marcador" => ":IdSubCategoria",
                 "campo_valor" => $subcategoria
+            ],
+            [
+                "campo_nombre" => "stock_deseado",
+                "campo_marcador" => ":stockDeseado",
+                "campo_valor" => $stock_deseado
             ]
         ];
         
@@ -352,6 +358,24 @@ return json_encode($alerta);
 
 public function listarProductControlador($pagina, $registros, $url, $busqueda)
 {
+    // Manejo de la solicitud AJAX para actualizar el status
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
+        $id_producto = $this->limpiarCadena($_POST['id_producto']);
+        $status = $this->limpiarCadena($_POST['status']);
+
+        $query = "UPDATE productos SET status = '$status' WHERE id_producto = '$id_producto'";
+        
+        $resultado = $this->ejecutarConsulta($query);
+        
+        if ($resultado) {
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error']);
+        }
+        exit;
+    }
+
+    // Código existente para listar productos
     $pagina = $this->limpiarCadena($pagina);
     $registros = $this->limpiarCadena($registros);
     $url = $this->limpiarCadena($url);
@@ -389,7 +413,7 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
         LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
         WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%'
         GROUP BY productos.id_producto
-        ORDER BY productos.id_producto DESC;";
+        ORDER BY productos.id_producto DESC";
 
     $consulta_total = "SELECT COUNT(DISTINCT productos.id_producto)
         FROM productos
@@ -400,7 +424,7 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
         JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
         LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
         LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
-        WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%';";
+        WHERE codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%'";
 
     $datos = $this->ejecutarConsulta($consulta_datos);
     $datos = $datos->fetchAll();
@@ -432,6 +456,15 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
                     </li>
                 </ul>
                 <hr>
+                <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productInvent/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Inventario
+                    </a>
+                </li>
+            </ul>
+            <hr>
             </div>
 
             <!-- Contenido principal -->
@@ -459,15 +492,16 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
         <table class="table table-bordered table-hover">
             <thead>
                 <tr class="table-primary text-center">
-                    <th>ID</th>
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(0)">ID</a></th>
                     <th>Imagen</th>
-                    <th>Nombre</th>
-                    <th>Código</th>
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(2)">Nombre</a></th>
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(3)">Código</a></th>
                     <th>Ubicación</th>
                     <th>Stock General</th>
                     <th>Stock Ensamble</th>
                     <th>Stock Maquinados</th>
                     <th>Stock Deseado</th>
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(9)">Status</a></th>
                 </tr>
             </thead>
             <tbody>';
@@ -485,21 +519,78 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
                     <td>' . $rows['stock_ensamble'] . '</td>
                     <td>' . $rows['stock_maquinados'] . '</td>
                     <td>' . $rows['stock_deseado'] . '</td>
+                    <td>
+                        <select class="form-select form-select-sm status-select custom-select" data-id="' . $rows['id_producto'] . '">
+                            <option value="1" ' . ($rows['status'] == 1 ? 'selected' : '') . '>Activo</option>
+                            <option value="0" ' . ($rows['status'] == 0 ? 'selected' : '') . '>Inactivo</option>
+                        </select>
+                    </td>
                 </tr>';
         }
     } else {
         $tabla .= '
             <tr>
-                <td colspan="11" class="text-center">No hay registros disponibles</td>
+                <td colspan="10" class="text-center">No hay registros disponibles</td>
             </tr>';
     }
 
-    $tabla .= '</tbody></table></div>';  // Cierra vista de lista
-    $tabla .= '</div></div></div>'; // Cierra el contenido principal
+    $tabla .= '</tbody></table></div>';
 
-    // JavaScript para interactividad
     $tabla .= '
+    <style>
+    .custom-select {
+        width: 100px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+    }
+    </style>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+
+    let ordenAscendente = true;
+
+    function ordenarTabla(columna) {
+        let tabla, filas, switching, i, x, y, shouldSwitch;
+        tabla = document.querySelector("#vistaLista table");
+        switching = true;
+
+        while (switching) {
+            switching = false;
+            filas = tabla.rows;
+
+            for (i = 1; i < (filas.length - 1); i++) {
+                shouldSwitch = false;
+                x = filas[i].getElementsByTagName("TD")[columna];
+                y = filas[i + 1].getElementsByTagName("TD")[columna];
+
+                let comparacion;
+                if (columna === 9) { // Para la columna Status
+                    comparacion = x.querySelector("select").value.localeCompare(y.querySelector("select").value);
+                } else if (columna === 0) { // Para la columna ID
+                    comparacion = parseInt(x.innerHTML) - parseInt(y.innerHTML);
+                } else {
+                    comparacion = x.innerHTML.toLowerCase().localeCompare(y.innerHTML.toLowerCase());
+                }
+
+                if (ordenAscendente ? comparacion > 0 : comparacion < 0) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+
+            if (shouldSwitch) {
+                filas[i].parentNode.insertBefore(filas[i + 1], filas[i]);
+                switching = true;
+            }
+        }
+
+        ordenAscendente = !ordenAscendente;
+    }
+
+
     function filtrarBusqueda() {
         let input = document.getElementById("searchInput");
         let filter = input.value.toLowerCase();
@@ -524,6 +615,34 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
         ventana.document.close();
         ventana.print();
     }
+
+   $(document).ready(function() {
+        $(".status-select").change(function() {
+            let id_producto = $(this).data("id");
+            let new_status = $(this).val();
+            
+            $.ajax({
+                url: window.location.href,
+                method: "POST",
+                data: {
+                    action: "update_status",
+                    id_producto: id_producto,
+                    status: new_status
+                },
+                success: function(response) {
+                    let data = JSON.parse(response);
+                    if(data.status === "success") {
+                        alert("Estado actualizado correctamente");
+                    } else {
+                        alert("Error al actualizar el estado");
+                    }
+                },
+                error: function() {
+                    alert("Error en la solicitud");
+                }
+            });
+        });
+    });
     </script>';
 
     return $tabla;
@@ -558,15 +677,13 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
         $codigo_producto = $this->limpiarCadena($_POST['codigo_producto']);
         $nombre_producto = $this->limpiarCadena($_POST['nombre_producto']);
         $ubicacion = $_POST['ubicacion'];
-        $id_categoria = $this->limpiarCadena($_POST['id_categoria']);
         $precio = $this->limpiarCadena($_POST['precio']);
         $stock = $this->limpiarCadena($_POST['stock']);
-        $subcategoria = $this->limpiarCadena($_POST['subcategoria']);
-       
+        $stock_deseado = $this->limpiarCadena($_POST['stock_deseado']);
 
         # Verificando campos obligatorios #
         if (
-            $codigo_producto == "" || $nombre_producto == "" || $precio == "" || $stock == "" || $id_categoria == "" || $ubicacion == "" || $subcategoria == ""
+            $codigo_producto == "" || $nombre_producto == "" || $precio == "" || $stock == "" || $ubicacion == "" ||  $stock_deseado == ""
         ) {
             $alerta = [
                 "tipo" => "simple",
@@ -596,11 +713,6 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
                 "campo_valor" => $ubicacion
             ],
             [
-                "campo_nombre" => "id_categoria",
-                "campo_marcador" => ":IdCategoria",
-                "campo_valor" => $id_categoria
-            ],
-            [
                 "campo_nombre" => "precio",
                 "campo_marcador" => ":Precio",
                 "campo_valor" => $precio
@@ -611,9 +723,9 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
                 "campo_valor" => $stock
             ],
             [
-                "campo_nombre" => "id_subcategoria",
-                "campo_marcador" => ":IdSubCategoria",
-                "campo_valor" => $subcategoria
+                "campo_nombre" => "stock_deseado",
+                "campo_marcador" => ":stockDeseado",
+                "campo_valor" => $stock_deseado
             ]
         ];
 
@@ -1177,7 +1289,8 @@ public function obtenerProductosAResurtir() {
     LEFT JOIN
         almacenes a ON sa.id_almacen = a.id_almacen
     WHERE 
-        a.nombre_almacen = 'Almacen General' OR a.nombre_almacen IS NULL
+        (a.nombre_almacen = 'Almacen General' OR a.nombre_almacen IS NULL)
+        AND p.status = 1  -- Añadimos esta condición para obtener solo productos activos
     GROUP BY 
         p.id_producto, p.nombre_producto, p.codigo_producto, p.stock_deseado, p.id_categoria, c.nombre_categoria
     HAVING 
@@ -1202,11 +1315,12 @@ public function obtenerCategorias()
 // En productController.php
 public function obtenerProductosConStock() {
     $consulta = "SELECT 
-        p.id_producto, 
-        p.codigo_producto, 
-        p.nombre_producto, 
+        p.id_producto,
+        p.codigo_producto,
+        p.nombre_producto,
         p.id_categoria,
         c.nombre_categoria,
+        p.precio,
         sa.id_almacen,
         sa.stock
     FROM 
@@ -1215,6 +1329,8 @@ public function obtenerProductosConStock() {
         categorias c ON p.id_categoria = c.id_categoria
     LEFT JOIN 
         stock_almacen sa ON p.id_producto = sa.id_producto
+    WHERE
+        p.status = 1  -- Añadimos esta condición para obtener solo productos activos
     ORDER BY 
         p.nombre_producto";
 
@@ -1229,11 +1345,14 @@ public function obtenerProductosConStock() {
                 'nombre_producto' => $row['nombre_producto'],
                 'id_categoria' => $row['id_categoria'],
                 'nombre_categoria' => $row['nombre_categoria'],
-                'stocks' => []
+                'precio' => $row['precio'],
+                'stocks' => [],
+                'total_stock' => 0
             ];
         }
         if ($row['id_almacen'] !== null) {
             $productos[$row['id_producto']]['stocks'][$row['id_almacen']] = $row['stock'];
+            $productos[$row['id_producto']]['total_stock'] += $row['stock'];
         }
     }
 

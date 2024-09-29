@@ -1,9 +1,4 @@
-<?php
-use app\controllers\movFacturaController;
-
-$insMov = new movFacturaController();
-?>
-
+<!-- Contenedor principal -->
 <div class="container-fluid">
     <div class="row">
         <!-- Menú lateral -->
@@ -44,40 +39,14 @@ $insMov = new movFacturaController();
                     </a>
                 </li>
             </ul>
-            <hr>
         </div>
 
-        <!-- Contenido principal -->
+        <!-- Formulario de creación de producto -->
         <div class="col-md-9 col-lg-10">
-            <div class="container-fluid py-4">
-                <h4 class="text-center mb-4">Consulta de Movimientos</h4>
-
-                <?php include "./app/views/inc/btn_back2.php"; ?>
-
-                <div class="table-responsive">
-                    <?php
-                    echo $insMov->listarMovFacturaControlador($url[1], 1000, $url[0], "");
-                    ?>
-                </div>
-            </div>
+             <!-- Título de la página -->
+            <h4 class="text-center">Facturas</h4>
+            <!-- Subtítulo de la página -->
+            <!-- Formulario de creación de producto -->
         </div>
     </div>
 </div>
-
-<style>
-    body {
-        font-size: 0.9rem;
-    }
-    .form-label {
-        font-size: 0.85rem;
-    }
-    .form-select-sm, .form-control-sm {
-        font-size: 0.85rem;
-    }
-    .btn-sm {
-        font-size: 0.85rem;
-    }
-    table {
-        font-size: 0.85rem;
-    }
-</style>

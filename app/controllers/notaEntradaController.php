@@ -55,7 +55,7 @@ class notaEntradaController extends mainModel
 
     public function obtenerOpcionesNotas()
     {
-        $consulta_notas = "SELECT * FROM notas_entrada ORDER BY numero_nota_entrada";
+        $consulta_notas = "SELECT * FROM notas_entrada ORDER BY numero_nota_entrada DESC";
         $datos_notas = $this->ejecutarConsulta($consulta_notas);
         $opciones_notas = "";
 
@@ -143,168 +143,161 @@ class notaEntradaController extends mainModel
 
     /*----------  Controlador listar productos  ----------*/
     public function listarNotaControlador($pagina, $registros, $url, $busqueda)
-{
-    $pagina = $this->limpiarCadena($pagina);
-    $registros = $this->limpiarCadena($registros);
-    $url = $this->limpiarCadena($url);
-    $url = APP_URL . $url . "/";
-    $busqueda = $this->limpiarCadena($busqueda);
-    $tabla = "";
-
-    // Consulta con JOIN para obtener
-    $consulta_datos = "
-        SELECT 
-            notas_entrada.id_nota_entrada, 
-            notas_entrada.numero_nota_entrada, 
-            proveedores.nombre_proveedor, 
-            empleados.nombre_empleado, 
-            notas_entrada.fecha, 
-            detalle_nota_entrada.id_detalle_nota, 
-            detalle_nota_entrada.numero_orden, 
-            detalle_nota_entrada.numero_partida, 
-            detalle_nota_entrada.nombre_producto, 
-            detalle_nota_entrada.cantidad, 
-            unidades_medida.nombre_unidad
-        FROM 
-            notas_entrada 
-        LEFT JOIN 
-            detalle_nota_entrada 
-        ON 
-            notas_entrada.id_nota_entrada = detalle_nota_entrada.id_nota_entrada 
-        LEFT JOIN 
-            proveedores 
-        ON 
-            notas_entrada.id_proveedor = proveedores.id_proveedor 
-        LEFT JOIN 
-            empleados 
-        ON 
-            notas_entrada.id_empleado = empleados.id_empleado 
-        LEFT JOIN 
-            unidades_medida 
-        ON 
-            detalle_nota_entrada.id_unidad_medida = unidades_medida.id_unidad 
-        WHERE 
-            notas_entrada.id_nota_entrada = :busqueda;
-    ";
-
-    $stmt = $this->conectar()->prepare($consulta_datos);
-    $stmt->bindParam(':busqueda', $busqueda, \PDO::PARAM_INT); // Asegúrate de usar \PDO aquí
-    $stmt->execute();
-    $datos = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-    if (empty($datos)) {
-        return "No se encontraron resultados.";
-    }
-
-    $numero_nota_entrada = $datos[0]['numero_nota_entrada'];
-
-    $tabla = '
-    <button class="btn btn-primary" onclick="imprimirArea(\'areaImprimir\', \'' . $numero_nota_entrada . '\')">Imprimir</button>
-    <div id="areaImprimir">
-    <div class="container-fluid">
-    <div style="text-align: center; margin: 20px 0;">
-            
-        </div>
-
-    <div class="invoice">
-
-    <div style="margin-top: 1px; font-size: 13px; border: 1px solid #000; padding-left: 5px; padding-right: 5px;">
-    <p style="font-size: 14px; text-align: center;"><strong>Nota de Entrada</strong></p>
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-        <img src="' . APP_URL . 'app/views/fotos/logo_orden.png" alt="logo" style="width:200px; height:auto;">
-        <div>
-            <p style="font-size: 13px; padding: 0px; margin: 0px;"><strong>Nota de Entrada:</strong>' . $numero_nota_entrada . '</p>
-            <p style="font-size: 13px; padding: 0px; margin: 0px;"><strong>Fecha:</strong> ' . date('d/m/Y', strtotime($datos[0]['fecha'])) . '</p>
-            <p style="font-size: 13px; padding: 0px; margin: 0px;"><strong>Número de Orden:</strong> ' . $datos[0]['numero_orden'] . '</p>
-            <p style="font-size: 13px; padding: 0px; margin: 0px;"><strong>Formato:</strong>  PR-12-F03</p>
-        </div>
-    </div>
-        <p style="margin-top: 0; margin-bottom: 0;">RADIOTECNOLOGÍA INDUSTRIAL S.A. DE C.V.</p>
-        <p style="margin-top: 0; margin-bottom: 0;">RFC: RIN070219R38</p>
-        <p style="margin-top: 0; margin-bottom: 0;">Calle Puebla Sur. Manzana 4. Lote 5 Nave B Int. 2 Col. Jardín Industrial</p>
-        <p style="margin-top: 0; margin-bottom: 0;">Ixtapaluca. Edo. de México, C.P. 56535</p>
-    </div>
-        
-        <div class="invoice-details" style="width: 100%; padding-top: 0%; font-size: 13px; margin: 0%;">
-            <p style="text-align: left; border: 1px solid #000; margin-top: 0; margin-bottom: 0; padding: 2px; "><strong>Proveedor:</strong> ' . $datos[0]['nombre_proveedor'] . '</p>
-            <p style="text-align: left; border: 1px solid #000; margin-top: 0; margin-bottom: 0; padding: 2px; "><strong>Recibe:</strong> ' . $datos[0]['nombre_empleado'] . '</p>
-        </div>
-
-        <table class="table" style="width: 100%; padding-top: 2; font-size: 13px;">
-            <thead>
-                <tr>
-                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">Partida</th>
-                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">Producto</th>
-                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">Cantidad</th>
-                    <th style="text-align: center; border: 1px solid #000; padding: 5px;">U.M.</th>
-                </tr>
-            </thead>
-            <tbody>';
-
-    foreach ($datos as $rows) {
+    {
+        $pagina = $this->limpiarCadena($pagina);
+        $registros = $this->limpiarCadena($registros);
+        $url = $this->limpiarCadena($url);
+        $url = APP_URL . $url . "/";
+        $busqueda = $this->limpiarCadena($busqueda);
+        $tabla = "";
+    
+        $consulta_datos = "
+            SELECT 
+                notas_entrada.id_nota_entrada, 
+                notas_entrada.numero_nota_entrada, 
+                proveedores.nombre_proveedor, 
+                empleados.nombre_empleado, 
+                notas_entrada.fecha, 
+                detalle_nota_entrada.id_detalle_nota, 
+                detalle_nota_entrada.numero_orden, 
+                detalle_nota_entrada.nombre_producto, 
+                detalle_nota_entrada.cantidad, 
+                unidades_medida.nombre_unidad
+            FROM 
+                notas_entrada 
+            LEFT JOIN 
+                detalle_nota_entrada ON notas_entrada.id_nota_entrada = detalle_nota_entrada.id_nota_entrada 
+            LEFT JOIN 
+                proveedores ON notas_entrada.id_proveedor = proveedores.id_proveedor 
+            LEFT JOIN 
+                empleados ON notas_entrada.id_empleado = empleados.id_empleado 
+            LEFT JOIN 
+                unidades_medida ON detalle_nota_entrada.id_unidad_medida = unidades_medida.id_unidad 
+            WHERE 
+                notas_entrada.id_nota_entrada = :busqueda
+            ORDER BY
+                detalle_nota_entrada.id_detalle_nota
+        ";
+    
+        $stmt = $this->conectar()->prepare($consulta_datos);
+        $stmt->bindParam(':busqueda', $busqueda, \PDO::PARAM_INT);
+        $stmt->execute();
+        $datos = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    
+        if (empty($datos)) {
+            return "No se encontraron resultados.";
+        }
+    
+        $numero_nota_entrada = $datos[0]['numero_nota_entrada'];
+    
         $tabla .= '
-        <tr>
-            <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['numero_partida'] . '</td>
-            <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_producto'] . '</td>
-            <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['cantidad'] . '</td>
-            <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_unidad'] . '</td>
-        </tr>';
+        <button class="btn btn-primary" onclick="imprimirArea(\'areaImprimir\')">Imprimir</button>
+        <div id="areaImprimir">
+            <div class="container-fluid">
+                <div class="invoice">
+                    <div style="margin-top: 1px; font-size: 13px; border: 1px solid #000; padding: 5px;">
+                        <p style="font-size: 14px; text-align: center;"><strong>Nota de Entrada</strong></p>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <img src="' . APP_URL . 'app/views/fotos/logo_orden.png" alt="logo" style="width:200px; height:auto;">
+                            <div>
+                                <p style="font-size: 13px; margin: 0;"><strong>Nota de Entrada:</strong> ' . $numero_nota_entrada . '</p>
+                                <p style="font-size: 13px; margin: 0;"><strong>Fecha:</strong> ' . date('d/m/Y', strtotime($datos[0]['fecha'])) . '</p>
+                                <p style="font-size: 13px; margin: 0;"><strong>Número de Orden:</strong> ' . $datos[0]['numero_orden'] . '</p>
+                                <p style="font-size: 13px; margin: 0;"><strong>Formato:</strong> PR-12-F03</p>
+                            </div>
+                        </div>
+                        <p style="margin: 0;">RADIOTECNOLOGÍA INDUSTRIAL S.A. DE C.V.</p>
+                        <p style="margin: 0;">RFC: RIN070219R38</p>
+                        <p style="margin: 0;">Calle Puebla Sur. Manzana 4. Lote 5 Nave B Int. 2 Col. Jardín Industrial</p>
+                        <p style="margin: 0;">Ixtapaluca. Edo. de México, C.P. 56535</p>
+                    </div>
+                    
+                    <div class="invoice-details" style="width: 100%; font-size: 13px; margin: 0;">
+                        <p style="text-align: left; border: 1px solid #000; margin: 0; padding: 2px;"><strong>Proveedor:</strong> ' . $datos[0]['nombre_proveedor'] . '</p>
+                        <p style="text-align: left; border: 1px solid #000; margin: 0; padding: 2px;"><strong>Recibe:</strong> ' . $datos[0]['nombre_empleado'] . '</p>
+                    </div>
+    
+                    <table class="table" style="width: 100%; font-size: 13px; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; border: 1px solid #000; padding: 5px;">Partida</th>
+                                <th style="text-align: center; border: 1px solid #000; padding: 5px;">Producto</th>
+                                <th style="text-align: center; border: 1px solid #000; padding: 5px;">Cantidad</th>
+                                <th style="text-align: center; border: 1px solid #000; padding: 5px;">U.M.</th>
+                            </tr>
+                        </thead>
+                        <tbody>';
+    
+        foreach ($datos as $index => $rows) {
+            $tabla .= '
+            <tr class="partida-row">
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;" class="numero-partida">' . ($index + 1) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_producto'] . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['cantidad'] . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . $rows['nombre_unidad'] . '</td>
+            </tr>';
+        }
+    
+        $tabla .= '
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    
+        <style>
+        @media print {
+            .sello-impresion {
+                position: fixed;
+                bottom: 50px;
+                width: 100%;
+                text-align: center;
+                font-weight: bold;
+                font-size: 13px;
+            }
+            .btn-primary { display: none; }
+        }
+        @media screen {
+            .sello-impresion { display: none; }
+        }
+        </style>
+        <div class="sello-impresion">Sello</div>
+    
+        <script>
+        function numerarPartidas() {
+            var rows = document.querySelectorAll(".partida-row");
+            rows.forEach((row, index) => {
+                row.querySelector(".numero-partida").textContent = index + 1;
+            });
+        }
+    
+        numerarPartidas();
+    
+        function imprimirArea(id) {
+            var contenido = document.getElementById(id).innerHTML;
+            var ventanaImpresion = window.open("", "_blank");
+            ventanaImpresion.document.write("<html><head><title>Nota de Entrada</title>");
+            ventanaImpresion.document.write("<style>");
+            ventanaImpresion.document.write("body { font-family: Arial, sans-serif; }");
+            ventanaImpresion.document.write("table { border-collapse: collapse; width: 100%; }");
+            ventanaImpresion.document.write("th, td { border: 1px solid black; padding: 5px; text-align: center; }");
+            ventanaImpresion.document.write(".sello-impresion { position: fixed; bottom: 50px; width: 100%; text-align: center; font-weight: bold; font-size: 13px; }");
+            ventanaImpresion.document.write("</style>");
+            ventanaImpresion.document.write("</head><body>");
+            ventanaImpresion.document.write(contenido);
+            ventanaImpresion.document.write("<div class=\'sello-impresion\'>Sello</div>");
+            ventanaImpresion.document.write("</body></html>");
+            ventanaImpresion.document.close();
+            setTimeout(function() {
+                ventanaImpresion.print();
+                ventanaImpresion.close();
+            }, 250);
+        }
+        </script>';
+    
+        return $tabla;
     }
-
-   // Agregar el texto de "Sello" que solo se verá en la impresión
-$tabla .= '
-<style>
-@media print {
-    .sello-impresion {
-        position: fixed;
-        bottom: 50px;
-        width: 100%;
-        text-align: center;
-        font-weight: bold;
-        font-size: 13px;
-    }
-}
-@media screen {
-    .sello-impresion {
-        display: none;
-    }
-}
-</style>
-<div class="sello-impresion">Sello</div>
-';
-
-    $tabla .= '<script>
-    function imprimirArea(id) {
-        var contenido = document.getElementById(id).innerHTML;
-        var ventanaImpresion = window.open("", "_blank");
-        ventanaImpresion.document.write("<html><head><title>' . $datos[0]['numero_nota_entrada'] . '</title>");
-        // Aquí puedes agregar tus estilos CSS
-    ventanaImpresion.document.write("<style>");
-    ventanaImpresion.document.write("body { font-family: Arial, sans-serif; line-height: 1; }");
-
-    ventanaImpresion.document.write("</style>");
     
-    ventanaImpresion.document.write("</head><body>");
-    ventanaImpresion.document.write(contenido);
-    ventanaImpresion.document.write("</body></html>");
-    ventanaImpresion.document.close();
-    ventanaImpresion.print();
-        
-    }
-    </script>';
-
-    
-
-    return $tabla;
-}
-
-
-    
-    
-    
-
-    
-
   
 
 }

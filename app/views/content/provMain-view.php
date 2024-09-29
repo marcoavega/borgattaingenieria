@@ -1,12 +1,6 @@
 <?php
-use app\controllers\provController;
-
-$insProveedor = new provController();
-
-$pagina = 1;
-$registros = 1000000; // Ajusta este número según tus necesidades
-$url = "provList";
-$busqueda = ""; // Mantenemos esto vacío ya que no hay búsqueda
+// Asegúrate de que todas las clases necesarias estén importadas
+use app\controllers\productController;
 ?>
 
 <div class="container-fluid">
@@ -36,33 +30,15 @@ $busqueda = ""; // Mantenemos esto vacío ya que no hay búsqueda
 
         <!-- Contenido principal -->
         <div class="col-md-9 col-lg-10">
-            <div class="container-fluid py-4">
-                <h4 class="mb-4">Lista de Proveedores</h4>
+            <div class="container py-4">
+                <h4 class="text-center mb-4">Proovedores</h4>
 
-                <!-- Contenedor para la tabla de proveedores -->
-                <div id="proveedoresTableContainer">
-                    <?php
-                    $tabla = $insProveedor->listarProvedoresControlador($pagina, $registros, $url, $busqueda);
-                    echo $tabla;
-                    ?>
-                </div>
+                
+
+                
+
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    body {
-        font-size: 0.85rem;
-    }
-    .table {
-        font-size: 0.8rem;
-    }
-    .table th, .table td {
-        padding: 0.5rem;
-    }
-    .btn-sm {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-    }
-</style>

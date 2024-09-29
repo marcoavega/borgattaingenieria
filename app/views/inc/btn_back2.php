@@ -1,7 +1,7 @@
-<!-- Contenedor para el botón de regreso. Las clases 'd-flex', 'pt-4' y 'pb-4' se usan para agregar relleno en la parte superior e inferior, respectivamente. -->
-<div class="d-flex pt-4 pb-4">
-    <!-- Botón para regresar a la página anterior. La clase 'btn' es una clase general para botones en Bootstrap y 'btn-primary' le da al botón un estilo específico (color de fondo azul). -->
-    <button class="btn btn-primary btn-back">Regresar</button>
+<!-- Contenedor para el botón de regreso. Se reduce el padding superior e inferior -->
+<div class="d-flex pt-2 pb-2">
+    <!-- Botón con tamaño pequeño y menor padding usando solo clases de Bootstrap -->
+    <button class="btn btn-primary btn-sm px-2 py-1 btn-back">Regresar</button>
 </div>
 
 <!-- Código JavaScript para agregar un evento de clic al botón de regreso -->

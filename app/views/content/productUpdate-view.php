@@ -1,23 +1,50 @@
 <!-- Contenedor principal -->
-<div class="container-fluid mb-4">
+<div class="container-fluid">
     <?php
     // Obtiene el ID del producto a editar
     $id = $insLogin->limpiarCadena($url[1]);
     ?>
-    <!-- Título de la página -->
-    <h1 class="display-4 text-center">Productos</h1>
-    <!-- Subtítulo de la página -->
-    <h2 class="lead text-center">Editar Producto</h2>
-</div>
+    <div class="row">
+        <!-- Menú lateral -->
+        <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="<?php echo APP_URL; ?>productList/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Lista de Productos
+                    </a>
+                </li>
+            </ul>
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="<?php echo APP_URL; ?>productNew/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Registrar Nuevo
+                    </a>
+                </li>
+            </ul>
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="<?php echo APP_URL; ?>productInvent/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Inventario
+                    </a>
+                </li>
+            </ul>
+            <hr>
+        </div>
 
-<!-- Contenedor para el formulario de edición de producto -->
-<div class="container py-4">
-    <?php
-    // Importa el controlador de productos
-    use app\controllers\productController;
+        <!-- Formulario de creación de producto -->
+        <div class="col-md-9 col-lg-10">
+            <?php
+            // Importa el controlador de productos
+            use app\controllers\productController;
 
-    // Crea una instancia del controlador
-    $insProduct = new productController();
+            // Crea una instancia del controlador
+            $insProduct = new productController();
 
     // Obtiene las opciones de categorías, proveedores, unidades de medida y tipos de moneda
     $opcionesCategorias = $insProduct->obtenerOpcionesCategorias();
@@ -37,6 +64,13 @@
             // Incluye el botón de regreso
             include "./app/views/inc/btn_back2.php";
             ?>
+
+             <!-- Título de la página -->
+    <h4 class="text-center">Productos</h4>
+    <!-- Subtítulo de la página -->
+    <h5 class="lead text-center">Nuevo Producto</h5>
+            <!-- Formulario de creación de producto -->
+
         <!-- Formulario de edición de producto -->
         <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/productAjax.php" method="POST" autocomplete="off">
             <!-- Campo oculto para el módulo de producto y el ID del producto -->
@@ -52,26 +86,8 @@
             <!-- Campo para el nombre del producto -->
             <div class="mb-3">
                 <label for="nombre_producto" class="form-label">Nombre Producto:</label>
-                <input type="text" class="form-control" id="nombre_producto" name="nombre_producto"  value="<?php echo htmlspecialchars($datos['nombre_producto'], ENT_QUOTES, 'UTF-8'); ?>" required>
+                <input type="text" class="form-control" id="nombre_producto" name="nombre_producto"  value="<?php echo $datos['nombre_producto']; ?>" required>
             </div>
-
-            <!-- Campo de selección para el tipo de moneda del producto -->
-            <div class="mb-3">
-                    <label for="id_categoria" class="form-label">Categorias</label>
-                    <select class="form-control" name="id_categoria" id="id_categoria" required>
-                        <option value="">Seleccione una categoria</option>
-                        <?php echo $opcionesCategorias; ?>
-                    </select>
-                </div>
-
-                 <!-- Campo de selección para la subcategoría del producto -->
-                 <div class="mb-3">
-                    <label for="subcategoria" class="form-label">Sub-Categoría</label>
-                    <select class='form-control' name='subcategoria' id='subcategoria' required>
-                        <option value="">Selecciona una sub-categoría</option>
-                        <?php echo $opcionesSubCategorias; ?>
-                    </select>
-                </div>
 
             <!-- Campo para el precio del producto -->
             <div class="mb-3">
@@ -91,7 +107,12 @@
                 <input type="number" class="form-control" id="stock" name="stock" value="<?php echo $datos['stock']; ?>" required>
             </div>
 
-            <!-- Campo de selección para la categoría del producto -->
+            
+            <!-- Campo para la cantidad de producto -->
+            <div class="mb-3">
+                <label for="stock_deseado" class="form-label">Stock Deseado:</label>
+                <input type="number" class="form-control" id="stock_deseado" name="stock_deseado" value="<?php echo $datos['stock_deseado']; ?>" required>
+            </div>
             
 
             <!-- Botón para enviar el formulario -->
@@ -106,4 +127,6 @@
         include "./app/views/inc/error_alert.php";
     }
     ?>
+</div>
+    </div>
 </div>

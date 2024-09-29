@@ -161,112 +161,77 @@ class provController extends mainModel
 
 
 
-    /*----------  Controlador listar usuario  ----------*/
     public function listarProvedoresControlador($pagina, $registros, $url, $busqueda)
     {
-
         $pagina = $this->limpiarCadena($pagina);
         $registros = $this->limpiarCadena($registros);
-
         $url = $this->limpiarCadena($url);
         $url = APP_URL . $url . "/";
-
-        $busqueda = $this->limpiarCadena($busqueda);
+    
         $tabla = "";
-
         $pagina = (isset($pagina) && $pagina > 0) ? (int) $pagina : 1;
         $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
-
-        $consulta_datos = "SELECT *
-                FROM proveedores
-                WHERE nombre_proveedor LIKE '%$busqueda%'
-                ORDER BY nombre_proveedor ASC
-                LIMIT $inicio, $registros;
-                ";
-
-        $consulta_total = "SELECT COUNT(id_proveedor)
-                FROM proveedores
-                WHERE nombre_proveedor LIKE '%$busqueda%';
-                ";
-
+    
+        $consulta_datos = "SELECT * FROM proveedores ORDER BY nombre_proveedor ASC LIMIT $inicio, $registros";
+        $consulta_total = "SELECT COUNT(id_proveedor) FROM proveedores";
+    
         $datos = $this->ejecutarConsulta($consulta_datos);
         $datos = $datos->fetchAll();
-
+    
         $total = $this->ejecutarConsulta($consulta_total);
         $total = (int) $total->fetchColumn();
-
+    
         $numeroPaginas = ceil($total / $registros);
-
+    
         $tabla .= '
-		        <div class="table-container">
-		        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
-		            <thead>
-		                <tr>
-		                    <th class="has-text-centered">#</th>
-		                    <th class="has-text-centered">Nombre</th>
-                            <th class="has-text-centered">RFC</th>
-                            <th class="has-text-centered">e-mail</th>
-                            <th class="has-text-centered">Teléfono</th>
-                            <th class="has-text-centered">Direccion</th>
-                            <th class="has-text-centered">Contacto</th>
-		                    <th class="has-text-centered" colspan="3">Opciones</th>
-		                </tr>
-		            </thead>
-		            <tbody>
-		    ';
-
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-sm">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nombre</th>
+                        <th>RFC</th>
+                        <th>E-mail</th>
+                        <th>Teléfono</th>
+                        <th>Dirección</th>
+                        <th>Contacto</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>';
+    
         if ($total >= 1 && $pagina <= $numeroPaginas) {
             $contador = $inicio + 1;
-            $pag_inicio = $inicio + 1;
             foreach ($datos as $rows) {
                 $tabla .= '
-						<tr class="has-text-centered" >
-							<td>' . $contador . '</td>
-							<td>' . $rows['nombre_proveedor'] . '</td>
-                            <td>' . $rows['RFC_proveedor'] . '</td>
-                            <td>' . $rows['email_proveedor'] . '</td>
-                            <td>' . $rows['telefono_proveedor'] . '</td>
-                            <td>' . $rows['direccion_proveedor'] . '</td>
-                            <td>' . $rows['contacto_proveedor'] . '</td>
-			                <td>
-			                    <a href="' . APP_URL . 'provUpdate/' . $rows['id_proveedor'] . '/" class="btn btn-info">Actualizar</a>
-			                </td>
-						</tr>
-					';
+                <tr>
+                    <td>'.$contador.'</td>
+                    <td>'.$rows['nombre_proveedor'].'</td>
+                    <td>'.$rows['RFC_proveedor'].'</td>
+                    <td>'.$rows['email_proveedor'].'</td>
+                    <td>'.$rows['telefono_proveedor'].'</td>
+                    <td>'.$rows['direccion_proveedor'].'</td>
+                    <td>'.$rows['contacto_proveedor'].'</td>
+                    <td>
+                        <a href="'.APP_URL.'provUpdate/'.$rows['id_proveedor'].'/" class="btn btn-info btn-sm">Actualizar</a>
+                    </td>
+                </tr>';
                 $contador++;
             }
-            $pag_final = $contador - 1;
         } else {
-            if ($total >= 1) {
-                $tabla .= '
-						<tr class="has-text-centered" >
-			                <td colspan="7">
-			                    <a href="' . $url . '1/" class="button is-link is-rounded is-small mt-4 mb-4">
-			                        Haga clic acá para recargar el listado
-			                    </a>
-			                </td>
-			            </tr>
-					';
-            } else {
-                $tabla .= '
-						<tr class="has-text-centered" >
-			                <td colspan="7">
-			                    No hay registros en el sistema
-			                </td>
-			            </tr>
-					';
-            }
+            $tabla .= '
+            <tr>
+                <td colspan="8" class="text-center">No hay registros en el sistema</td>
+            </tr>';
         }
-
+    
         $tabla .= '</tbody></table></div>';
-
-        ### Paginacion ###
+    
         if ($total > 0 && $pagina <= $numeroPaginas) {
-            $tabla .= '<p class="has-text-right">Mostrando proveedores <strong>' . $pag_inicio . '</strong> al <strong>' . $pag_final . '</strong> de un <strong>total de ' . $total . '</strong></p>';
-
+            $tabla .= '<p class="text-end">Mostrando proveedores <strong>' . $inicio . '</strong> al <strong>' . ($inicio + count($datos)) . '</strong> de un <strong>total de ' . $total . '</strong></p>';
             $tabla .= $this->paginadorTablas($pagina, $numeroPaginas, $url, 7);
         }
-
+    
         return $tabla;
     }
 

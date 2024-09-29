@@ -26,6 +26,15 @@
                 </li>
             </ul>
             <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="<?php echo APP_URL; ?>productInvent/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Inventario
+                    </a>
+                </li>
+            </ul>
+            <hr>
         </div>
 
         <!-- Formulario de creación de producto -->
@@ -126,6 +135,12 @@
                         <option value="">Selecciona un tipo de moneda</option>
                         <?php echo $opcionesTiposMoneda; ?>
                     </select>
+                </div>
+
+                 <!-- Campo para la cantidad de stock deseado -->
+                 <div class="mb-3">
+                    <label for="stock_deseado" class="form-label">Stock Deseado:</label>
+                    <input type="number" class="form-control" id="stock_deseado" name="stock_deseado" required>
                 </div>
 
                 <!-- Campo para subir la foto del producto -->

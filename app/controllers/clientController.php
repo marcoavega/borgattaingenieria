@@ -262,149 +262,137 @@ class clientController extends mainModel
     }
 
 
-    /*----------  Controlador actualizar usuario  ----------*/
     public function actualizarClienteControlador()
-    {
+{
+    $id = $this->limpiarCadena($_POST['id_cliente']);
 
-        $id = $this->limpiarCadena($_POST['id_cliene']);
-
-        # Verificando usuario #
-        $datos = $this->ejecutarConsulta("SELECT * FROM clientes WHERE id_cliente='$id'");
-        if ($datos->rowCount() <= 0) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No hemos encontrado el proveedor en el sistema",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        } else {
-            $datos = $datos->fetch();
-        }
-
-        $cliente = $this->limpiarCadena($_POST['nombre_cliente']);
-        $RFC = $this->limpiarCadena($_POST['rfc_cliente']);
-        $direccion = $this->limpiarCadena($_POST['direccion']);
-        $email = $this->limpiarCadena($_POST['email']);
-        $telefono = $this->limpiarCadena($_POST['telefono']);
-       
-
-        # Verificando campos obligatorios  #
-        if ($cliente == "" || $RFC == "" || $email == "" || $telefono == "" || $direccion == "") {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "Favor de llenar todos los campos",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
-
-       
-        if ($this->verificarDatos("[a-zA-Z0-9 ]{12,14}", $RFC)) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "El RFC de cliente no coincide con el formato solicitado",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "El email de cliente no coincide con el formato solicitado",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
-        if ($this->verificarDatos("[a-zA-Z0-9 ]{5,20}", $telefono)) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "El teléfono de cliente no coincide con el formato solicitado",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
-
-       
-        # Verificando proveedor #
-        if ($datos['nombre'] != $cliente) {
-            $check_usuario = $this->ejecutarConsulta("SELECT nombre_cliente FROM clientes WHERE nombre_cliente='$cliente'");
-            if ($check_usuario->rowCount() > 0) {
-                $alerta = [
-                    "tipo" => "simple",
-                    "titulo" => "Ocurrió un error inesperado",
-                    "texto" => "El cliente ingresado ya se encuentra registrado, por favor elija otro",
-                    "icono" => "error"
-                ];
-                return json_encode($alerta);
-                exit();
-            }
-        }
-
-
-        $cliente_datos_up = [
-            [
-                "campo_nombre" => "nombre_cliente",
-                "campo_marcador" => ":Ciente",
-                "campo_valor" => $cliente
-            ],
-            [
-                "campo_nombre" => "rfc_cliente",
-                "campo_marcador" => ":RFC",
-                "campo_valor" => $RFC
-            ],
-            [
-                "campo_nombre" => "email",
-                "campo_marcador" => ":Email",
-                "campo_valor" => $email
-            ],
-            [
-                "campo_nombre" => "telefono",
-                "campo_marcador" => ":Telefono",
-                "campo_valor" => $telefono
-            ],
-            [
-                "campo_nombre" => "direccion",
-                "campo_marcador" => ":Direccion",
-                "campo_valor" => $direccion
-            ]
-
+    # Verificando cliente #
+    $datos = $this->ejecutarConsulta("SELECT * FROM clientes WHERE id_cliente='$id'");
+    if ($datos->rowCount() <= 0) {
+        $alerta = [
+            "tipo" => "simple",
+            "titulo" => "Ocurrió un error inesperado",
+            "texto" => "No hemos encontrado el cliente en el sistema",
+            "icono" => "error"
         ];
-
-        $condicion = [
-            "condicion_campo" => "id_cliente",
-            "condicion_marcador" => ":ID",
-            "condicion_valor" => $id
-        ];
-
-        if ($this->actualizarDatos("proveedores", $cliente_datos_up, $condicion)) {
-
-            $alerta = [
-                "tipo" => "recargar",
-                "titulo" => "Proveedor actualizado",
-                "texto" => "Los datos del Cliemte " . $datos['nombre_cliente'] . " se actualizaron correctamente",
-                "icono" => "success"
-            ];
-        } else {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No hemos podido actualizar los datos del cliente " . $datos['nombre_proveedor'] . ", por favor intente nuevamente",
-                "icono" => "error"
-            ];
-        }
-
         return json_encode($alerta);
     }
+    $datos = $datos->fetch();
+
+    $cliente = $this->limpiarCadena($_POST['nombre_cliente']);
+    $RFC = $this->limpiarCadena($_POST['rfc_cliente']);
+    $direccion = $this->limpiarCadena($_POST['direccion']);
+    $email = $this->limpiarCadena($_POST['email']);
+    $telefono = $this->limpiarCadena($_POST['telefono']);
+
+    # Verificando campos obligatorios  #
+    if ($cliente == "" || $RFC == "" || $email == "" || $telefono == "" || $direccion == "") {
+        $alerta = [
+            "tipo" => "simple",
+            "titulo" => "Ocurrió un error inesperado",
+            "texto" => "Favor de llenar todos los campos",
+            "icono" => "error"
+        ];
+        return json_encode($alerta);
+    }
+
+    # Validaciones de formato #
+    if (!preg_match("/^[a-zA-Z0-9]{12,14}$/", $RFC)) {
+        $alerta = [
+            "tipo" => "simple",
+            "titulo" => "Ocurrió un error inesperado",
+            "texto" => "El RFC del cliente no coincide con el formato solicitado",
+            "icono" => "error"
+        ];
+        return json_encode($alerta);
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $alerta = [
+            "tipo" => "simple",
+            "titulo" => "Ocurrió un error inesperado",
+            "texto" => "El email del cliente no es válido",
+            "icono" => "error"
+        ];
+        return json_encode($alerta);
+    }
+
+    if (!preg_match("/^[0-9]{5,20}$/", $telefono)) {
+        $alerta = [
+            "tipo" => "simple",
+            "titulo" => "Ocurrió un error inesperado",
+            "texto" => "El teléfono del cliente no coincide con el formato solicitado",
+            "icono" => "error"
+        ];
+        return json_encode($alerta);
+    }
+
+    # Verificando cliente #
+    if ($datos['nombre_cliente'] != $cliente) {
+        $check_cliente = $this->ejecutarConsulta("SELECT nombre_cliente FROM clientes WHERE nombre_cliente='$cliente'");
+        if ($check_cliente->rowCount() > 0) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Ocurrió un error inesperado",
+                "texto" => "El cliente ingresado ya se encuentra registrado, por favor elija otro",
+                "icono" => "error"
+            ];
+            return json_encode($alerta);
+        }
+    }
+
+    $cliente_datos_up = [
+        [
+            "campo_nombre" => "nombre_cliente",
+            "campo_marcador" => ":Cliente",
+            "campo_valor" => $cliente
+        ],
+        [
+            "campo_nombre" => "rfc_cliente",
+            "campo_marcador" => ":RFC",
+            "campo_valor" => $RFC
+        ],
+        [
+            "campo_nombre" => "email",
+            "campo_marcador" => ":Email",
+            "campo_valor" => $email
+        ],
+        [
+            "campo_nombre" => "telefono",
+            "campo_marcador" => ":Telefono",
+            "campo_valor" => $telefono
+        ],
+        [
+            "campo_nombre" => "direccion",
+            "campo_marcador" => ":Direccion",
+            "campo_valor" => $direccion
+        ]
+    ];
+
+    $condicion = [
+        "condicion_campo" => "id_cliente",
+        "condicion_marcador" => ":ID",
+        "condicion_valor" => $id
+    ];
+
+    if ($this->actualizarDatos("clientes", $cliente_datos_up, $condicion)) {
+        $alerta = [
+            "tipo" => "recargar",
+            "titulo" => "Cliente actualizado",
+            "texto" => "Los datos del Cliente " . $datos['nombre_cliente'] . " se actualizaron correctamente",
+            "icono" => "success"
+        ];
+    } else {
+        $alerta = [
+            "tipo" => "simple",
+            "titulo" => "Ocurrió un error inesperado",
+            "texto" => "No hemos podido actualizar los datos del cliente " . $datos['nombre_cliente'] . ", por favor intente nuevamente",
+            "icono" => "error"
+        ];
+    }
+
+    return json_encode($alerta);
+}
 
 
 }

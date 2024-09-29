@@ -31,11 +31,24 @@ use app\controllers\productController;
                 </li>
             </ul>
             <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="<?php echo APP_URL; ?>productInvent/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Inventario
+                    </a>
+                </li>
+            </ul>
+            <hr>
         </div>
 
         <!-- Contenido principal -->
         <div class="col-md-9 col-lg-10">
             <div class="container py-4">
+            <?php
+            // Incluye el botón de regreso
+            include "./app/views/inc/btn_back2.php";
+            ?>
                 <?php
                 // Obtiene el ID del producto a mostrar
                 $id = $insLogin->limpiarCadena($url[1]);

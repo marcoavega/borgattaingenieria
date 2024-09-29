@@ -1,5 +1,4 @@
 <?php
-// Asegúrate de que todas las clases necesarias estén importadas
 use app\controllers\productController;
 ?>
 
@@ -44,14 +43,15 @@ use app\controllers\productController;
 
                 <!-- Sección de productos que necesitan resurtirse -->
                 <div class="card mb-4">
-                    <div class="card-header bg-warning text-dark">
+                    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Productos que necesitan resurtirse (Almacén General)</h5>
+                        <button onclick="imprimirStocksFaltantes()" class="btn btn-primary btn-sm">Imprimir Stocks Faltantes</button>
                     </div>
                     <div class="card-body">
                         <!-- Selector de categorías -->
                         <div class="mb-3">
                             <label for="categoriaSelector" class="form-label">Filtrar por categoría:</label>
-                            <select id="categoriaSelector" class="form-select">
+                            <select id="categoriaSelector" class="form-select form-select-sm">
                                 <option value="">Todas las categorías</option>
                                 <?php
                                 $insProduct = new productController();
@@ -64,7 +64,7 @@ use app\controllers\productController;
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-sm table-bordered">
+                            <table class="table table-sm table-bordered" id="tablaStocksFaltantes">
                                 <thead>
                                     <tr>
                                         <th>Código</th>
@@ -125,4 +125,52 @@ document.getElementById('categoriaSelector').addEventListener('change', function
         }
     });
 });
+
+function imprimirStocksFaltantes() {
+    var categoriaSeleccionada = document.getElementById('categoriaSelector').value;
+    var titulo = 'Stocks Faltantes - ' + (categoriaSeleccionada ? document.getElementById('categoriaSelector').options[document.getElementById('categoriaSelector').selectedIndex].text : 'Todas las categorías');
+    
+    var contenido = document.getElementById('tablaStocksFaltantes').cloneNode(true);
+    var filas = contenido.querySelectorAll('tbody tr');
+    
+    filas.forEach(function(fila) {
+        if (fila.style.display === 'none') {
+            fila.parentNode.removeChild(fila);
+        } else {
+            fila.removeChild(fila.lastElementChild); // Remover la columna de acciones
+        }
+    });
+
+    var ventanaImpresion = window.open('', '_blank');
+    ventanaImpresion.document.write('<html><head><title>' + titulo + '</title>');
+    ventanaImpresion.document.write('<style>');
+    ventanaImpresion.document.write('body { font-family: Arial, sans-serif; font-size: 12px; }');
+    ventanaImpresion.document.write('table { width: 100%; border-collapse: collapse; }');
+    ventanaImpresion.document.write('th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }');
+    ventanaImpresion.document.write('th { background-color: #f2f2f2; }');
+    ventanaImpresion.document.write('.text-danger { color: red; }');
+    ventanaImpresion.document.write('</style>');
+    ventanaImpresion.document.write('</head><body>');
+    ventanaImpresion.document.write('<h1>' + titulo + '</h1>');
+    ventanaImpresion.document.write(contenido.outerHTML);
+    ventanaImpresion.document.write('</body></html>');
+    ventanaImpresion.document.close();
+    ventanaImpresion.print();
+}
 </script>
+
+<style>
+    body {
+        font-size: 0.9rem;
+    }
+    .form-label {
+        font-size: 0.85rem;
+    }
+    .form-select-sm, .form-control-sm, .btn-sm {
+        font-size: 0.85rem;
+    }
+    .table-sm th, .table-sm td {
+        padding: 0.3rem;
+        font-size: 0.85rem;
+    }
+</style>

@@ -223,7 +223,7 @@ class facturaController extends mainModel
         GROUP BY
             f.id_factura, f.num_factura, f.numero_factura, p.nombre_proveedor, p.RFC_proveedor, f.fecha, m.nombre_moneda
         ORDER BY
-            f.id_factura DESC
+            f.fecha DESC
         LIMIT
             $inicio, $registros;";
 
@@ -265,10 +265,15 @@ class facturaController extends mainModel
         $totalGeneralPesos = 0;
         $totalGeneralDolares = 0;
 
-
-
-
+        $facturas_agrupadas = [];
         foreach ($datos as $rows) {
+            $fecha = new \DateTime($rows['fecha']);
+            $año = $fecha->format('Y');
+            $mes = $fecha->format('F Y');
+            $semana = $fecha->format('W');
+
+            $facturas_agrupadas[$año][$mes][$semana][] = $rows;
+
             $subtotal = $rows['precio_sin_iva'];
             $iva = $subtotal * 0.16;
             $totalConIva = $subtotal + $iva;
@@ -284,17 +289,16 @@ class facturaController extends mainModel
             }
 
             $tabla .= '
-           
              <div class="invoice">
                  <div style="margin-top: 1px; font-size: 13px; border: 1px solid #000; padding: 5px;">
                  <p style="font-size: 14px; text-align: center;"><strong>Captura de Factura</strong></p>
                  <div style="display: flex; align-items: center; justify-content: space-between;">
                      <img src="' . APP_URL . 'app/views/fotos/logo_orden.png" alt="logo" style="width:200px; height:auto;">
                      <div>
-                         <p><strong>Registro Número::</strong> ' . $rows['num_factura'] . '</p>
+                         <p><strong>Registro Número:</strong> ' . $rows['num_factura'] . '</p>
                          <p><strong>Fecha:</strong> ' . $rows['fecha'] . '</p>
                          <p><strong>Fecha de emisión:</strong> ' . $rows['fecha_emision'] . '</p>
-                         <p><strong>Fecha de vencimineto:</strong> ' . $rows['fecha_vencimiento'] . '</p>
+                         <p><strong>Fecha de vencimiento:</strong> ' . $rows['fecha_vencimiento'] . '</p>
                          <p style="font-size: 13px;"><strong>Formato:</strong>  PR-12-F07</p>
                      </div>
                  </div>
@@ -333,8 +337,6 @@ class facturaController extends mainModel
             ';
         }
 
-        
-
         $totalDolaresEnPesos = $totalDolares * $precioDolar;
         $totalIvaDolaresEnPesos = $totalIvaDolares * $precioDolar;
         $totalGeneralDolaresEnPesos = $totalGeneralDolares * $precioDolar;
@@ -344,58 +346,53 @@ class facturaController extends mainModel
         $totalGeneral = $totalGeneralPesos + $totalGeneralDolaresEnPesos;
 
         $tabla .= '
-
-<table class="table" style="width: 100%; padding-top: 10; font-size: 13px;">
-                <tr>
-                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Subtotal Pesos</th>
-                                  <th style="text-align: center; border: 1px solid #000; padding: 5px;">IVA Pesos</th>
-                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Subtotal Dólares en Pesos</th>
-
-                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">IVA Dólares en Pesos</th>
-                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Subtotal</th>
-                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">IVA General</th>
-                 <th style="text-align: center; border: 1px solid #000; padding: 5px;">Total General con IVA</th>
-             </tr>
-
-                </thead>
-                <tbody>
-                <tr>
-
-<td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars(number_format($totalPesos, 2)) . '</td>
-         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars(number_format($totalIvaPesos, 2)) . '</td>
-         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars(number_format($totalDolaresEnPesos, 2)) . '</td>
-         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars(number_format($totalIvaDolaresEnPesos, 2)) . '</td>
-         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars(number_format($subtotalGeneral, 2)) . '</td>
-         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars(number_format($ivaGeneral, 2)) . '</td>
-         <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars(number_format($totalGeneral, 2)) . '</td>
-                </tr>
-                </tbody>
-            </table>
+        <table class="table" style="width: 100%; padding-top: 10; font-size: 13px;">
+            <tr>
+                <th style="text-align: center; border: 1px solid #000; padding: 5px;">Subtotal Pesos</th>
+                <th style="text-align: center; border: 1px solid #000; padding: 5px;">IVA Pesos</th>
+                <th style="text-align: center; border: 1px solid #000; padding: 5px;">Subtotal Dólares en Pesos</th>
+                <th style="text-align: center; border: 1px solid #000; padding: 5px;">IVA Dólares en Pesos</th>
+                <th style="text-align: center; border: 1px solid #000; padding: 5px;">Subtotal</th>
+                <th style="text-align: center; border: 1px solid #000; padding: 5px;">IVA General</th>
+                <th style="text-align: center; border: 1px solid #000; padding: 5px;">Total General con IVA</th>
+            </tr>
+            <tr>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars(number_format($totalPesos, 2)) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars(number_format($totalIvaPesos, 2)) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars(number_format($totalDolaresEnPesos, 2)) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars(number_format($totalIvaDolaresEnPesos, 2)) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars(number_format($subtotalGeneral, 2)) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars(number_format($ivaGeneral, 2)) . '</td>
+                <td style="text-align: center; border: 1px solid #000; padding: 5px;">' . htmlspecialchars(number_format($totalGeneral, 2)) . '</td>
+            </tr>
+        </table>
         </div>
         </div>';
 
         $tabla .= '
         <script>
-       function imprimirArea(id) {
-    var contenido = document.getElementById(id).innerHTML;
-    var ventanaImpresion = window.open("", "_blank");
-    ventanaImpresion.document.write("<html><head><title>' . $rows['num_factura'] . '</title>");
-    
-    // Aquí puedes agregar tus estilos CSS
-    ventanaImpresion.document.write("<style>");
-    ventanaImpresion.document.write("body { font-family: Arial, sans-serif; line-height: 1; }");
-
-    ventanaImpresion.document.write("</style>");
-    
-    ventanaImpresion.document.write("</head><body>");
-    ventanaImpresion.document.write(contenido);
-    ventanaImpresion.document.write("</body></html>");
-    ventanaImpresion.document.close();
-    ventanaImpresion.print();
-}
+        function imprimirArea(id) {
+            var contenido = document.getElementById(id).innerHTML;
+            var ventanaImpresion = window.open("", "_blank");
+            ventanaImpresion.document.write("<html><head><title>Facturas</title>");
+            
+            // Aquí puedes agregar tus estilos CSS
+            ventanaImpresion.document.write("<style>");
+            ventanaImpresion.document.write("body { font-family: Arial, sans-serif; line-height: 1; }");
+            ventanaImpresion.document.write("</style>");
+            
+            ventanaImpresion.document.write("</head><body>");
+            ventanaImpresion.document.write(contenido);
+            ventanaImpresion.document.write("</body></html>");
+            ventanaImpresion.document.close();
+            ventanaImpresion.print();
+        }
         </script>';
 
-        return $tabla;
+        return [
+            'tabla_html' => $tabla,
+            'facturas_agrupadas' => $facturas_agrupadas
+        ];
     }
 
 

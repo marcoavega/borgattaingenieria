@@ -71,6 +71,8 @@
                             "facturacion",
                             "clientNew",
                             "clientList",
+                            "clientMain",
+                            "clientUpdate",
                             "controlLotes",
                             "productMain",
                             "userMain",
@@ -82,6 +84,11 @@
                             "almacenList",
                             "almacenUpdate",
                             "productInvent",
+                            "provMain",
+                            "orderCMain",
+                            "orderGMain",
+                            "notaEMain",
+                            "facturaMain",
                         ];
 
             // Comprueba si la vista solicitada está en la lista blanca

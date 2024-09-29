@@ -1,122 +1,141 @@
-<!-- Contenedor principal -->
-<div class="container-fluid py-4">
+<?php
+use app\controllers\ordenGastoProductosController;
 
-    <!-- Título de la página -->
-    <h1 class="display-4 text-center">Orden de Gasto</h1>
-    <!-- Subtítulo de la página -->
-    <h2 class="lead text-center">Alta de productos en Orden</h2>
+// Crea una instancia del controlador
+$insOrdenGasto = new ordenGastoProductosController();
+$insNombreProducto = new ordenGastoProductosController();
+$insCodigoProducto = new ordenGastoProductosController();
+$insUnidadesMedida = new ordenGastoProductosController();
 
-    <!-- Contenedor para el formulario de creación de producto -->
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <?php
-            // Importa el controlador de productos
-            use app\controllers\ordenGastoProductosController;
+// Obtiene las opciones necesarias
+$opcionesOrdenes = $insOrdenGasto->obtenerOpcionesOrdenGasto();
+$opcionesNombreProductos = $insNombreProducto->obtenerOpcionesNombreProductos();
+$opcionesCodigoProductos = $insCodigoProducto->obtenerOpcionesCodigoProductos();
+$opcionesUnidadesMedida = $insUnidadesMedida->obtenerOpcionesUnidadesMedida();
+?>
 
-            // Crea una instancia del controlador
-            $insOrdenGasto = new ordenGastoProductosController();
-            $insNombreProducto = new ordenGastoProductosController();
-            $insCodigoProducto = new ordenGastoProductosController();
-            $insUnidadesMedida = new ordenGastoProductosController();
-
-
-            // Obtiene las opciones de proveedores.
-            $opcionesOrdenes = $insOrdenGasto->obtenerOpcionesOrdenGasto();
-            $opcionesNombreProductos = $insNombreProducto->obtenerOpcionesNombreProductos();
-            $opcionesCodigoProductos = $insCodigoProducto->obtenerOpcionesCodigoProductos();
-            $opcionesUnidadesMedida = $insUnidadesMedida->obtenerOpcionesUnidadesMedida();
-
-            ?>
-            <?php
-            // Incluye el botón de regreso
-            include "./app/views/inc/btn_back2.php";
-            ?>
-            <!-- Formulario de creación de orden -->
-            <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/ordenGastoProductosAjax.php" method="POST" autocomplete="off" enctype="multipart/form-data">
-                <!-- Campo oculto para el módulo de orden compra -->
-                <input type="hidden" name="modulo_orden_gasto_productos" value="registrar">
-
-                <div class="row">
-
-                    <!-- Campo de selección -->
-        <div class="mb-3">
-            <label for="id_orden_gasto" class="form-label">Ordenes de gasto</label>
-            <select class='form-control' name='id_orden_gasto' id='id_orden_gasto' required>
-                <option value="">Selecciona una orden</option>
-                <?php echo $opcionesOrdenes; ?>
-            </select>
-        </div>
-<!--
-        <div class="mb-3">
-            <label for="numero_partida" class="form-label">Numero de partida:</label>
-            <input type="number" class="form-control" id="numero_partida" name="numero_partida" required>
-        </div>
--->
-        <div class="mb-3">
-            <label for="nombre_producto" class="form-label">Nombre Producto:</label>
-            <textarea class="form-control" id="nombre_producto" name="nombre_producto" required></textarea>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Menú lateral -->
+        <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="<?php echo APP_URL; ?>orderGNew/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Nueva orden
+                    </a>
+                </li>
+            </ul>
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="<?php echo APP_URL; ?>orderGPNew/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Alta de productos
+                    </a>
+                </li>
+            </ul>
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="<?php echo APP_URL; ?>orderGSearch/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Consultar
+                    </a>
+                </li>
+            </ul>
+            <hr>
         </div>
 
-        <div class="mb-3">
-            <label for="cantidad" class="form-label">Cantidad:</label>
-            <input type="number" class="form-control" id="cantidad" name="cantidad" required>
-        </div>
+        <!-- Contenido principal -->
+        <div class="col-md-9 col-lg-10">
+            <div class="container-fluid py-4">
+                <h4 class="text-center mb-4">Alta de productos en Orden de Gasto</h4>
 
-        <!-- Campo de selección para la unidad de medida del producto -->
-                <div class="mb-3">
-                    <label for="unidad_medida" class="form-label">Unidad de Medida</label>
-                    <select class="form-control" name="unidad_medida" id="unidad_medida" required>
-                        <option value="">Selecciona una unidad de medida</option>
-                        <?php echo $opcionesUnidadesMedida; ?>
-                    </select>
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <?php include "./app/views/inc/btn_back2.php"; ?>
+
+                        <form class="FormularioAjax p-4 border rounded-3" action="<?php echo APP_URL; ?>app/ajax/ordenGastoProductosAjax.php" method="POST" autocomplete="off" enctype="multipart/form-data">
+                            <input type="hidden" name="modulo_orden_gasto_productos" value="registrar">
+
+                            <div class="mb-3">
+                                <label for="id_orden_gasto" class="form-label">Órdenes de gasto</label>
+                                <select class='form-select form-select-sm' name='id_orden_gasto' id='id_orden_gasto' required>
+                                    <option value="">Selecciona una orden</option>
+                                    <?php echo $opcionesOrdenes; ?>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="nombre_producto" class="form-label">Nombre Producto:</label>
+                                <textarea class="form-control form-control-sm" id="nombre_producto" name="nombre_producto" required></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="cantidad" class="form-label">Cantidad:</label>
+                                <input type="number" class="form-control form-control-sm" id="cantidad" name="cantidad" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="unidad_medida" class="form-label">Unidad de Medida</label>
+                                <select class="form-select form-select-sm" name="unidad_medida" id="unidad_medida" required>
+                                    <option value="">Selecciona una unidad de medida</option>
+                                    <?php echo $opcionesUnidadesMedida; ?>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="precio_sin_IVA" class="form-label">Precio sin IVA:</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">$</span>
+                                    <input type="text" class="form-control form-control-sm" id="precio_sin_IVA" name="precio_sin_IVA" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="total" class="form-label">Precio total:</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">$</span>
+                                    <input type="text" class="form-control form-control-sm" id="total" name="total" required readonly>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                                <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-
-
-        <div class="mb-3">
-            <label for="precio_sin_IVA" class="form-label">Precio sin IVA:</label>
-            <div class="input-group">
-                <span class="input-group-text">$</span>
-                <input type="text" class="form-control" id="precio_sin_IVA" name="precio_sin_IVA" required>
             </div>
-        </div>
-
-        <!-- Campo para el precio total -->
-        <div class="mb-3">
-            <label for="total" class="form-label">Precio total:</label>
-            <div class="input-group">
-                <span class="input-group-text">$</span>
-                <input type="text" class="form-control" id="total" name="total" required readonly>
-            </div>
-        </div>
-
-
-                </div><!-- termina row -->
-
-                <!-- Botón para enviar el formulario -->
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                </div>
-            </form>
-
         </div>
     </div>
 </div>
 
+<style>
+    body {
+        font-size: 0.9rem;
+    }
+    .form-label {
+        font-size: 0.85rem;
+    }
+    .form-select-sm, .form-control-sm {
+        font-size: 0.85rem;
+    }
+    .btn-sm {
+        font-size: 0.85rem;
+    }
+</style>
+
 <script>
-    // Función para calcular el precio total
     function calcularPrecioTotal() {
-        // Obtiene la cantidad y el precio sin IVA
         var cantidad = parseFloat(document.getElementById("cantidad").value);
         var precioSinIVA = parseFloat(document.getElementById("precio_sin_IVA").value);
-
-        // Calcula el precio total
         var precioTotal = cantidad * precioSinIVA;
-
-        // Establece el precio total en el campo correspondiente
         document.getElementById("total").value = precioTotal.toFixed(2);
     }
 
-    // Agrega eventos oninput a los campos de cantidad y precio sin IVA para llamar a la función calcularPrecioTotal
     document.getElementById("cantidad").addEventListener("input", calcularPrecioTotal);
     document.getElementById("precio_sin_IVA").addEventListener("input", calcularPrecioTotal);
 </script>

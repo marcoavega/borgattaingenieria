@@ -1,7 +1,6 @@
 <?php
-use app\controllers\clientController;
-
-$insCliente = new clientController();
+// Asegúrate de que todas las clases necesarias estén importadas
+use app\controllers\productController;
 ?>
 
 <div class="container-fluid">
@@ -31,33 +30,15 @@ $insCliente = new clientController();
 
         <!-- Contenido principal -->
         <div class="col-md-9 col-lg-10">
-            <div class="container-fluid py-4">
-                <h4 class="text-center mb-4">Lista de Clientes</h4>
+            <div class="container py-4">
+                <h4 class="text-center mb-4">Clientes</h4>
 
-                <!-- Contenedor para la lista de clientes -->
-                <div id="clientesTableContainer">
-                    <?php
-                    // Muestra la lista de clientes
-                    echo $insCliente->listarClientesControlador($url[1], 99999, $url[0], "");
-                    ?>
-                </div>
+                
+
+                
+
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    body {
-        font-size: 0.85rem;
-    }
-    .table {
-        font-size: 0.8rem;
-    }
-    .table th, .table td {
-        padding: 0.5rem;
-    }
-    .btn-sm {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-    }
-</style>
