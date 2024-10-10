@@ -276,7 +276,7 @@ class notaEntradaController extends mainModel
         function imprimirArea(id) {
             var contenido = document.getElementById(id).innerHTML;
             var ventanaImpresion = window.open("", "_blank");
-            ventanaImpresion.document.write("<html><head><title>Nota de Entrada</title>");
+            ventanaImpresion.document.write("<html><head><title>' . $numero_nota_entrada . '</title>");
             ventanaImpresion.document.write("<style>");
             ventanaImpresion.document.write("body { font-family: Arial, sans-serif; }");
             ventanaImpresion.document.write("table { border-collapse: collapse; width: 100%; }");

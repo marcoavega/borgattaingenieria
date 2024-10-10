@@ -124,35 +124,39 @@ class productController extends mainModel
     public function registrarProductControlador()
     {
 
-        # Almacenando datos#
+       # Almacenando datos#
+    $codigo_producto = $this->limpiarCadena($_POST['codigo_producto']);
+    $nombre_producto = $_POST['nombre_producto'];
+    $ubicacion = $_POST['ubicacion'];
+    $precio = $this->limpiarCadena($_POST['precio']);
+    $precio_venta = $this->limpiarCadena($_POST['precio_venta']); // Nuevo campo
+    $stock = $this->limpiarCadena($_POST['stock']);
+    $categoria = $this->limpiarCadena($_POST['categoria']);
+    $proveedor = $this->limpiarCadena($_POST['proveedor']);
+    $unidad_medida = $this->limpiarCadena($_POST['unidad_medida']);
+    $tipo_moneda = $this->limpiarCadena($_POST['tipo_moneda']);
+    $subcategoria = $this->limpiarCadena($_POST['subcategoria']);
+    $stock_deseado = $this->limpiarCadena($_POST['stock_deseado']);
+    $peso = $this->limpiarCadena($_POST['peso']); // Nuevo campo
+    $altura = $this->limpiarCadena($_POST['altura']); // Nuevo campo
+    $largo = $this->limpiarCadena($_POST['largo']); // Nuevo campo
+    $ancho = $this->limpiarCadena($_POST['ancho']); // Nuevo campo
+    $diametro = $this->limpiarCadena($_POST['diametro']); // Nuevo campo
 
-        $codigo_producto = $this->limpiarCadena($_POST['codigo_producto']);
-        $nombre_producto = $_POST['nombre_producto'];
-        $ubicacion = $_POST['ubicacion'];
-        $precio = $this->limpiarCadena($_POST['precio']);
-        $stock = $this->limpiarCadena($_POST['stock']);
-        $categoria = $this->limpiarCadena($_POST['categoria']);
-        $proveedor = $this->limpiarCadena($_POST['proveedor']);
-        $unidad_medida = $this->limpiarCadena($_POST['unidad_medida']);
-        $tipo_moneda = $this->limpiarCadena($_POST['tipo_moneda']);
-        $subcategoria = $this->limpiarCadena($_POST['subcategoria']);
-        $stock_deseado = $this->limpiarCadena($_POST['stock_deseado']);
-  
-
-        # Verificando campos obligatorios #
-        if (
-            $codigo_producto == "" || $nombre_producto == "" || $precio == "" || $stock == "" || $categoria == "" || $proveedor == "" ||
-            $unidad_medida == "" || $tipo_moneda == "" || $ubicacion == "" || $subcategoria == "" || $stock_deseado == ""
-        ) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No has llenado todos los campos que son obligatorios",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
+    # Verificando campos obligatorios #
+    if (
+        $codigo_producto == "" || $nombre_producto == "" || $precio == "" || $stock == "" || $categoria == "" || $proveedor == "" ||
+        $unidad_medida == "" || $tipo_moneda == "" || $ubicacion == "" || $subcategoria == "" || $stock_deseado == "" || $diametro == ""
+    ) {
+        $alerta = [
+            "tipo" => "simple",
+            "titulo" => "Ocurrió un error inesperado",
+            "texto" => "No has llenado todos los campos que son obligatorios",
+            "icono" => "error"
+        ];
+        return json_encode($alerta);
+        exit();
+    }
 
         # Directorio de imágenes #
         $img_dir = "../views/img/img/";
@@ -230,7 +234,6 @@ class productController extends mainModel
         }
 
         $producto_datos_reg = [
-
             [
                 "campo_nombre" => "codigo_producto",
                 "campo_marcador" => ":CodigoProducto",
@@ -250,6 +253,11 @@ class productController extends mainModel
                 "campo_nombre" => "precio",
                 "campo_marcador" => ":Precio",
                 "campo_valor" => $precio
+            ],
+            [
+                "campo_nombre" => "precio_venta",
+                "campo_marcador" => ":PrecioVenta",
+                "campo_valor" => $precio_venta
             ],
             [
                 "campo_nombre" => "stock",
@@ -290,6 +298,31 @@ class productController extends mainModel
                 "campo_nombre" => "stock_deseado",
                 "campo_marcador" => ":stockDeseado",
                 "campo_valor" => $stock_deseado
+            ],
+            [
+                "campo_nombre" => "peso",
+                "campo_marcador" => ":Peso",
+                "campo_valor" => $peso
+            ],
+            [
+                "campo_nombre" => "altura",
+                "campo_marcador" => ":Altura",
+                "campo_valor" => $altura
+            ],
+            [
+                "campo_nombre" => "largo",
+                "campo_marcador" => ":Largo",
+                "campo_valor" => $largo
+            ],
+            [
+                "campo_nombre" => "ancho",
+                "campo_marcador" => ":Ancho",
+                "campo_valor" => $ancho
+            ],
+            [
+                "campo_nombre" => "diametro",
+                "campo_marcador" => ":Diametro",
+                "campo_valor" => $diametro
             ]
         ];
         
@@ -652,109 +685,138 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
 
 
 
-    /*----------  Controlador actualizar usuario  ----------*/
-    public function actualizarProductControlador()
-    {
+public function actualizarProductControlador()
+{
+    $id = $this->limpiarCadena($_POST['id_producto']);
 
-        $id = $this->limpiarCadena($_POST['id_producto']);
-
-        # Verificando usuario #
-        $datos = $this->ejecutarConsulta("SELECT * FROM productos WHERE id_producto='$id'");
-        if ($datos->rowCount() <= 0) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No hemos encontrado el productos en el sistema",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        } else {
-            $datos = $datos->fetch();
-        }
-
-        # Almacenando datos#
-        $codigo_producto = $this->limpiarCadena($_POST['codigo_producto']);
-        $nombre_producto = $this->limpiarCadena($_POST['nombre_producto']);
-        $ubicacion = $_POST['ubicacion'];
-        $precio = $this->limpiarCadena($_POST['precio']);
-        $stock = $this->limpiarCadena($_POST['stock']);
-        $stock_deseado = $this->limpiarCadena($_POST['stock_deseado']);
-
-        # Verificando campos obligatorios #
-        if (
-            $codigo_producto == "" || $nombre_producto == "" || $precio == "" || $stock == "" || $ubicacion == "" ||  $stock_deseado == ""
-        ) {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No has llenado todos los campos que son obligatorios",
-                "icono" => "error"
-            ];
-            return json_encode($alerta);
-            exit();
-        }
-
-        $producto_datos_reg = [
-
-            [
-                "campo_nombre" => "codigo_producto",
-                "campo_marcador" => ":CodigoProducto",
-                "campo_valor" => $codigo_producto
-            ],
-            [
-                "campo_nombre" => "nombre_producto",
-                "campo_marcador" => ":NombreProducto",
-                "campo_valor" => $nombre_producto
-            ],
-            [
-                "campo_nombre" => "ubicacion",
-                "campo_marcador" => ":Ubicacion",
-                "campo_valor" => $ubicacion
-            ],
-            [
-                "campo_nombre" => "precio",
-                "campo_marcador" => ":Precio",
-                "campo_valor" => $precio
-            ],
-            [
-                "campo_nombre" => "stock",
-                "campo_marcador" => ":Stock",
-                "campo_valor" => $stock
-            ],
-            [
-                "campo_nombre" => "stock_deseado",
-                "campo_marcador" => ":stockDeseado",
-                "campo_valor" => $stock_deseado
-            ]
+    # Verificando producto #
+    $datos = $this->ejecutarConsulta("SELECT * FROM productos WHERE id_producto='$id'");
+    if ($datos->rowCount() <= 0) {
+        $alerta = [
+            "tipo" => "simple",
+            "titulo" => "Ocurrió un error inesperado",
+            "texto" => "No hemos encontrado el producto en el sistema",
+            "icono" => "error"
         ];
-
-
-        $condicion = [
-            "condicion_campo" => "id_producto",
-            "condicion_marcador" => ":ID",
-            "condicion_valor" => $id
-        ];
-
-        if ($this->actualizarDatos("productos", $producto_datos_reg, $condicion)) {
-
-            $alerta = [
-                "tipo" => "recargar",
-                "titulo" => "Producto actualizado",
-                "texto" => "Los datos del producto " . $datos['nombre_producto'] . " se actualizaron correctamente",
-                "icono" => "success"
-            ];
-        } else {
-            $alerta = [
-                "tipo" => "simple",
-                "titulo" => "Ocurrió un error inesperado",
-                "texto" => "No hemos podido actualizar los datos del producto " . $datos['nombre_producto'] . ", por favor intente nuevamente",
-                "icono" => "error"
-            ];
-        }
-
         return json_encode($alerta);
+        exit();
+    } else {
+        $datos = $datos->fetch();
     }
+
+    # Almacenando datos#
+    $codigo_producto = $this->limpiarCadena($_POST['codigo_producto']);
+    $nombre_producto = $this->limpiarCadena($_POST['nombre_producto']);
+    $ubicacion = $_POST['ubicacion'];
+    $precio = $this->limpiarCadena($_POST['precio']);
+    $precio_venta = $this->limpiarCadena($_POST['precio_venta']);
+    $stock = $this->limpiarCadena($_POST['stock']);
+    $stock_deseado = $this->limpiarCadena($_POST['stock_deseado']);
+    $peso = $this->limpiarCadena($_POST['peso']);
+    $altura = $this->limpiarCadena($_POST['altura']);
+    $largo = $this->limpiarCadena($_POST['largo']);
+    $ancho = $this->limpiarCadena($_POST['ancho']);
+    $diametro = $this->limpiarCadena($_POST['diametro']);
+
+    # Verificando campos obligatorios #
+    if ($codigo_producto == "" || $nombre_producto == "" || $precio == "" || $stock == "" || $ubicacion == "" || $stock_deseado == "") {
+        $alerta = [
+            "tipo" => "simple",
+            "titulo" => "Ocurrió un error inesperado",
+            "texto" => "No has llenado todos los campos que son obligatorios",
+            "icono" => "error"
+        ];
+        return json_encode($alerta);
+        exit();
+    }
+
+    $producto_datos_reg = [
+        [
+            "campo_nombre" => "codigo_producto",
+            "campo_marcador" => ":CodigoProducto",
+            "campo_valor" => $codigo_producto
+        ],
+        [
+            "campo_nombre" => "nombre_producto",
+            "campo_marcador" => ":NombreProducto",
+            "campo_valor" => $nombre_producto
+        ],
+        [
+            "campo_nombre" => "ubicacion",
+            "campo_marcador" => ":Ubicacion",
+            "campo_valor" => $ubicacion
+        ],
+        [
+            "campo_nombre" => "precio",
+            "campo_marcador" => ":Precio",
+            "campo_valor" => $precio
+        ],
+        [
+            "campo_nombre" => "precio_venta",
+            "campo_marcador" => ":PrecioVenta",
+            "campo_valor" => $precio_venta
+        ],
+        [
+            "campo_nombre" => "stock",
+            "campo_marcador" => ":Stock",
+            "campo_valor" => $stock
+        ],
+        [
+            "campo_nombre" => "stock_deseado",
+            "campo_marcador" => ":stockDeseado",
+            "campo_valor" => $stock_deseado
+        ],
+        [
+            "campo_nombre" => "peso",
+            "campo_marcador" => ":Peso",
+            "campo_valor" => $peso
+        ],
+        [
+            "campo_nombre" => "altura",
+            "campo_marcador" => ":Altura",
+            "campo_valor" => $altura
+        ],
+        [
+            "campo_nombre" => "largo",
+            "campo_marcador" => ":Largo",
+            "campo_valor" => $largo
+        ],
+        [
+            "campo_nombre" => "ancho",
+            "campo_marcador" => ":Ancho",
+            "campo_valor" => $ancho
+        ],
+        [
+            "campo_nombre" => "diametro",
+            "campo_marcador" => ":Diametro",
+            "campo_valor" => $diametro
+        ]
+    ];
+
+    $condicion = [
+        "condicion_campo" => "id_producto",
+        "condicion_marcador" => ":ID",
+        "condicion_valor" => $id
+    ];
+
+    if ($this->actualizarDatos("productos", $producto_datos_reg, $condicion)) {
+        $alerta = [
+            "tipo" => "recargar",
+            "titulo" => "Producto actualizado",
+            "texto" => "Los datos del producto " . $datos['nombre_producto'] . " se actualizaron correctamente",
+            "icono" => "success"
+        ];
+    } else {
+        $alerta = [
+            "tipo" => "simple",
+            "titulo" => "Ocurrió un error inesperado",
+            "texto" => "No hemos podido actualizar los datos del producto " . $datos['nombre_producto'] . ", por favor intente nuevamente",
+            "icono" => "error"
+        ];
+    }
+
+    return json_encode($alerta);
+}
 
 
 

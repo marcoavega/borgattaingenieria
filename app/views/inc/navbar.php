@@ -15,7 +15,7 @@
           <li class="nav-item">
             <a class="nav-link" href="<?php echo APP_URL; ?>userMain/" id="UserDropdown" role="button" aria-expanded="false">
               <div class="d-flex flex-column align-items-center">
-                <img src="https://img.icons8.com/ios-filled/50/ffffff/user.png" alt="User Icon" class="nav-icon">
+                <img src="<?php echo APP_URL; ?>app/views/img/icons/fa-solid--user-cog.svg" alt="User Icon" class="nav-icon">
                 Usuarios
               </div>
             </a>
@@ -26,7 +26,7 @@
           <li class="nav-item">
             <a class="nav-link" href="<?php echo APP_URL; ?>almacenMain/" id="UserDropdown" role="button" aria-expanded="false">
               <div class="d-flex flex-column align-items-center">
-                <img src="https://img.icons8.com/ios-filled/50/ffffff/box.png" alt="User Icon" class="nav-icon">
+                <img src="<?php echo APP_URL; ?>app/views/img/icons/vaadin--storage.svg" alt="User Icon" class="nav-icon">
                 Almacenes
               </div>
             </a>
@@ -36,7 +36,7 @@
         <li class="nav-item">
           <a class="nav-link" href="<?php echo APP_URL; ?>productMain/" id="productosDropdown" role="button" aria-expanded="false">
             <div class="d-flex flex-column align-items-center">
-              <img src="https://img.icons8.com/ios-glyphs/30/ffffff/box.png" alt="Products Icon" class="nav-icon">
+              <img src="<?php echo APP_URL; ?>app/views/img/icons/fluent-mdl2--product-variant.svg" alt="Products Icon" class="nav-icon">
               Productos
             </div>
           </a>
@@ -46,7 +46,7 @@
           <li class="nav-item">
             <a class="nav-link" href="<?php echo APP_URL; ?>movementsMain/" id="productosDropdown" role="button" aria-expanded="false">
               <div class="d-flex flex-column align-items-center">
-                <img src="https://img.icons8.com/ios-glyphs/30/ffffff/shuffle.png" alt="Movements Icon" class="nav-icon">
+                <img src="<?php echo APP_URL; ?>app/views/img/icons/material-symbols--move-up.svg" alt="Movements Icon" class="nav-icon">
                 Movimientos
               </div>
             </a>
@@ -57,7 +57,7 @@
           <li class="nav-item">
             <a class="nav-link" href="<?php echo APP_URL; ?>provMain/" id="productosDropdown" role="button" aria-expanded="false">
               <div class="d-flex flex-column align-items-center">
-                <img src="https://img.icons8.com/ios-glyphs/30/ffffff/truck.png" alt="Suppliers Icon" class="nav-icon">
+                <img src="<?php echo APP_URL; ?>app/views/img/icons/carbon--ibm-z-cloud-provisioning.svg" alt="Suppliers Icon" class="nav-icon">
                 Proveedores
               </div>
             </a>
@@ -66,7 +66,7 @@
           <li class="nav-item">
             <a class="nav-link" href="<?php echo APP_URL; ?>clientMain/" id="productosDropdown" role="button" aria-expanded="false">
               <div class="d-flex flex-column align-items-center">
-                <img src="https://img.icons8.com/ios-glyphs/30/ffffff/business-contact.png" alt="Suppliers Icon" class="nav-icon">
+                <img src="<?php echo APP_URL; ?>app/views/img/icons/gis--map-user.svg" alt="Suppliers Icon" class="nav-icon">
                 Clientes
               </div>
             </a>
@@ -75,7 +75,7 @@
           <li class="nav-item">
             <a class="nav-link" href="<?php echo APP_URL; ?>orderCMain/" id="productosDropdown" role="button" aria-expanded="false">
               <div class="d-flex flex-column align-items-center">
-                <img src="https://img.icons8.com/ios-glyphs/30/ffffff/shopping-cart.png" alt="Suppliers Icon" class="nav-icon">
+                <img src="<?php echo APP_URL; ?>app/views/img/icons/icon-park-solid--buy.svg" alt="Suppliers Icon" class="nav-icon">
                 Órdenes Compra
               </div>
             </a>
@@ -84,7 +84,7 @@
           <li class="nav-item">
             <a class="nav-link" href="<?php echo APP_URL; ?>orderGMain/" id="productosDropdown" role="button" aria-expanded="false">
               <div class="d-flex flex-column align-items-center">
-                <img src="https://img.icons8.com/ios-glyphs/30/ffffff/purchase-order.png" alt="Suppliers Icon" class="nav-icon">
+                <img src="<?php echo APP_URL; ?>app/views/img/icons/icon-park-outline--buy.svg" alt="Suppliers Icon" class="nav-icon">
                 Órdenes Gasto
               </div>
             </a>
@@ -93,7 +93,7 @@
           <li class="nav-item">
             <a class="nav-link" href="<?php echo APP_URL; ?>notaEMain/" id="productosDropdown" role="button" aria-expanded="false">
               <div class="d-flex flex-column align-items-center">
-                <img src="https://img.icons8.com/ios-glyphs/30/ffffff/checklist.png" alt="Suppliers Icon" class="nav-icon">
+                <img src="<?php echo APP_URL; ?>app/views/img/icons/octicon--note-16.svg" alt="Suppliers Icon" class="nav-icon">
                 Nota Entrada
               </div>
             </a>
@@ -102,7 +102,7 @@
           <li class="nav-item">
             <a class="nav-link" href="<?php echo APP_URL; ?>facturaMain/" id="productosDropdown" role="button" aria-expanded="false">
               <div class="d-flex flex-column align-items-center">
-                <img src="https://img.icons8.com/ios-glyphs/30/ffffff/invoice.png" alt="Products Icon" class="nav-icon">
+                <img src="<?php echo APP_URL; ?>app/views/img/icons/material-symbols--fact-check.svg" alt="Products Icon" class="nav-icon">
                 Facturas
               </div>
             </a>
@@ -111,7 +111,7 @@
           <li class="nav-item">
             <a class="nav-link" href="<?php echo APP_URL; ?>salidaTerminadoMain/" id="productosDropdown" role="button" aria-expanded="false">
               <div class="d-flex flex-column align-items-center">
-                <img src="https://img.icons8.com/ios-glyphs/30/ffffff/settings.png" alt="Products Icon" class="nav-icon">
+                <img src="<?php echo APP_URL; ?>app/views/img/icons/hugeicons--product-loading.svg" alt="Products Icon" class="nav-icon">
                 Salida Terminado
               </div>
             </a>
@@ -122,7 +122,7 @@
       <ul class="navbar-nav">
         <li class="nav-item dropdown">
           <a class="nav-link" href="#" id="userOptionsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
+            <img src="<?php echo APP_URL; ?>app/views/img/icons/la--user-solid.svg" alt="" width="32" height="32" class="rounded-circle me-2">
             <i class="fas fa-user fa-sm"></i> Usuario
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userOptionsDropdown">

@@ -27,7 +27,12 @@ class kitController extends mainModel
            SUM(CASE WHEN cpi.nombre = 'Articulador' THEN pca.cantidad ELSE 0 END) AS cantidad_articulador,
            SUM(CASE WHEN cpi.nombre = 'ARCO' THEN pca.cantidad ELSE 0 END) AS cantidad_arco_facial,
            SUM(CASE WHEN cpi.nombre = 'Empaque' THEN pca.cantidad ELSE 0 END) AS cantidad_empaque,
-           sa.stock AS stock_almacen_general,
+           (SELECT COALESCE(SUM(stock), 0) FROM stock_almacen WHERE id_producto = p.id_producto AND id_almacen = 1) AS stock_almacen_general,
+           (SELECT COALESCE(SUM(stock), 0) FROM stock_almacen WHERE id_producto = p.id_producto AND id_almacen = 3) AS stock_area_ensamble,
+           (SELECT COALESCE(SUM(stock), 0) FROM stock_almacen WHERE id_producto = p.id_producto AND id_almacen = 31) AS stock_almacen_sin_pintar,
+           (SELECT COALESCE(SUM(stock), 0) FROM stock_almacen WHERE id_producto = p.id_producto AND id_almacen = 32) AS stock_area_pintura,
+           (SELECT COALESCE(SUM(stock), 0) FROM stock_almacen WHERE id_producto = p.id_producto AND id_almacen = 34) AS stock_almacen_pintadas,
+           (SELECT COALESCE(SUM(stock), 0) FROM stock_almacen WHERE id_producto = p.id_producto AND id_almacen IN (1, 3, 31, 32, 34)) AS stock_total,
            (SUM(CASE WHEN cpi.nombre = 'CPI' THEN pca.cantidad ELSE 0 END) +
             SUM(CASE WHEN cpi.nombre = 'Articulador' THEN pca.cantidad ELSE 0 END) +
             SUM(CASE WHEN cpi.nombre = 'ARCO' THEN pca.cantidad ELSE 0 END) +
@@ -37,8 +42,7 @@ class kitController extends mainModel
        JOIN categorias c ON p.id_categoria = c.id_categoria
        JOIN productos_cpi_art_af pca ON p.id_producto = pca.id_producto
        JOIN cpi_art_af cpi ON pca.id_cpi_art_af = cpi.id_cpi_art_af
-       JOIN stock_almacen sa ON p.id_producto = sa.id_producto AND sa.id_almacen = 1
-       GROUP BY p.codigo_producto, p.nombre_producto, sa.stock
+       GROUP BY p.codigo_producto, p.nombre_producto
        ORDER BY p.codigo_producto ASC
        LIMIT $inicio, $registros;";
    
@@ -70,7 +74,12 @@ class kitController extends mainModel
                <th>Arco Facial</th>
                <th>Empaque</th>
                <th>Total</th>
-               <th>Stock Almacén General</th>
+               <th>Almacén General</th>
+               <th>Área de Ensamble</th>
+               <th>Almacén Sin Pintar</th>
+               <th>Área de Pintura</th>
+               <th>Almacén Pintadas</th>
+               <th>Stock Total</th>
                <th>Stock Restante</th>
            </tr>
        </thead>
@@ -87,12 +96,17 @@ class kitController extends mainModel
                    <td class="cantidad-arco">' . htmlspecialchars($rows['cantidad_arco_facial']) . '</td>
                    <td class="cantidad-empaque">' . htmlspecialchars($rows['cantidad_empaque']) . '</td>
                    <td class="total">' . htmlspecialchars($rows['total_cantidad']) . '</td>
-                   <td>' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
+                   <td class="stock-almacen-general">' . htmlspecialchars($rows['stock_almacen_general']) . '</td>
+                   <td class="stock-area-ensamble">' . htmlspecialchars($rows['stock_area_ensamble']) . '</td>
+                   <td class="stock-almacen-sin-pintar">' . htmlspecialchars($rows['stock_almacen_sin_pintar']) . '</td>
+                   <td class="stock-area-pintura">' . htmlspecialchars($rows['stock_area_pintura']) . '</td>
+                   <td class="stock-almacen-pintadas">' . htmlspecialchars($rows['stock_almacen_pintadas']) . '</td>
+                   <td class="stock-total">' . htmlspecialchars($rows['stock_total']) . '</td>
                    <td class="stock-disponible"></td>
                </tr>';
            }
        } else {
-           $tabla .= '<tr><td colspan="10" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+           $tabla .= '<tr><td colspan="15" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
        }
    
        $tabla .= '</tbody></table>';
@@ -108,12 +122,12 @@ class kitController extends mainModel
                var articulador = parseFloat(fila.querySelector(".cantidad-articulador").textContent) || 0;
                var arco = parseFloat(fila.querySelector(".cantidad-arco").textContent) || 0;
                var empaque = parseFloat(fila.querySelector(".cantidad-empaque").textContent) || 0;
-               var stock = parseFloat(fila.querySelector("td:nth-child(9)").textContent);
+               var stockTotal = parseFloat(fila.querySelector(".stock-total").textContent);
                var total = fila.querySelector(".total");
                var stockDisponible = fila.querySelector(".stock-disponible");
                var totalCantidad = (cpi + articulador + arco + empaque) * multiplicador;
                total.textContent = totalCantidad.toFixed(2);
-               stockDisponible.textContent = (stock - totalCantidad).toFixed(2);
+               stockDisponible.textContent = (stockTotal - totalCantidad).toFixed(2);
            });
        }
    
@@ -130,7 +144,7 @@ class kitController extends mainModel
            ventanaImpresion.document.write("</style>");
            ventanaImpresion.document.write("</head><body>");
            ventanaImpresion.document.write("<table>");
-           ventanaImpresion.document.write("<thead class=\'thead-dark\'><tr><th>Imagen</th><th>Código Producto</th><th>Nombre Producto</th><th>CPI</th><th>Articulador</th><th>Arco Facial</th><th>Empaque</th><th>Total</th><th>Stock Almacén General</th><th>Stock Restante</th></tr></thead>");
+           ventanaImpresion.document.write("<thead class=\'thead-dark\'><tr><th>Imagen</th><th>Código Producto</th><th>Nombre Producto</th><th>CPI</th><th>Articulador</th><th>Arco Facial</th><th>Empaque</th><th>Total</th><th>Almacén General</th><th>Área de Ensamble</th><th>Almacén Sin Pintar</th><th>Área de Pintura</th><th>Almacén Pintadas</th><th>Stock Total</th><th>Stock Restante</th></tr></thead>");
            ventanaImpresion.document.write("<tbody>");
            ventanaImpresion.document.write(contenidoTabla);
            ventanaImpresion.document.write("</tbody>");

@@ -1,7 +1,7 @@
 # Activa el motor de reescritura de Apache
 RewriteEngine On
 
-# Configuración de las opciones. 
+# Configuración de las opciones.
 # En este caso, se deshabilita la visualización de listas de directorios.
 Options All -Indexes
 

@@ -34,7 +34,9 @@ use app\controllers\productController;
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a href="<?php echo APP_URL; ?>productInvent/" class="nav-link active" aria-current="page">
-                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        <svg class="bi me-2" width="16" height="16">
+                            <use xlink:href="#home" />
+                        </svg>
                         Inventario
                     </a>
                 </li>
@@ -45,10 +47,10 @@ use app\controllers\productController;
         <!-- Contenido principal -->
         <div class="col-md-9 col-lg-10">
             <div class="container py-4">
-            <?php
-            // Incluye el botón de regreso
-            include "./app/views/inc/btn_back2.php";
-            ?>
+                <?php
+                // Incluye el botón de regreso
+                include "./app/views/inc/btn_back2.php";
+                ?>
                 <?php
                 // Obtiene el ID del producto a mostrar
                 $id = $insLogin->limpiarCadena($url[1]);
@@ -92,7 +94,8 @@ use app\controllers\productController;
                                                     <p><strong>Nombre:</strong> <?php echo htmlspecialchars($producto['nombre_producto']); ?></p>
                                                     <p><strong>Ubicación:</strong> <?php echo htmlspecialchars($producto['ubicacion']); ?></p>
                                                     <p><strong>Stock Deseado:</strong> <?php echo htmlspecialchars($producto['stock_deseado']); ?></p>
-                                                    <p><strong>Precio:</strong> <?php echo number_format($producto['precio'], 2); ?></p>
+                                                    <p><strong>Precio de Compra:</strong> <?php echo number_format($producto['precio'], 2); ?></p>
+                                                    <p><strong>Precio de Venta:</strong> <?php echo number_format($producto['precio_venta'], 2); ?></p>
                                                     <p><strong>Categoría:</strong> <?php echo htmlspecialchars($producto['nombre_categoria']); ?></p>
                                                     <p><strong>Subcategoría:</strong> <?php echo htmlspecialchars($producto['nombre_subcategoria']); ?></p>
                                                 </div>
@@ -101,6 +104,21 @@ use app\controllers\productController;
                                                     <p><strong>Unidad:</strong> <?php echo htmlspecialchars($producto['nombre_unidad']); ?></p>
                                                     <p><strong>Moneda:</strong> <?php echo htmlspecialchars($producto['nombre_moneda']); ?></p>
                                                     <p><strong>Fecha de Registro:</strong> <?php echo date('d/m/Y H:i', strtotime($producto['fecha_registro'])); ?></p>
+                                                    <?php if ($producto['peso'] !== null): ?>
+    <p><strong>Peso (Kg.):</strong> <?php echo number_format($producto['peso'], 4); ?></p>
+<?php endif; ?>
+<?php if ($producto['altura'] !== null): ?>
+    <p><strong>Altura:</strong> <?php echo number_format($producto['altura'], 4); ?> M (<?php echo number_format($producto['altura'] * 39.3701, 4); ?> in)</p>
+<?php endif; ?>
+<?php if ($producto['largo'] !== null): ?>
+    <p><strong>Largo:</strong> <?php echo number_format($producto['largo'], 4); ?> M (<?php echo number_format($producto['largo'] * 39.3701, 4); ?> in)</p>
+<?php endif; ?>
+<?php if ($producto['ancho'] !== null): ?>
+    <p><strong>Ancho:</strong> <?php echo number_format($producto['ancho'], 4); ?> M (<?php echo number_format($producto['ancho'] * 39.3701, 4); ?> in)</p>
+<?php endif; ?>
+<?php if ($producto['diametro'] !== null): ?>
+    <p><strong>Diámetro:</strong> <?php echo number_format($producto['diametro'], 4); ?> M (<?php echo number_format($producto['diametro'] * 39.3701, 4); ?> in)</p>
+<?php endif; ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -125,8 +143,8 @@ use app\controllers\productController;
                                             echo '<a href="' . APP_URL . $action['url'] . '/' . $producto['id_producto'] . '/" class="btn ' . $action['class'] . ' btn-sm mb-2">' . $action['text'] . '</a>';
                                         }
                                         ?>
-                                         <!-- Botón de eliminar -->
-            <button onclick="eliminarProducto(<?php echo $producto['id_producto']; ?>)" class="btn btn-danger btn-sm mb-2">Eliminar Producto</button>
+                                        <!-- Botón de eliminar -->
+                                        <button onclick="eliminarProducto(<?php echo $producto['id_producto']; ?>)" class="btn btn-danger btn-sm mb-2">Eliminar Producto</button>
                                     </div>
                                 </div>
                             </div>
@@ -177,29 +195,29 @@ use app\controllers\productController;
 </div>
 
 <script>
-function eliminarProducto(id) {
-    if (confirm("¿Estás seguro de que quieres eliminar este producto?")) {
-        let formData = new FormData();
-        formData.append('modulo_product', 'eliminar');
-        formData.append('id_producto', id);
+    function eliminarProducto(id) {
+        if (confirm("¿Estás seguro de que quieres eliminar este producto?")) {
+            let formData = new FormData();
+            formData.append('modulo_product', 'eliminar');
+            formData.append('id_producto', id);
 
-        fetch('<?php echo APP_URL; ?>app/ajax/productAjax.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.tipo === "recargar") {
-                alert(data.texto);
-                window.location.href = '<?php echo APP_URL; ?>productList/';
-            } else {
-                alert(data.texto);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Ocurrió un error al intentar eliminar el producto');
-        });
+            fetch('<?php echo APP_URL; ?>app/ajax/productAjax.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.tipo === "recargar") {
+                        alert(data.texto);
+                        window.location.href = '<?php echo APP_URL; ?>productList/';
+                    } else {
+                        alert(data.texto);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ocurrió un error al intentar eliminar el producto');
+                });
+        }
     }
-}
 </script>
