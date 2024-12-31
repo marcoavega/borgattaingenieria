@@ -4,6 +4,6 @@
         // Crea una instancia del controlador
         $insMov = new movController();
         // Muestra la lista de productos
-        echo $insMov->listarMovControladorEmpleado($url[1],1000,$url[0],"");
+        echo $insMov->listarMovControladorEmpleado($url[1],10000,$url[0],"");
     ?>
 </div>

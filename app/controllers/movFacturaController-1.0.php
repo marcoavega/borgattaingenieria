@@ -528,8 +528,6 @@ class movFacturaController extends mainModel
 }
 
 
- 
-
 
 
 

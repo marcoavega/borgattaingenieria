@@ -498,6 +498,33 @@ public function listarProductControlador($pagina, $registros, $url, $busqueda)
                 </li>
             </ul>
             <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productHM/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Listado Herramientas Maquinados
+                    </a>
+                </li>
+            </ul>
+            <hr>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productKit/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Listado Kit
+                    </a>
+                </li>
+            </ul>
+            <hr>
+             <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productDelt/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Producto Terminado
+                    </a>
+                </li>
+            </ul>
+            <hr>
             </div>
 
             <!-- Contenido principal -->
@@ -1366,15 +1393,23 @@ public function obtenerProductosAResurtir() {
 }
 
 
+//Obtener categorias
 public function obtenerCategorias()
 {
     $consulta = "SELECT id_categoria, nombre_categoria FROM categorias ORDER BY nombre_categoria";
     $datos = $this->ejecutarConsulta($consulta);
     return $datos->fetchAll();
 }
+
+//Obtener subcategorias
+public function obtenerSubCategorias()
+{
+    $consulta = "SELECT id_subcategoria, nombre_subcategoria FROM sub_categorias ORDER BY nombre_subcategoria";
+    $datos = $this->ejecutarConsulta($consulta);
+    return $datos->fetchAll();
+}
     
 
-// En productController.php
 public function obtenerProductosConStock() {
     $consulta = "SELECT 
         p.id_producto,
@@ -1382,7 +1417,10 @@ public function obtenerProductosConStock() {
         p.nombre_producto,
         p.id_categoria,
         c.nombre_categoria,
+        p.id_subcategoria,
+        sc.nombre_subcategoria,
         p.precio,
+        p.ubicacion, -- Add this line to include ubicacion
         sa.id_almacen,
         sa.stock
     FROM 
@@ -1390,11 +1428,15 @@ public function obtenerProductosConStock() {
     LEFT JOIN 
         categorias c ON p.id_categoria = c.id_categoria
     LEFT JOIN 
+        sub_categorias sc ON p.id_subcategoria = sc.id_subcategoria
+    LEFT JOIN 
         stock_almacen sa ON p.id_producto = sa.id_producto
     WHERE
-        p.status = 1  -- Añadimos esta condición para obtener solo productos activos
+        p.status = 1 -- Solo productos activos
     ORDER BY 
-        p.nombre_producto";
+    p.codigo_producto";
+        /*p.ubicacion asc";*/
+    
 
     $datos = $this->ejecutarConsulta($consulta);
     $productos = [];
@@ -1407,7 +1449,10 @@ public function obtenerProductosConStock() {
                 'nombre_producto' => $row['nombre_producto'],
                 'id_categoria' => $row['id_categoria'],
                 'nombre_categoria' => $row['nombre_categoria'],
+                'id_subcategoria' => $row['id_subcategoria'],
+                'nombre_subcategoria' => $row['nombre_subcategoria'],
                 'precio' => $row['precio'],
+                'ubicacion' => $row['ubicacion'], // Add this line
                 'stocks' => [],
                 'total_stock' => 0
             ];
@@ -1421,5 +1466,1194 @@ public function obtenerProductosConStock() {
     return array_values($productos);
 }
 
+
+
+
+public function listarProductHM($pagina, $registros, $url, $busqueda)
+{
+    // Manejo de la solicitud AJAX para actualizar el status
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
+        $id_producto = $this->limpiarCadena($_POST['id_producto']);
+        $status = $this->limpiarCadena($_POST['status']);
+
+        $query = "UPDATE productos SET status = '$status' WHERE id_producto = '$id_producto'";
+        
+        $resultado = $this->ejecutarConsulta($query);
+        
+        if ($resultado) {
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error']);
+        }
+        exit;
+    }
+
+    // Código existente para listar productos
+    $pagina = $this->limpiarCadena($pagina);
+    $registros = $this->limpiarCadena($registros);
+    $url = $this->limpiarCadena($url);
+    $url = APP_URL . $url . "/";
+    $busqueda = $this->limpiarCadena($busqueda);
+
+    $tabla = "";
+
+    $pagina = (isset($pagina) && $pagina > 0) ? (int)$pagina : 1;
+    $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
+
+    $consulta_datos = "SELECT
+        productos.*,
+        categorias.nombre_categoria,
+        proveedores.nombre_proveedor,
+        unidades_medida.nombre_unidad,
+        tipos_moneda.nombre_moneda,
+        sub_categorias.nombre_subcategoria,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen General' THEN stock_almacen.stock ELSE 0 END) AS stock_general,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Maquinado' THEN stock_almacen.stock ELSE 0 END) AS stock_maquinados,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ensamble' THEN stock_almacen.stock ELSE 0 END) AS stock_ensamble,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Dental Trade' THEN stock_almacen.stock ELSE 0 END) AS stock_dental,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_terminado,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Radiotecnologia Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_rtproducto,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ventas' THEN stock_almacen.stock ELSE 0 END) AS stock_ventas,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Descarte de Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_descarte_terminado,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Descarte de Desgaste' THEN stock_almacen.stock ELSE 0 END) AS stock_descarte_desgaste
+        FROM productos
+        JOIN categorias ON productos.id_categoria = categorias.id_categoria
+        JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
+        JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
+        JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
+        JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
+        LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
+        LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
+        WHERE productos.id_categoria = 3 
+        AND (codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%')
+        GROUP BY productos.id_producto
+        ORDER BY productos.id_producto DESC";
+
+    $consulta_total = "SELECT COUNT(DISTINCT productos.id_producto)
+        FROM productos
+        JOIN categorias ON productos.id_categoria = categorias.id_categoria
+        JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
+        JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
+        JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
+        JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
+        LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
+        LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
+        WHERE productos.id_categoria = 3
+        AND (codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%')";
+
+    $datos = $this->ejecutarConsulta($consulta_datos);
+    $datos = $datos->fetchAll();
+
+    $total = $this->ejecutarConsulta($consulta_total);
+    $total = (int)$total->fetchColumn();
+
+    $tabla .= '
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Menú lateral -->
+            <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="' . APP_URL . 'productList/" class="nav-link active" aria-current="page">
+                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                            Lista de Productos
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="' . APP_URL . 'productNew/" class="nav-link active" aria-current="page">
+                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                            Registrar Nuevo
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productInvent/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Inventario
+                    </a>
+                </li>
+            </ul>
+            <hr>
+             <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productHM/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Listado Herramientas Maquinados
+                    </a>
+                </li>
+            </ul>
+            <hr>
+             <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productKit/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Listado Kit
+                    </a>
+                </li>
+            </ul>
+            <hr>
+             <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productDelt/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Producto Terminado
+                    </a>
+                </li>
+            </ul>
+            </div>
+
+            <!-- Contenido principal -->
+        <div class="col-12 col-md-9 col-lg-10">
+            <div class="container-fluid mb-4">
+                <h4 class="text-center">Productos Categoría 3</h4>
+                <h5 class="lead text-center">Lista de productos</h5>
+            </div>
+            <!-- Buscador en tiempo real y botón de impresión -->
+            <div class="container-fluid p-4">
+                <div class="row mb-3">
+                    <div class="col-12 col-md-6 mb-2 mb-md-0">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="searchInput" placeholder="Buscar..." onkeyup="filtrarBusqueda()">
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 d-flex justify-content-end">
+                        <button class="btn btn-success" onclick="imprimirTabla()">Imprimir</button>
+                    </div>
+                </div>';
+
+    // Vista de lista
+    $tabla .= '
+    <div id="vistaLista" class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr class="table-primary text-center">
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(0)">ID</a></th>
+                    <th>Imagen</th>
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(2)">Nombre</a></th>
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(3)">Código</a></th>
+                    <th>Ubicación</th>
+                    <th>Stock General</th>
+                    <th>Stock Ensamble</th>
+                    <th>Stock Maquinados</th>
+                    <th>Stock Deseado</th>
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(9)">Status</a></th>
+                </tr>
+            </thead>
+            <tbody>';
+
+    if ($total >= 1) {
+        foreach ($datos as $rows) {
+            $tabla .= '
+                <tr class="text-center">
+                    <td>' . $rows['id_producto'] . '</td>
+                    <td><img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;" alt="Imagen del producto" loading="lazy"></td>
+                    <td><a href="' . APP_URL . 'productDetails/' . $rows['id_producto'] . '/" class="text-decoration-none">' . $rows['nombre_producto'] . '</a></td>
+                    <td>' . $rows['codigo_producto'] . '</td>
+                    <td>' . $rows['ubicacion'] . '</td>
+                    <td>' . $rows['stock_general'] . '</td>
+                    <td>' . $rows['stock_ensamble'] . '</td>
+                    <td>' . $rows['stock_maquinados'] . '</td>
+                    <td>' . $rows['stock_deseado'] . '</td>
+                    <td>
+                        <select class="form-select form-select-sm status-select custom-select" data-id="' . $rows['id_producto'] . '">
+                            <option value="1" ' . ($rows['status'] == 1 ? 'selected' : '') . '>Activo</option>
+                            <option value="0" ' . ($rows['status'] == 0 ? 'selected' : '') . '>Inactivo</option>
+                        </select>
+                    </td>
+                </tr>';
+        }
+    } else {
+        $tabla .= '
+            <tr>
+                <td colspan="10" class="text-center">No hay registros disponibles</td>
+            </tr>';
+    }
+
+    $tabla .= '</tbody></table></div>';
+
+    $tabla .= '
+    <style>
+    .custom-select {
+        width: 100px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+    }
+    </style>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+    let ordenAscendente = true;
+
+    function ordenarTabla(columna) {
+        let tabla, filas, switching, i, x, y, shouldSwitch;
+        tabla = document.querySelector("#vistaLista table");
+        switching = true;
+
+        while (switching) {
+            switching = false;
+            filas = tabla.rows;
+
+            for (i = 1; i < (filas.length - 1); i++) {
+                shouldSwitch = false;
+                x = filas[i].getElementsByTagName("TD")[columna];
+                y = filas[i + 1].getElementsByTagName("TD")[columna];
+
+                let comparacion;
+                if (columna === 9) { // Para la columna Status
+                    comparacion = x.querySelector("select").value.localeCompare(y.querySelector("select").value);
+                } else if (columna === 0) { // Para la columna ID
+                    comparacion = parseInt(x.innerHTML) - parseInt(y.innerHTML);
+                } else {
+                    comparacion = x.innerHTML.toLowerCase().localeCompare(y.innerHTML.toLowerCase());
+                }
+
+                if (ordenAscendente ? comparacion > 0 : comparacion < 0) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+
+            if (shouldSwitch) {
+                filas[i].parentNode.insertBefore(filas[i + 1], filas[i]);
+                switching = true;
+            }
+        }
+
+        ordenAscendente = !ordenAscendente;
+    }
+
+    function filtrarBusqueda() {
+        let input = document.getElementById("searchInput");
+        let filter = input.value.toLowerCase();
+        let words = filter.split(" ").filter(Boolean);
+        let rowsLista = document.querySelectorAll("#vistaLista tbody tr");
+
+        rowsLista.forEach(function (row) {
+            let text = row.innerText.toLowerCase();
+            let matches = words.every(word => text.includes(word));
+            row.style.display = matches ? "" : "none";
+        });
+    }
+
+    function imprimirTabla() {
+        let contenido = document.getElementById("vistaLista").innerHTML;
+        let ventana = window.open("", "_blank");
+        ventana.document.write("<html><head><title>Imprimir Tabla</title>");
+        ventana.document.write("<style>table {width: 100%; border-collapse: collapse;} th, td {border: 1px solid black; padding: 8px; text-align: center;} th {background-color: #f2f2f2;}</style>");
+        ventana.document.write("</head><body>");
+        ventana.document.write(contenido);
+        ventana.document.write("</body></html>");
+        ventana.document.close();
+        ventana.print();
+    }
+
+   $(document).ready(function() {
+        $(".status-select").change(function() {
+            let id_producto = $(this).data("id");
+            let new_status = $(this).val();
+            
+            $.ajax({
+                url: window.location.href,
+                method: "POST",
+                data: {
+                    action: "update_status",
+                    id_producto: id_producto,
+                    status: new_status
+                },
+                success: function(response) {
+                    let data = JSON.parse(response);
+                    if(data.status === "success") {
+                        alert("Estado actualizado correctamente");
+                    } else {
+                        alert("Error al actualizar el estado");
+                    }
+                }, error: function() {
+                alert("Error en la solicitud");
+            }
+        });
+    });
+});
+</script>';
+
+    return $tabla;
+}
+
+
+public function listarProductKit($pagina, $registros, $url, $busqueda)
+{
+    // Manejo de la solicitud AJAX para actualizar el status
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
+        $id_producto = $this->limpiarCadena($_POST['id_producto']);
+        $status = $this->limpiarCadena($_POST['status']);
+
+        $query = "UPDATE productos SET status = '$status' WHERE id_producto = '$id_producto'";
+        
+        $resultado = $this->ejecutarConsulta($query);
+        
+        if ($resultado) {
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error']);
+        }
+        exit;
+    }
+
+    // Código existente para listar productos
+    $pagina = $this->limpiarCadena($pagina);
+    $registros = $this->limpiarCadena($registros);
+    $url = $this->limpiarCadena($url);
+    $url = APP_URL . $url . "/";
+    $busqueda = $this->limpiarCadena($busqueda);
+
+    $tabla = "";
+
+    $pagina = (isset($pagina) && $pagina > 0) ? (int)$pagina : 1;
+    $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
+
+    $consulta_datos = "SELECT
+        productos.*,
+        categorias.nombre_categoria,
+        proveedores.nombre_proveedor,
+        unidades_medida.nombre_unidad,
+        tipos_moneda.nombre_moneda,
+        sub_categorias.nombre_subcategoria,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen General' THEN stock_almacen.stock ELSE 0 END) AS stock_general,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Maquinado' THEN stock_almacen.stock ELSE 0 END) AS stock_maquinados,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ensamble' THEN stock_almacen.stock ELSE 0 END) AS stock_ensamble,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Dental Trade' THEN stock_almacen.stock ELSE 0 END) AS stock_dental,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_terminado,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Radiotecnologia Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_rtproducto,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ventas' THEN stock_almacen.stock ELSE 0 END) AS stock_ventas,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Descarte de Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_descarte_terminado,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Descarte de Desgaste' THEN stock_almacen.stock ELSE 0 END) AS stock_descarte_desgaste
+        FROM productos
+        JOIN categorias ON productos.id_categoria = categorias.id_categoria
+        JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
+        JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
+        JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
+        JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
+        LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
+        LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
+        WHERE productos.id_categoria = 9 
+        AND (codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%')
+        GROUP BY productos.id_producto
+        ORDER BY productos.id_producto DESC";
+
+    $consulta_total = "SELECT COUNT(DISTINCT productos.id_producto)
+        FROM productos
+        JOIN categorias ON productos.id_categoria = categorias.id_categoria
+        JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
+        JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
+        JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
+        JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
+        LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
+        LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
+        WHERE productos.id_categoria = 9
+        AND (codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%')";
+
+    $datos = $this->ejecutarConsulta($consulta_datos);
+    $datos = $datos->fetchAll();
+
+    $total = $this->ejecutarConsulta($consulta_total);
+    $total = (int)$total->fetchColumn();
+
+    $tabla .= '
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Menú lateral -->
+            <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="' . APP_URL . 'productList/" class="nav-link active" aria-current="page">
+                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                            Lista de Productos Kit
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="' . APP_URL . 'productNew/" class="nav-link active" aria-current="page">
+                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                            Registrar Nuevo
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productInvent/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Inventario
+                    </a>
+                </li>
+            </ul>
+            <hr>
+             <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productHM/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Listado Herramientas Maquinados
+                    </a>
+                </li>
+            </ul>
+             <hr>
+             <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productKit/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Listado Kit
+                    </a>
+                </li>
+            </ul>
+             <hr>
+             <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productDelt/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Producto Terminado
+                    </a>
+                </li>
+            </ul>
+            </div>
+
+            <!-- Contenido principal -->
+        <div class="col-12 col-md-9 col-lg-10">
+            <div class="container-fluid mb-4">
+                <h4 class="text-center">Productos Categoría 3</h4>
+                <h5 class="lead text-center">Lista de productos</h5>
+            </div>
+            <!-- Buscador en tiempo real y botón de impresión -->
+            <div class="container-fluid p-4">
+                <div class="row mb-3">
+                    <div class="col-12 col-md-6 mb-2 mb-md-0">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="searchInput" placeholder="Buscar..." onkeyup="filtrarBusqueda()">
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 d-flex justify-content-end">
+                        <button class="btn btn-success" onclick="imprimirTabla()">Imprimir</button>
+                    </div>
+                </div>';
+
+    // Vista de lista
+    $tabla .= '
+    <div id="vistaLista" class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr class="table-primary text-center">
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(0)">ID</a></th>
+                    <th>Imagen</th>
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(2)">Nombre</a></th>
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(3)">Código</a></th>
+                    <th>Ubicación</th>
+                    <th>Stock General</th>
+                    <th>Stock Ensamble</th>
+                    <th>Stock Maquinados</th>
+                    <th>Stock Deseado</th>
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(9)">Status</a></th>
+                </tr>
+            </thead>
+            <tbody>';
+
+    if ($total >= 1) {
+        foreach ($datos as $rows) {
+            $tabla .= '
+                <tr class="text-center">
+                    <td>' . $rows['id_producto'] . '</td>
+                    <td><img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;" alt="Imagen del producto" loading="lazy"></td>
+                    <td><a href="' . APP_URL . 'productDetails/' . $rows['id_producto'] . '/" class="text-decoration-none">' . $rows['nombre_producto'] . '</a></td>
+                    <td>' . $rows['codigo_producto'] . '</td>
+                    <td>' . $rows['ubicacion'] . '</td>
+                    <td>' . $rows['stock_general'] . '</td>
+                    <td>' . $rows['stock_ensamble'] . '</td>
+                    <td>' . $rows['stock_maquinados'] . '</td>
+                    <td>' . $rows['stock_deseado'] . '</td>
+                    <td>
+                        <select class="form-select form-select-sm status-select custom-select" data-id="' . $rows['id_producto'] . '">
+                            <option value="1" ' . ($rows['status'] == 1 ? 'selected' : '') . '>Activo</option>
+                            <option value="0" ' . ($rows['status'] == 0 ? 'selected' : '') . '>Inactivo</option>
+                        </select>
+                    </td>
+                </tr>';
+        }
+    } else {
+        $tabla .= '
+            <tr>
+                <td colspan="10" class="text-center">No hay registros disponibles</td>
+            </tr>';
+    }
+
+    $tabla .= '</tbody></table></div>';
+
+    $tabla .= '
+    <style>
+    .custom-select {
+        width: 100px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+    }
+    </style>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+    let ordenAscendente = true;
+
+    function ordenarTabla(columna) {
+        let tabla, filas, switching, i, x, y, shouldSwitch;
+        tabla = document.querySelector("#vistaLista table");
+        switching = true;
+
+        while (switching) {
+            switching = false;
+            filas = tabla.rows;
+
+            for (i = 1; i < (filas.length - 1); i++) {
+                shouldSwitch = false;
+                x = filas[i].getElementsByTagName("TD")[columna];
+                y = filas[i + 1].getElementsByTagName("TD")[columna];
+
+                let comparacion;
+                if (columna === 9) { // Para la columna Status
+                    comparacion = x.querySelector("select").value.localeCompare(y.querySelector("select").value);
+                } else if (columna === 0) { // Para la columna ID
+                    comparacion = parseInt(x.innerHTML) - parseInt(y.innerHTML);
+                } else {
+                    comparacion = x.innerHTML.toLowerCase().localeCompare(y.innerHTML.toLowerCase());
+                }
+
+                if (ordenAscendente ? comparacion > 0 : comparacion < 0) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+
+            if (shouldSwitch) {
+                filas[i].parentNode.insertBefore(filas[i + 1], filas[i]);
+                switching = true;
+            }
+        }
+
+        ordenAscendente = !ordenAscendente;
+    }
+
+    function filtrarBusqueda() {
+        let input = document.getElementById("searchInput");
+        let filter = input.value.toLowerCase();
+        let words = filter.split(" ").filter(Boolean);
+        let rowsLista = document.querySelectorAll("#vistaLista tbody tr");
+
+        rowsLista.forEach(function (row) {
+            let text = row.innerText.toLowerCase();
+            let matches = words.every(word => text.includes(word));
+            row.style.display = matches ? "" : "none";
+        });
+    }
+
+    function imprimirTabla() {
+        let contenido = document.getElementById("vistaLista").innerHTML;
+        let ventana = window.open("", "_blank");
+        ventana.document.write("<html><head><title>Imprimir Tabla</title>");
+        ventana.document.write("<style>table {width: 100%; border-collapse: collapse;} th, td {border: 1px solid black; padding: 8px; text-align: center;} th {background-color: #f2f2f2;}</style>");
+        ventana.document.write("</head><body>");
+        ventana.document.write(contenido);
+        ventana.document.write("</body></html>");
+        ventana.document.close();
+        ventana.print();
+    }
+
+   $(document).ready(function() {
+        $(".status-select").change(function() {
+            let id_producto = $(this).data("id");
+            let new_status = $(this).val();
+            
+            $.ajax({
+                url: window.location.href,
+                method: "POST",
+                data: {
+                    action: "update_status",
+                    id_producto: id_producto,
+                    status: new_status
+                },
+                success: function(response) {
+                    let data = JSON.parse(response);
+                    if(data.status === "success") {
+                        alert("Estado actualizado correctamente");
+                    } else {
+                        alert("Error al actualizar el estado");
+                    }
+                }, error: function() {
+                alert("Error en la solicitud");
+            }
+        });
+    });
+});
+</script>';
+
+    return $tabla;
+}
+
+
+public function listarProductDelt($pagina, $registros, $url, $busqueda)
+{
+    // Manejo de la solicitud AJAX para actualizar el status
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
+        $id_producto = $this->limpiarCadena($_POST['id_producto']);
+        $status = $this->limpiarCadena($_POST['status']);
+
+        $query = "UPDATE productos SET status = '$status' WHERE id_producto = '$id_producto'";
+        
+        $resultado = $this->ejecutarConsulta($query);
+        
+        if ($resultado) {
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error']);
+        }
+        exit;
+    }
+
+    // Código existente para listar productos
+    $pagina = $this->limpiarCadena($pagina);
+    $registros = $this->limpiarCadena($registros);
+    $url = $this->limpiarCadena($url);
+    $url = APP_URL . $url . "/";
+    $busqueda = $this->limpiarCadena($busqueda);
+
+    $tabla = "";
+
+    $pagina = (isset($pagina) && $pagina > 0) ? (int)$pagina : 1;
+    $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
+
+    $consulta_datos = "SELECT
+        productos.*,
+        categorias.nombre_categoria,
+        proveedores.nombre_proveedor,
+        unidades_medida.nombre_unidad,
+        tipos_moneda.nombre_moneda,
+        sub_categorias.nombre_subcategoria,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen General' THEN stock_almacen.stock ELSE 0 END) AS stock_general,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Maquinado' THEN stock_almacen.stock ELSE 0 END) AS stock_maquinados,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ensamble' THEN stock_almacen.stock ELSE 0 END) AS stock_ensamble,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Dental Trade' THEN stock_almacen.stock ELSE 0 END) AS stock_dental,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_terminado,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Almacen Radiotecnologia Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_rtproducto,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Area de Ventas' THEN stock_almacen.stock ELSE 0 END) AS stock_ventas,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Descarte de Producto Terminado' THEN stock_almacen.stock ELSE 0 END) AS stock_descarte_terminado,
+        SUM(CASE WHEN almacenes.nombre_almacen = 'Descarte de Desgaste' THEN stock_almacen.stock ELSE 0 END) AS stock_descarte_desgaste
+        FROM productos
+        JOIN categorias ON productos.id_categoria = categorias.id_categoria
+        JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
+        JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
+        JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
+        JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
+        LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
+        LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
+        WHERE productos.id_categoria = 11 
+        AND (codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%')
+        GROUP BY productos.id_producto
+        ORDER BY productos.id_producto DESC";
+
+    $consulta_total = "SELECT COUNT(DISTINCT productos.id_producto)
+        FROM productos
+        JOIN categorias ON productos.id_categoria = categorias.id_categoria
+        JOIN proveedores ON productos.id_proveedor = proveedores.id_proveedor
+        JOIN unidades_medida ON productos.id_unidad = unidades_medida.id_unidad
+        JOIN tipos_moneda ON productos.id_moneda = tipos_moneda.id_moneda
+        JOIN sub_categorias ON productos.id_subcategoria = sub_categorias.id_subcategoria
+        LEFT JOIN stock_almacen ON productos.id_producto = stock_almacen.id_producto
+        LEFT JOIN almacenes ON stock_almacen.id_almacen = almacenes.id_almacen
+        WHERE productos.id_categoria = 11
+        AND (codigo_producto LIKE '%$busqueda%' OR nombre_producto LIKE '%$busqueda%')";
+
+    $datos = $this->ejecutarConsulta($consulta_datos);
+    $datos = $datos->fetchAll();
+
+    $total = $this->ejecutarConsulta($consulta_total);
+    $total = (int)$total->fetchColumn();
+
+    $tabla .= '
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Menú lateral -->
+            <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white bg-dark bg-black">
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="' . APP_URL . 'productList/" class="nav-link active" aria-current="page">
+                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                            Lista de Productos Kit
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="' . APP_URL . 'productNew/" class="nav-link active" aria-current="page">
+                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                            Registrar Nuevo
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productInvent/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Inventario
+                    </a>
+                </li>
+            </ul>
+            <hr>
+             <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productHM/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Listado Herramientas Maquinados
+                    </a>
+                </li>
+            </ul>
+             <hr>
+             <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productKit/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Listado Kit
+                    </a>
+                </li>
+            </ul>
+            <hr>
+             <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="' . APP_URL . 'productDelt/" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Producto Terminado
+                    </a>
+                </li>
+            </ul>
+            </div>
+
+            <!-- Contenido principal -->
+        <div class="col-12 col-md-9 col-lg-10">
+            <div class="container-fluid mb-4">
+                <h4 class="text-center">Productos Categoría 3</h4>
+                <h5 class="lead text-center">Lista de productos</h5>
+            </div>
+            <!-- Buscador en tiempo real y botón de impresión -->
+            <div class="container-fluid p-4">
+                <div class="row mb-3">
+                    <div class="col-12 col-md-6 mb-2 mb-md-0">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="searchInput" placeholder="Buscar..." onkeyup="filtrarBusqueda()">
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 d-flex justify-content-end">
+                        <button class="btn btn-success" onclick="imprimirTabla()">Imprimir</button>
+                    </div>
+                </div>';
+
+    // Vista de lista
+    $tabla .= '
+    <div id="vistaLista" class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr class="table-primary text-center">
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(0)">ID</a></th>
+                    <th>Imagen</th>
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(2)">Nombre</a></th>
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(3)">Código</a></th>
+                    <th>Ubicación</th>
+                    <th>Stock General</th>
+                    <th>Stock Ensamble</th>
+                    <th>Stock Maquinados</th>
+                    <th>Stock Deseado</th>
+                    <th><a href="#" class="text-dark" onclick="ordenarTabla(9)">Status</a></th>
+                </tr>
+            </thead>
+            <tbody>';
+
+    if ($total >= 1) {
+        foreach ($datos as $rows) {
+            $tabla .= '
+                <tr class="text-center">
+                    <td>' . $rows['id_producto'] . '</td>
+                    <td><img src="' . APP_URL . 'app/views/img/img/' . $rows['url_imagen'] . '" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;" alt="Imagen del producto" loading="lazy"></td>
+                    <td><a href="' . APP_URL . 'productDetails/' . $rows['id_producto'] . '/" class="text-decoration-none">' . $rows['nombre_producto'] . '</a></td>
+                    <td>' . $rows['codigo_producto'] . '</td>
+                    <td>' . $rows['ubicacion'] . '</td>
+                    <td>' . $rows['stock_general'] . '</td>
+                    <td>' . $rows['stock_ensamble'] . '</td>
+                    <td>' . $rows['stock_maquinados'] . '</td>
+                    <td>' . $rows['stock_deseado'] . '</td>
+                    <td>
+                        <select class="form-select form-select-sm status-select custom-select" data-id="' . $rows['id_producto'] . '">
+                            <option value="1" ' . ($rows['status'] == 1 ? 'selected' : '') . '>Activo</option>
+                            <option value="0" ' . ($rows['status'] == 0 ? 'selected' : '') . '>Inactivo</option>
+                        </select>
+                    </td>
+                </tr>';
+        }
+    } else {
+        $tabla .= '
+            <tr>
+                <td colspan="10" class="text-center">No hay registros disponibles</td>
+            </tr>';
+    }
+
+    $tabla .= '</tbody></table></div>';
+
+
+ // Consulta y llenado de datos [sin cambios]
+ $consulta_control = "SELECT 
+    cpt.id_control_producto_terminado,
+    p.codigo_producto,
+    p.nombre_producto,
+    ns.numero_serie,
+    nl.numero_lote,
+    spt.nombre_status,
+    e.nombre_empleado,
+    a.nombre_almacen,
+    cpt.fecha_entregado
+FROM control_producto_terminado cpt
+JOIN productos p ON cpt.id_producto = p.id_producto
+JOIN numeros_serie ns ON cpt.id_numero_serie = ns.id_numero_serie
+JOIN numeros_lote nl ON cpt.id_numero_lote = nl.id_numero_lote
+JOIN status_producto_terminado spt ON cpt.id_status_producto_terminado = spt.id_status_producto_terminado
+JOIN empleados e ON cpt.id_empleado = e.id_empleado
+JOIN almacenes a ON cpt.id_almacen = a.id_almacen
+WHERE p.id_categoria = 11
+ORDER BY cpt.id_control_producto_terminado ASC";
+
+$datos_control = $this->ejecutarConsulta($consulta_control);
+$datos_control = $datos_control->fetchAll();
+
+
+
+
+// Si se envía el formulario de actualización
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_control'])) {
+    $id_control = $this->limpiarCadena($_POST['id_control']);
+    $id_producto = $this->limpiarCadena($_POST['id_producto']);
+    $id_numero_serie = $this->limpiarCadena($_POST['id_numero_serie']);
+    $id_numero_lote = $this->limpiarCadena($_POST['id_numero_lote']);
+    $id_status = $this->limpiarCadena($_POST['id_status']);
+    $id_empleado = $this->limpiarCadena($_POST['id_empleado']);
+    $id_almacen = $this->limpiarCadena($_POST['id_almacen']);
+    $fecha_entregado = $this->limpiarCadena($_POST['fecha_entregado']);
+
+    $query_update = "UPDATE control_producto_terminado 
+                    SET id_producto = '$id_producto',
+                        id_numero_serie = '$id_numero_serie',
+                        id_numero_lote = '$id_numero_lote',
+                        id_status_producto_terminado = '$id_status',
+                        id_empleado = '$id_empleado',
+                        id_almacen = '$id_almacen',
+                        fecha_entregado = '$fecha_entregado'
+                    WHERE id_control_producto_terminado = '$id_control'";
+    
+    $this->ejecutarConsulta($query_update);
+}
+
+
+
+
+// Consultas para obtener los datos para los selects
+$query_productos = "SELECT id_producto, codigo_producto, nombre_producto FROM productos WHERE id_categoria = 11";
+$query_series = "SELECT id_numero_serie, numero_serie FROM numeros_serie";
+$query_lotes = "SELECT id_numero_lote, numero_lote FROM numeros_lote";
+$query_status = "SELECT id_status_producto_terminado, nombre_status FROM status_producto_terminado";
+$query_empleados = "SELECT id_empleado, nombre_empleado FROM empleados";
+$query_almacenes = "SELECT id_almacen, nombre_almacen FROM almacenes";
+
+$productos = $this->ejecutarConsulta($query_productos)->fetchAll();
+$series = $this->ejecutarConsulta($query_series)->fetchAll();
+$lotes = $this->ejecutarConsulta($query_lotes)->fetchAll();
+$status_list = $this->ejecutarConsulta($query_status)->fetchAll();
+$empleados = $this->ejecutarConsulta($query_empleados)->fetchAll();
+$almacenes = $this->ejecutarConsulta($query_almacenes)->fetchAll();
+
+// Consulta principal de control de productos [mantener igual]
+$consulta_control = "SELECT 
+    cpt.id_control_producto_terminado,
+    cpt.id_producto,
+    cpt.id_numero_serie,
+    cpt.id_numero_lote,
+    cpt.id_status_producto_terminado,
+    cpt.id_empleado,
+    cpt.id_almacen,
+    p.codigo_producto,
+    p.nombre_producto,
+    ns.numero_serie,
+    nl.numero_lote,
+    spt.nombre_status,
+    e.nombre_empleado,
+    a.nombre_almacen,
+    cpt.fecha_entregado
+FROM control_producto_terminado cpt
+JOIN productos p ON cpt.id_producto = p.id_producto
+JOIN numeros_serie ns ON cpt.id_numero_serie = ns.id_numero_serie
+JOIN numeros_lote nl ON cpt.id_numero_lote = nl.id_numero_lote
+JOIN status_producto_terminado spt ON cpt.id_status_producto_terminado = spt.id_status_producto_terminado
+JOIN empleados e ON cpt.id_empleado = e.id_empleado
+JOIN almacenes a ON cpt.id_almacen = a.id_almacen
+WHERE p.id_categoria = 11
+ORDER BY cpt.id_control_producto_terminado ASC";
+
+$datos_control = $this->ejecutarConsulta($consulta_control);
+$datos_control = $datos_control->fetchAll();
+
+// Actualizar la tabla de control con campos editables
+$tabla .= '
+<div class="container-fluid mt-5">
+    <div class="row mb-3">
+        <div class="col-12 col-md-6">
+            <h4 class="text-center">Control de Productos Terminados</h4>
+        </div>
+        <div class="col-12 col-md-6 d-flex justify-content-end">
+            <button class="btn btn-success" onclick="imprimirTablaControl()">Imprimir Control</button>
+        </div>
+    </div>
+
+    <div id="vistaListaControl" class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr class="table-primary text-center">
+                    <th>ID Control</th>
+                    <th>Producto</th>
+                    <th>Número Serie</th>
+                    <th>Número Lote</th>
+                    <th>Status</th>
+                    <th>Empleado</th>
+                    <th>Almacén</th>
+                    <th>Fecha Entregado</th>
+                    <th class="no-print">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>';
+
+if (count($datos_control) >= 1) {
+    foreach ($datos_control as $control) {
+        $tabla .= '
+            <form method="POST" class="control-form">
+                <tr class="text-center">
+                    <td>
+                        ' . $control['id_control_producto_terminado'] . '
+                        <input type="hidden" name="id_control" value="' . $control['id_control_producto_terminado'] . '">
+                    </td>
+                    <td>
+                        <select name="id_producto" class="form-select form-select-sm">
+                            <option value="">Seleccione un producto</option>';
+                            foreach ($productos as $producto) {
+                                $tabla .= '<option value="' . $producto['id_producto'] . '"' . 
+                                ($producto['id_producto'] == $control['id_producto'] ? ' selected' : '') . '>' . 
+                                $producto['codigo_producto'] . ' - ' . $producto['nombre_producto'] . '</option>';
+                            }
+        $tabla .= '</select>
+                    </td>
+                    <td>
+                        <select name="id_numero_serie" class="form-select form-select-sm">';
+                            foreach ($series as $serie) {
+                                $tabla .= '<option value="' . $serie['id_numero_serie'] . '"' . 
+                                ($serie['id_numero_serie'] == $control['id_numero_serie'] ? ' selected' : '') . '>' . 
+                                $serie['numero_serie'] . '</option>';
+                            }
+        $tabla .= '</select>
+                    </td>
+                    <td>
+                        <select name="id_numero_lote" class="form-select form-select-sm">';
+                            foreach ($lotes as $lote) {
+                                $tabla .= '<option value="' . $lote['id_numero_lote'] . '"' . 
+                                ($lote['id_numero_lote'] == $control['id_numero_lote'] ? ' selected' : '') . '>' . 
+                                $lote['numero_lote'] . '</option>';
+                            }
+        $tabla .= '</select>
+                    </td>
+                    <td>
+                        <select name="id_status" class="form-select form-select-sm">';
+                            foreach ($status_list as $status) {
+                                $tabla .= '<option value="' . $status['id_status_producto_terminado'] . '"' . 
+                                ($status['id_status_producto_terminado'] == $control['id_status_producto_terminado'] ? ' selected' : '') . '>' . 
+                                $status['nombre_status'] . '</option>';
+                            }
+        $tabla .= '</select>
+                    </td>
+                    <td>
+                        <select name="id_empleado" class="form-select form-select-sm">';
+                            foreach ($empleados as $empleado) {
+                                $tabla .= '<option value="' . $empleado['id_empleado'] . '"' . 
+                                ($empleado['id_empleado'] == $control['id_empleado'] ? ' selected' : '') . '>' . 
+                                $empleado['nombre_empleado'] . '</option>';
+                            }
+        $tabla .= '</select>
+                    </td>
+                    <td>
+                        <select name="id_almacen" class="form-select form-select-sm">';
+                            foreach ($almacenes as $almacen) {
+                                $tabla .= '<option value="' . $almacen['id_almacen'] . '"' . 
+                                ($almacen['id_almacen'] == $control['id_almacen'] ? ' selected' : '') . '>' . 
+                                $almacen['nombre_almacen'] . '</option>';
+                            }
+        $tabla .= '</select>
+                    </td>
+                    <td>
+                        <input type="date" name="fecha_entregado" class="form-control form-control-sm" 
+                               value="' . $control['fecha_entregado'] . '">
+                    </td>
+                    <td class="no-print">
+                        <input type="hidden" name="update_control" value="1">
+                        <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+                    </td>
+                </tr>
+            </form>';
+    }
+} else {
+    $tabla .= '
+        <tr>
+            <td colspan="9" class="text-center">No hay registros de control disponibles</td>
+        </tr>';
+}
+
+$tabla .= '</tbody></table></div>';
+
+ // Actualizar el script para manejar las búsquedas y la impresión de manera independiente
+ $tabla .= '
+ <script>
+ // Función de búsqueda para la primera tabla (productos)
+ function filtrarBusqueda() {
+     let input = document.getElementById("searchInput");
+     let filter = input.value.toLowerCase();
+     let words = filter.split(" ").filter(Boolean);
+     let rowsLista = document.querySelectorAll("#vistaLista tbody tr");
+
+     rowsLista.forEach(function (row) {
+         let text = row.innerText.toLowerCase();
+         let matches = words.every(word => text.includes(word));
+         row.style.display = matches ? "" : "none";
+     });
+ }
+
+ // Función de búsqueda para la segunda tabla (control)
+ function filtrarBusquedaControl() {
+     let input = document.getElementById("searchInputControl");
+     let filter = input.value.toLowerCase();
+     let words = filter.split(" ").filter(Boolean);
+     let rowsLista = document.querySelectorAll("#vistaListaControl tbody tr");
+
+     rowsLista.forEach(function (row) {
+         let text = row.innerText.toLowerCase();
+         let matches = words.every(word => text.includes(word));
+         row.style.display = matches ? "" : "none";
+     });
+ }
+
+ // Función de impresión para la primera tabla
+ function imprimirTabla() {
+     let contenido = document.getElementById("vistaLista").innerHTML;
+     let ventana = window.open("", "_blank");
+     ventana.document.write("<html><head><title>Lista de Productos</title>");
+     ventana.document.write("<style>");
+     ventana.document.write("table {width: 100%; border-collapse: collapse;}");
+     ventana.document.write("th, td {border: 1px solid black; padding: 8px; text-align: center;}");
+     ventana.document.write("th {background-color: #f2f2f2;}");
+     ventana.document.write("@media print {");
+     ventana.document.write("  .select-status {-webkit-appearance: none; -moz-appearance: none; appearance: none; border: none; padding: 0; margin: 0; font: inherit; text-align: center;}");
+     ventana.document.write("}");
+     ventana.document.write("</style>");
+     ventana.document.write("</head><body>");
+     ventana.document.write("<h2 style=\"text-align: center;\">Lista de Productos</h2>");
+     ventana.document.write(contenido);
+     ventana.document.write("</body></html>");
+     ventana.document.close();
+     ventana.print();
+ }
+
+ // Función de impresión para la segunda tabla
+function imprimirTablaControl() {
+    let tablaControl = document.getElementById("vistaListaControl").cloneNode(true);
+    
+    // Remover los elementos que no queremos imprimir
+    let accionesCeldas = tablaControl.querySelectorAll(".no-print");
+    accionesCeldas.forEach(celda => celda.remove());
+    
+    // Convertir los selects a texto plano para la impresión
+    let selects = tablaControl.querySelectorAll("select");
+    selects.forEach(select => {
+        let selectedOption = select.options[select.selectedIndex];
+        let textNode = document.createTextNode(selectedOption.text);
+        select.parentNode.replaceChild(textNode, select);
+    });
+
+    let ventana = window.open("", "_blank");
+    ventana.document.write(`
+        <html>
+        <head>
+            <title>Control de Productos Terminados</title>
+            <style>
+                body { font-family: Arial, sans-serif; }
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin-top: 20px;
+                }
+                th, td { 
+                    border: 1px solid black; 
+                    padding: 8px; 
+                    text-align: center; 
+                }
+                th { 
+                    background-color: #f2f2f2; 
+                }
+                .table-header {
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+                @media print {
+                    button { display: none; }
+                    .no-print { display: none; }
+                    input[type="date"] { 
+                        border: none;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                    }
+                    select {
+                        border: none;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="table-header">
+                <h2>Control de Productos Terminados</h2>
+                <p>Fecha de impresión: ${new Date().toLocaleString()}</p>
+            </div>
+            ${tablaControl.outerHTML}
+        </body>
+        </html>
+    `);
+    
+    ventana.document.close();
+    setTimeout(() => {
+        ventana.print();
+    }, 500);
+}
+ </script>';
+
+ return $tabla;
+}
 
 }

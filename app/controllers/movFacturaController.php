@@ -316,7 +316,8 @@ public function listarMovFacturaControlador($pagina, $registros, $url, $busqueda
         </div>
     </form>';
 
-    if (!empty($fechaInicio) && !empty($fechaFin)) {
+//consulta para vencimientos y pagos de las facturas por mes:
+if (!empty($fechaInicio) && !empty($fechaFin)) {
         $pagina = (isset($pagina) && $pagina > 0) ? (int)$pagina : 1;
         $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
 
@@ -360,6 +361,55 @@ public function listarMovFacturaControlador($pagina, $registros, $url, $busqueda
         JOIN proveedores p ON f.id_proveedor = p.id_proveedor
         JOIN tipos_moneda m ON f.id_moneda = m.id_moneda
         WHERE $condiciones;";
+
+/*
+ // Si se han especificado fechas de inicio y fin
+if (!empty($fechaInicio) && !empty($fechaFin)) {
+    $pagina = (isset($pagina) && $pagina > 0) ? (int)$pagina : 1;
+    $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
+
+    // Cambiar la condición para que solo considere la fecha de emisión
+    $condiciones = "(f.fecha_emision BETWEEN '$fechaInicio' AND '$fechaFin')";
+    if (!empty($idProveedor)) {
+        $condiciones .= " AND f.id_proveedor = '$idProveedor'";
+    }
+
+          $consulta_datos = "SELECT
+        f.id_factura,
+        f.num_factura,
+        f.numero_factura,
+        p.nombre_proveedor,
+        p.rfc_proveedor,
+        f.fecha_emision,
+        f.fecha_vencimiento,
+        m.nombre_moneda,
+        SUM(df.precio_sin_IVA) AS precio_sin_iva,
+        SUM(df.total) AS total_factura,
+        f.pagada
+    FROM
+        facturas f
+    JOIN
+        detalle_factura df ON f.id_factura = df.id_factura
+    JOIN
+        proveedores p ON f.id_proveedor = p.id_proveedor
+    JOIN
+        tipos_moneda m ON f.id_moneda = m.id_moneda
+    WHERE
+        $condiciones
+    GROUP BY
+        f.id_factura, f.num_factura, f.numero_factura, p.nombre_proveedor, p.rfc_proveedor, f.fecha_emision, f.fecha_vencimiento, m.nombre_moneda, f.pagada
+    ORDER BY
+        f.fecha_emision ASC
+    LIMIT
+        $inicio, $registros;";
+
+    $consulta_total = "SELECT COUNT(DISTINCT f.id_factura)
+    FROM facturas f
+    JOIN detalle_factura df ON f.id_factura = df.id_factura
+    JOIN proveedores p ON f.id_proveedor = p.id_proveedor
+    JOIN tipos_moneda m ON f.id_moneda = m.id_moneda
+    WHERE $condiciones;";
+*/
 
         $datos = $this->ejecutarConsulta($consulta_datos);
         $datos = $datos->fetchAll();
@@ -593,8 +643,336 @@ public function listarMovFacturaControlador($pagina, $registros, $url, $busqueda
 
 
 
- 
+public function listarMovFacturaReportControlador($pagina, $registros, $url) {
+    $url = APP_URL . $this->limpiarCadena($url) . "/";
+    
+    $anioSeleccionado = isset($_POST['anio']) ? $this->limpiarCadena($_POST['anio']) : date('Y');
+    $precioDolar = isset($_POST['precioDolar']) ? (float)$_POST['precioDolar'] : 0;
+    $iva = 0.16;
 
+    $consulta_datos = "SELECT 
+        p.nombre_proveedor,
+        MONTH(f.fecha_emision) AS mes,
+        m.nombre_moneda,
+        SUM(df.precio_sin_IVA) AS total_sin_iva
+    FROM 
+        facturas f
+    JOIN 
+        detalle_factura df ON f.id_factura = df.id_factura
+    JOIN 
+        proveedores p ON f.id_proveedor = p.id_proveedor
+    JOIN 
+        tipos_moneda m ON f.id_moneda = m.id_moneda
+    WHERE 
+        YEAR(f.fecha_emision) = '$anioSeleccionado'
+    GROUP BY 
+        p.nombre_proveedor, 
+        MONTH(f.fecha_emision),
+        m.nombre_moneda
+    ORDER BY 
+        mes, p.nombre_proveedor";
+
+    $datos = $this->ejecutarConsulta($consulta_datos);
+    $resultados = $datos->fetchAll();
+
+    $datosPorMes = [];
+    $mesesNombres = [
+        1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril', 
+        5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto', 
+        9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
+    ];
+
+    $totalAnualPorProveedor = [];
+    $totalAnual = 0;
+
+    foreach ($resultados as $fila) {
+        $mes = $fila['mes'];
+        $proveedor = $fila['nombre_proveedor'];
+        $moneda = strtolower($fila['nombre_moneda']);
+        
+        if ($moneda === 'dólares' || $moneda === 'dolares' || $moneda === 'usd') {
+            $total = $fila['total_sin_iva'] * $precioDolar;
+            $monedaFinal = 'USD';
+        } elseif ($moneda === 'pesos' || $moneda === 'mxn') {
+            $total = $fila['total_sin_iva'];
+            $monedaFinal = 'MXN';
+        } else {
+            $total = $fila['total_sin_iva'];
+            $monedaFinal = 'Otra';
+        }
+
+        if (!isset($datosPorMes[$mes])) {
+            $datosPorMes[$mes] = [];
+        }
+
+        if (!isset($datosPorMes[$mes][$proveedor])) {
+            $datosPorMes[$mes][$proveedor] = [
+                'total' => 0,
+                'moneda' => $monedaFinal
+            ];
+        }
+        $datosPorMes[$mes][$proveedor]['total'] += $total;
+
+        if (!isset($totalAnualPorProveedor[$proveedor])) {
+            $totalAnualPorProveedor[$proveedor] = 0;
+        }
+        $totalAnualPorProveedor[$proveedor] += $total;
+    }
+
+    $tabla = '
+    <form method="POST" action="' . $url . '">
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label for="anio" class="form-label">Año:</label>
+                <select class="form-control" name="anio" id="anio">';
+    
+    $anioActual = date('Y');
+    for ($i = $anioActual; $i >= $anioActual - 4; $i--) {
+        $selected = ($i == $anioSeleccionado) ? 'selected' : '';
+        $tabla .= "<option value='$i' $selected>$i</option>";
+    }
+    
+    $tabla .= '
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="precioDolar" class="form-label">Tipo de cambio del dólar:</label>
+                <input type="number" step="0.01" class="form-control" name="precioDolar" id="precioDolar" placeholder="Precio del Dólar" value="' . htmlspecialchars($precioDolar) . '">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+            </div>
+        </div>
+    </form>
+    <button class="btn btn-primary mb-3" onclick="imprimirArea(\'areaImprimir\')">Imprimir</button>
+    <div id="areaImprimir">
+    <div style="margin-top: 1px; font-size: 13px; border: 1px solid #000; padding: 5px;">
+        <p style="font-size: 16px; text-align: center;"><strong>Reporte de Gastos por Proveedor</strong></p>
+        <p style="font-size: 14px; text-align: center;"><strong>Año ' . htmlspecialchars($anioSeleccionado) . '</strong></p>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <img src="' . APP_URL . 'app/views/fotos/logo_orden.png" alt="logo" style="width:200px; height:auto;">
+            <div>
+                <p style="font-size: 13px;"><strong>Formato:</strong> PR-12-F11</p>
+            </div>
+        </div>
+    </div>';
+
+    $totalAnual = 0;
+    foreach ($mesesNombres as $numMes => $nombreMes) {
+        if (isset($datosPorMes[$numMes]) && !empty($datosPorMes[$numMes])) {
+            $tabla .= '<div class="table-responsive mt-3">';
+            $tabla .= '<h3>' . $nombreMes . '</h3>';
+            $tabla .= '<table class="table table-striped table-bordered">';
+            $tabla .= '<thead class="table-dark">';
+            $tabla .= '<tr><th>Proveedor</th><th>Total (MXN)</th><th>Moneda Original</th></tr>';
+            $tabla .= '</thead><tbody>';
+            
+            $totalMes = 0;
+            foreach ($datosPorMes[$numMes] as $proveedor => $datos) {
+                $tabla .= '<tr>';
+                $tabla .= '<td>' . htmlspecialchars($proveedor) . '</td>';
+                $tabla .= '<td>$' . number_format($datos['total'], 2) . '</td>';
+                $tabla .= '<td>' . htmlspecialchars($datos['moneda']) . '</td>';
+                $tabla .= '</tr>';
+                
+                $totalMes += $datos['total'];
+            }
+            
+            $tabla .= '<tr class="table-active">';
+            $tabla .= '<td><strong>Total ' . $nombreMes . '</strong></td>';
+            $tabla .= '<td><strong>$' . number_format($totalMes, 2) . '</strong></td>';
+            $tabla .= '<td><strong>MXN</strong></td>';
+            $tabla .= '</tr>';
+            
+            $tabla .= '</tbody></table>';
+            $tabla .= '</div>';
+            
+            $totalAnual += $totalMes;
+        }
+    }
+
+    $tabla .= '<div class="table-responsive mt-3">';
+    $tabla .= '<h3>Totales Anuales por Proveedor</h3>';
+    $tabla .= '<table class="table table-striped table-bordered">';
+    $tabla .= '<thead class="table-dark">';
+    $tabla .= '<tr><th>Proveedor</th><th>Total Anual (MXN)</th></tr>';
+    $tabla .= '</thead><tbody>';
+    
+    arsort($totalAnualPorProveedor);
+
+    foreach ($totalAnualPorProveedor as $proveedor => $total) {
+        $tabla .= '<tr>';
+        $tabla .= '<td>' . htmlspecialchars($proveedor) . '</td>';
+        $tabla .= '<td>$' . number_format($total, 2) . '</td>';
+        $tabla .= '</tr>';
+    }
+    
+    $tabla .= '<tr class="table-active">';
+    $tabla .= '<td><strong>Total General</strong></td>';
+    $tabla .= '<td><strong>$' . number_format($totalAnual, 2) . '</strong></td>';
+    $tabla .= '</tr>';
+    
+    $tabla .= '</tbody></table>';
+    $tabla .= '</div>';
+
+    // Agregar el contenedor y scripts para la gráfica
+    $tabla .= '<div class="mt-4">
+        <canvas id="grafica" style="width: 100%; height: 400px;"></canvas>
+    </div>';
+
+
+
+// Obtener lista única de proveedores
+$proveedoresUnicos = [];
+foreach ($datosPorMes as $mes => $proveedores) {
+    foreach ($proveedores as $proveedor => $datos) {
+        if (!in_array($proveedor, $proveedoresUnicos)) {
+            $proveedoresUnicos[] = $proveedor;
+        }
+    }
+}
+sort($proveedoresUnicos);
+
+// Crear tabla con el nuevo formato
+$tabla .= '<div class="table-responsive mt-3">';
+$tabla .= '<h3>Resumen Anual de Gastos por Proveedor</h3>';
+$tabla .= '<table class="table table-striped table-bordered">';
+$tabla .= '<thead class="table-dark">';
+$tabla .= '<tr><th>Mes</th>';
+
+// Encabezados con nombres de proveedores
+foreach ($proveedoresUnicos as $proveedor) {
+    $tabla .= '<th>' . htmlspecialchars($proveedor) . '</th>';
+}
+$tabla .= '<th>Total Mensual</th></tr>';
+$tabla .= '</thead><tbody>';
+
+// Filas para cada mes
+$totalesPorProveedor = array_fill_keys($proveedoresUnicos, 0);
+
+foreach ($mesesNombres as $numMes => $nombreMes) {
+    $tabla .= '<tr>';
+    $tabla .= '<td>' . $nombreMes . '</td>';
+    
+    $totalMes = 0;
+    foreach ($proveedoresUnicos as $proveedor) {
+        $gasto = isset($datosPorMes[$numMes][$proveedor]) ? 
+                 $datosPorMes[$numMes][$proveedor]['total'] : 
+                 'Sin gasto';
+                 
+        if ($gasto !== 'Sin gasto') {
+            $totalMes += $gasto;
+            $totalesPorProveedor[$proveedor] += $gasto;
+            $tabla .= '<td>$' . number_format($gasto, 2) . '</td>';
+        } else {
+            $tabla .= '<td>' . $gasto . '</td>';
+        }
+    }
+    
+    $tabla .= '<td><strong>$' . number_format($totalMes, 2) . '</strong></td>';
+    $tabla .= '</tr>';
+}
+
+// Fila de totales
+$tabla .= '<tr class="table-active">';
+$tabla .= '<td><strong>Total por Proveedor</strong></td>';
+
+$granTotal = 0;
+foreach ($proveedoresUnicos as $proveedor) {
+    $total = $totalesPorProveedor[$proveedor];
+    $granTotal += $total;
+    $tabla .= '<td><strong>$' . number_format($total, 2) . '</strong></td>';
+}
+
+$tabla .= '<td><strong>$' . number_format($granTotal, 2) . '</strong></td>';
+$tabla .= '</tr>';
+
+$tabla .= '</tbody></table>';
+$tabla .= '</div>';
+
+
+
+
+
+
+    $tabla .= '</div>'; // Cierre de areaImprimir
+
+    // Convertir datos para la gráfica
+    $chartData = json_encode($datosPorMes);
+    $proveedoresData = json_encode($totalAnualPorProveedor);
+    $mesesNombresData = json_encode($mesesNombres);
+
+    // Scripts necesarios
+    $tabla .= '
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script>
+    function imprimirArea(id) {
+        var contenido = document.getElementById(id).innerHTML;
+        var ventanaImpresion = window.open("", "_blank");
+        ventanaImpresion.document.write("<html><head><title>Reporte de Gastos Año ' . htmlspecialchars($anioSeleccionado) . '</title>");
+        ventanaImpresion.document.write("<style>");
+        ventanaImpresion.document.write("body { font-family: Arial, sans-serif; line-height: 1; }");
+        ventanaImpresion.document.write("table { width: 100%; border-collapse: collapse; }");
+        ventanaImpresion.document.write("table, th, td { border: 1px solid black; padding: 5px; }");
+        ventanaImpresion.document.write("</style>");
+        ventanaImpresion.document.write("</head><body>");
+        ventanaImpresion.document.write(contenido);
+        ventanaImpresion.document.write("</body></html>");
+        ventanaImpresion.document.close();
+        ventanaImpresion.print();
+    }
+
+    // Crear la gráfica
+    const datos = ' . $chartData . ';
+    const mesesNombres = ' . $mesesNombresData . ';
+    const proveedores = ' . $proveedoresData . ';
+
+    const ctx = document.getElementById("grafica").getContext("2d");
+    const datasets = Object.keys(proveedores).map((proveedor, index) => ({
+        label: proveedor,
+        data: Object.keys(mesesNombres).map(mes => 
+            datos[mes]?.[proveedor]?.total || 0
+        ),
+        backgroundColor: `hsl(${index * (360 / Object.keys(proveedores).length)}, 70%, 50%)`
+    }));
+
+    new Chart(ctx, {
+        type: "bar",  
+        data: {
+            labels: Object.values(mesesNombres),
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    stacked: false,  // Cambié a false para separar las barras
+                    ticks: {
+                        maxRotation: 45  // Rotar etiquetas para mejor lectura
+                    }
+                },
+                y: { 
+                    stacked: false,  // Cambié a false para separar las barras
+                    ticks: {
+                        callback: value => `$${(value/1000).toLocaleString()}k`
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: context => `${context.dataset.label}: $${context.raw.toLocaleString()}`
+                    }
+                }
+            },
+            barPercentage: 0.8,  // Ajusta el ancho de las barras
+            categoryPercentage: 0.9  // Ajusta el espacio entre grupos de barras
+        }
+    });
+    </script>';
+
+    return $tabla;
+}
 
 
 

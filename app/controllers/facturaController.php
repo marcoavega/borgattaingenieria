@@ -194,7 +194,7 @@ class facturaController extends mainModel
         $url = APP_URL . $url . "/";
 
         $busqueda = $this->limpiarCadena($busqueda);
-        $precioDolar = isset($_POST['precioDolar']) ? (float) $_POST['precioDolar'] : 18; // Precio del dólar por defecto es 18
+        $precioDolar = isset($_POST['precioDolar']) ? (float) $_POST['precioDolar'] : 20; // Precio del dólar por defecto es 18
         $tabla = "";
 
         $pagina = (isset($pagina) && $pagina > 0) ? (int) $pagina : 1;

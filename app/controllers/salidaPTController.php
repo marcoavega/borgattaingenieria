@@ -166,7 +166,8 @@ class salidaPTController extends mainModel
     LEFT JOIN 
         productos p ON dst.id_producto = p.id_producto
     WHERE 
-        sp.id_salida = :busqueda;
+        sp.id_salida = :busqueda
+        ORDER BY id_numero_serie;
 ";
 
     $stmt = $this->conectar()->prepare($consulta_datos);

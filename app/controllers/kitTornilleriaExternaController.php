@@ -8,8 +8,7 @@ class kitTornilleriaExternaController extends mainModel
 {
 
     
-   /*----------  Controlador listar productos  ----------*/
-   public function listarKitTornilleriaExternaControlador($pagina, $registros, $url, $busqueda)
+  public function listarKitTornilleriaExternaControlador($pagina, $registros, $url, $busqueda)
 {
     $pagina = intval($this->limpiarCadena($pagina));
     $registros = intval($this->limpiarCadena($registros));
@@ -19,10 +18,13 @@ class kitTornilleriaExternaController extends mainModel
 
     $inicio = ($pagina > 0) ? (($pagina - 1) * $registros) : 0;
 
+    // Consulta SQL con el tipo de moneda añadido
     $consulta_datos = "SELECT
         p.codigo_producto,
         p.nombre_producto,
         p.url_imagen,
+        p.precio,
+        tm.nombre_moneda,  -- Columna añadida para mostrar el tipo de moneda
         COALESCE(sa_general.stock, 0) AS stock_almacen_general,
         COALESCE(sa_ensamble.stock, 0) AS stock_area_ensamble,
         COALESCE(sa_descarte.stock, 0) AS stock_descartes,
@@ -36,19 +38,21 @@ class kitTornilleriaExternaController extends mainModel
     JOIN productos_cpi_art_af pca ON p.id_producto = pca.id_producto
     JOIN cpi_art_af cpi ON pca.id_cpi_art_af = cpi.id_cpi_art_af
     JOIN sub_categorias s ON p.id_subcategoria = s.id_subcategoria
+    JOIN tipos_moneda tm ON p.id_moneda = tm.id_moneda  -- JOIN para obtener la moneda
     LEFT JOIN stock_almacen sa_general ON p.id_producto = sa_general.id_producto AND sa_general.id_almacen = 1
     LEFT JOIN stock_almacen sa_ensamble ON p.id_producto = sa_ensamble.id_producto AND sa_ensamble.id_almacen = 3
     LEFT JOIN stock_almacen sa_descarte ON p.id_producto = sa_descarte.id_producto AND sa_descarte.id_almacen = 8
     WHERE
         (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
         AND s.nombre_subcategoria = 'TORNILLERIA COMPRA EXTERNA PARA KIT'
-    GROUP BY p.id_producto, p.codigo_producto, p.nombre_producto, p.url_imagen, sa_general.stock, sa_ensamble.stock, sa_descarte.stock
+    GROUP BY p.id_producto, p.codigo_producto, p.nombre_producto, p.url_imagen, p.precio, tm.nombre_moneda, sa_general.stock, sa_ensamble.stock, sa_descarte.stock
     ORDER BY p.codigo_producto ASC
     LIMIT $inicio, $registros;";
 
     $datos = $this->ejecutarConsulta($consulta_datos);
     $datos = $datos->fetchAll();
 
+    // Consulta para el total de registros
     $consulta_total = "SELECT COUNT(DISTINCT p.id_producto)
     FROM productos p
     JOIN categorias c ON p.id_categoria = c.id_categoria
@@ -57,10 +61,11 @@ class kitTornilleriaExternaController extends mainModel
     JOIN sub_categorias s ON p.id_subcategoria = s.id_subcategoria
     WHERE (p.codigo_producto LIKE '%$busqueda%' OR p.nombre_producto LIKE '%$busqueda%')
     AND s.nombre_subcategoria = 'TORNILLERIA COMPRA EXTERNA PARA KIT';";
+    
     $total = (int) $this->ejecutarConsulta($consulta_total)->fetchColumn();
-
     $numeroPaginas = ceil($total / $registros);
 
+    // Inicio de la tabla HTML
     $tabla = '<div class="container-fluid p-4">
     <input type="number" id="multiplicador" value="1" min="1" oninput="calcularTotales()" class="form-control mb-3" style="width: 200px;">
     <button onclick="imprimirTabla()" class="btn btn-primary mb-3">Imprimir Tabla</button>
@@ -70,6 +75,8 @@ class kitTornilleriaExternaController extends mainModel
             <th>Imagen</th>
             <th>Código Producto</th>
             <th>Nombre Producto</th>
+            <th>Precio</th>
+            <th>Moneda</th>  <!-- Nueva columna de moneda -->
             <th>CPI</th>
             <th>ARTICULADOR</th>
             <th>ARCO FACIAL</th>
@@ -90,6 +97,8 @@ class kitTornilleriaExternaController extends mainModel
                 <td><img src="' . APP_URL . 'app/views/img/img/' . htmlspecialchars($rows['url_imagen']) . '" alt="' . htmlspecialchars($rows['nombre_producto']) . '" style="width: 50px; height: 50px;"></td>
                 <td>' . htmlspecialchars($rows['codigo_producto']) . '</td>
                 <td>' . htmlspecialchars($rows['nombre_producto']) . '</td>
+                <td>' . htmlspecialchars($rows['precio']) . '</td>
+                <td>' . htmlspecialchars($rows['nombre_moneda']) . '</td>  <!-- Mostrar tipo de moneda -->
                 <td class="cantidad-cpi">' . htmlspecialchars($rows['cantidad_cpi']) . '</td>
                 <td class="cantidad-articulador">' . htmlspecialchars($rows['cantidad_articulador']) . '</td>
                 <td class="cantidad-arco-facial">' . htmlspecialchars($rows['cantidad_arco_facial']) . '</td>
@@ -102,13 +111,13 @@ class kitTornilleriaExternaController extends mainModel
             </tr>';
         }
     } else {
-        $tabla .= '<tr><td colspan="12" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
+        $tabla .= '<tr><td colspan="14" class="text-center">No hay registros que coincidan con la búsqueda.</td></tr>';
     }
 
     $tabla .= '</tbody></table>';
     $tabla .= '</div>';
 
-    // JavaScript para calcular totales dinámicamente
+    // JavaScript para calcular los totales y stock dinámicamente
     $tabla .= '<script>
     function calcularTotales() {
         var multiplicador = document.getElementById("multiplicador").value;
@@ -119,7 +128,7 @@ class kitTornilleriaExternaController extends mainModel
             var arcoFacial = parseFloat(fila.querySelector(".cantidad-arco-facial").textContent) || 0;
             var empaque = parseFloat(fila.querySelector(".cantidad-empaque").textContent) || 0;
             var total = fila.querySelector(".total");
-            var stockGeneral = parseFloat(fila.querySelector("td:nth-child(9)").textContent);
+            var stockGeneral = parseFloat(fila.querySelector("td:nth-child(11)").textContent);
             var stockDisponible = fila.querySelector(".stock-disponible");
             var totalCantidad = (cpi + articulador + arcoFacial + empaque) * multiplicador;
             total.textContent = totalCantidad.toFixed(2);
@@ -150,22 +159,9 @@ class kitTornilleriaExternaController extends mainModel
         ventanaImpresion.document.close();
         ventanaImpresion.print();
     }
-    </script>';
 
-    // Paginación
-    if ($total > 0 && $numeroPaginas > 1) {
-        $tabla .= "<nav><ul class='pagination'>";
-        if ($pagina > 1) {
-            $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina - 1) . "'>Anterior</a></li>";
-        }
-        for ($i = 1; $i <= $numeroPaginas; $i++) {
-            $tabla .= "<li class='page-item " . ($i == $pagina ? "active" : "") . "'><a class='page-link' href='" . $url . $i . "'>$i</a></li>";
-        }
-        if ($pagina < $numeroPaginas) {
-            $tabla .= "<li class='page-item'><a class='page-link' href='" . $url . ($pagina + 1) . "'>Siguiente</a></li>";
-        }
-        $tabla .= "</ul></nav>";
-    }
+    calcularTotales();
+    </script>';
 
     return $tabla;
 }

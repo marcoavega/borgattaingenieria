@@ -1,7 +1,7 @@
 <?php
 
 // URL base de la aplicación
-const APP_URL = "http://localhost/borgattaingenieria/";
+const APP_URL = "http://localhost:8080/borgattaingenieria/";
 //const APP_URL = "http://borgattaingenieria.atwebpages.com/";
 //const APP_URL = "https://radiotecnologia.rf.gd/";
 

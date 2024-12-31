@@ -89,6 +89,16 @@
                             "orderGMain",
                             "notaEMain",
                             "facturaMain",
+                            "productHM",
+                            "productKit",
+                            "movSearch3",
+                            "movSearch4",
+                            "productDelt",
+                            "ReportYearFactura",
+                            "entradaTerminadoMain",
+                            "entradasProductoTerminado",
+                            "entradaPTNew",
+                            "entradaPTSearch",
                         ];
 
             // Comprueba si la vista solicitada está en la lista blanca

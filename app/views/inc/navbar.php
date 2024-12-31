@@ -117,6 +117,16 @@
             </a>
           </li>
 
+
+          <li class="nav-item">
+            <a class="nav-link" href="<?php echo APP_URL; ?>entradaTerminadoMain/" id="productosDropdown" role="button" aria-expanded="false">
+              <div class="d-flex flex-column align-items-center">
+                <img src="<?php echo APP_URL; ?>app/views/img/icons/hugeicons--product-loading.svg" alt="Products Icon" class="nav-icon">
+                Entrada Terminado
+              </div>
+            </a>
+          </li>
+
         <?php } ?>
       </ul>
       <ul class="navbar-nav">

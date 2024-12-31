@@ -23,72 +23,166 @@ class numSerieController extends mainModel
     }
 
 
+    public function obtenerOpcionesProductoFinal()
+    {
+        $consulta_productos = "SELECT * FROM productos_finales_venta ORDER BY id_productos_finales_venta";
+        $datos_productos = $this->ejecutarConsulta($consulta_productos);
+        $opciones_productos = "";
+
+        while ($productos = $datos_productos->fetch()) {
+            $opciones_productos .= '<option value="' . $productos['id_productos_finales_venta'] . '">
+            '. $productos['nombre_producto_final_venta'] .' - 
+            '. $productos['descripcion'] . '
+            </option>
+                ';
+        }
+
+        return $opciones_productos;
+    }
+
+
+
+
     /*----------  Controlador registrar usuario  ----------*/
-  public function registrarNumSerieControlador()
-{
-    // Generando número de serie automático
-$ultimoNumeroSerie = $this->obtenerUltimoNumeroSerie();
-$nuevoNumeroSerie = 'PTARC001-5-' . str_pad($ultimoNumeroSerie + 1, 4, '0', STR_PAD_LEFT);
-
-    // Almacenando datos del formulario
-    $id_numero_lote = $this->limpiarCadena($_POST['id_lote']);
-
-    // Verificando campos obligatorios
-    if (empty($id_numero_lote)) {
-        $alerta = [
-            "tipo" => "simple",
-            "titulo" => "Error",
-            "texto" => "Selecciona un lote válido",
-            "icono" => "error"
-        ];
-        return json_encode($alerta);
+    public function registrarNumSerieControlador()
+    {
+        try {
+            $id_producto = $this->limpiarCadena($_POST['id_p_f']);
+            $id_numero_lote = $this->limpiarCadena($_POST['id_lote']);
+            $cantidad_series = $this->limpiarCadena($_POST['cantidad_series']);
+    
+            if (empty($id_numero_lote) || empty($id_producto) || empty($cantidad_series)) {
+                return json_encode([
+                    "tipo" => "simple",
+                    "titulo" => "Campos Incompletos",
+                    "texto" => "Por favor, complete todos los campos requeridos",
+                    "icono" => "warning"
+                ]);
+            }
+    
+            $cantidad_series = intval($cantidad_series);
+            if ($cantidad_series < 1 || $cantidad_series > 100) {
+                return json_encode([
+                    "tipo" => "simple",
+                    "titulo" => "Cantidad Inválida",
+                    "texto" => "La cantidad debe estar entre 1 y 100",
+                    "icono" => "warning"
+                ]);
+            }
+    
+            $producto_nombre = $this->obtenerNombreProducto($id_producto);
+            if (!$producto_nombre) {
+                return json_encode([
+                    "tipo" => "simple",
+                    "titulo" => "Error de Producto",
+                    "texto" => "No se pudo obtener el nombre del producto",
+                    "icono" => "error"
+                ]);
+            }
+    
+            $this->conectar()->beginTransaction();
+            
+            // Bloquear tabla para evitar race conditions
+            $this->conectar()->exec('LOCK TABLES numeros_serie WRITE');
+            
+            $ultimoNumeroSerie = $this->obtenerUltimoNumeroSerie();
+            $numerosGenerados = [];
+            
+            // Verificar duplicados antes de insertar
+            for ($i = 1; $i <= $cantidad_series; $i++) {
+                $nuevoNumero = $ultimoNumeroSerie + $i;
+                $nuevoNumeroSerie = $producto_nombre . '-' . str_pad($nuevoNumero, 4, '0', STR_PAD_LEFT);
+                
+                // Verificar si ya existe
+                $stmt = $this->conectar()->prepare("SELECT COUNT(*) FROM numeros_serie WHERE numero_serie = ?");
+                $stmt->execute([$nuevoNumeroSerie]);
+                if ($stmt->fetchColumn() > 0) {
+                    $this->conectar()->exec('UNLOCK TABLES');
+                    $this->conectar()->rollBack();
+                    return json_encode([
+                        "tipo" => "simple",
+                        "titulo" => "Error de Registro",
+                        "texto" => "Número de serie duplicado detectado",
+                        "icono" => "error"
+                    ]);
+                }
+                
+                $numerosGenerados[] = [
+                    "numero" => $nuevoNumeroSerie,
+                    "lote" => $id_numero_lote
+                ];
+            }
+    
+            // Insertar todos los números en una sola consulta
+            $sql = "INSERT INTO numeros_serie (numero_serie, id_numero_lote) VALUES ";
+            $values = [];
+            $params = [];
+            
+            foreach ($numerosGenerados as $index => $num) {
+                $values[] = "(?, ?)";
+                $params[] = $num["numero"];
+                $params[] = $num["lote"];
+            }
+            
+            $sql .= implode(', ', $values);
+            $stmt = $this->conectar()->prepare($sql);
+            
+            if (!$stmt->execute($params)) {
+                $this->conectar()->exec('UNLOCK TABLES');
+                $this->conectar()->rollBack();
+                return json_encode([
+                    "tipo" => "simple",
+                    "titulo" => "Error de Registro",
+                    "texto" => "Error al insertar los números de serie",
+                    "icono" => "error"
+                ]);
+            }
+    
+            $this->conectar()->exec('UNLOCK TABLES');
+            $this->conectar()->commit();
+            
+            return json_encode([
+                "tipo" => "simple",
+                "titulo" => "¡Registro Exitoso!",
+                "texto" => "Se generaron " . count($numerosGenerados) . " números de serie correctamente",
+                "icono" => "success"
+            ]);
+            
+        } catch (\Exception $e) {
+            if ($this->conectar()->inTransaction()) {
+                $this->conectar()->exec('UNLOCK TABLES');
+                $this->conectar()->rollBack();
+            }
+            
+            return json_encode([
+                "tipo" => "simple",
+                "titulo" => "Error del Sistema",
+                "texto" => "Ocurrió un error al procesar la solicitud",
+                "icono" => "error"
+            ]);
+        }
     }
-
-    // Preparando datos para la inserción
-    $datosRegistro = [
-        [
-            "campo_nombre" => "numero_serie",
-            "campo_marcador" => ":NumeroSerie",
-            "campo_valor" => $nuevoNumeroSerie
-        ],
-        [
-            "campo_nombre" => "id_numero_lote",  // Asegúrate de que el nombre sea correcto aquí
-            "campo_marcador" => ":IdNumeroLote",
-            "campo_valor" => $id_numero_lote
-        ]
-    ];
-
-    // Guardando datos en la base de datos
-    $registro = $this->guardarDatos("numeros_serie", $datosRegistro);
-
-    if ($registro->rowCount() === 1) {
-        $alerta = [
-            "tipo" => "limpiar",
-            "titulo" => "Éxito",
-            "texto" => "Número de serie registrado correctamente: $nuevoNumeroSerie",
-            "icono" => "success"
-        ];
-    } else {
-        $alerta = [
-            "tipo" => "simple",
-            "titulo" => "Error",
-            "texto" => "No se pudo registrar el número de serie",
-            "icono" => "error"
-        ];
+    
+    private function obtenerNombreProducto($id_producto)
+    {
+        $consulta = "SELECT nombre_producto_final_venta FROM productos_finales_venta WHERE id_productos_finales_venta = :id";
+        $stmt = $this->conectar()->prepare($consulta);
+        $stmt->bindParam(':id', $id_producto, \PDO::PARAM_INT);
+        $stmt->execute();
+        $resultado = $stmt->fetch();
+        return $resultado ? $resultado['nombre_producto_final_venta'] : false;
     }
-
-    return json_encode($alerta);
-}
-
-
-
-  private function obtenerUltimoNumeroSerie()
-{
-    $consulta_ultimo_numero = "SELECT MAX(CAST(SUBSTRING(numero_serie, 12) AS UNSIGNED)) AS ultimo_numero FROM numeros_serie WHERE numero_serie LIKE 'PTARC001-5-%'";
-    $resultado = $this->ejecutarConsulta($consulta_ultimo_numero)->fetch();
-    return $resultado ? intval($resultado['ultimo_numero']) : 0;
-}
-
+    
+    private function obtenerUltimoNumeroSerie()
+    {
+        // Modificado para obtener el último número global sin importar el producto
+        $consulta_ultimo_numero = "SELECT MAX(CAST(SUBSTRING_INDEX(numero_serie, '-', -1) AS UNSIGNED)) AS ultimo_numero 
+                                 FROM numeros_serie";
+        $stmt = $this->conectar()->prepare($consulta_ultimo_numero);
+        $stmt->execute();
+        $resultado = $stmt->fetch();
+        return $resultado ? intval($resultado['ultimo_numero']) : 0;
+    }
 
 public function listarNumSerieControlador($busqueda)
 {
